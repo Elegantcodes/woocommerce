@@ -322,7 +322,6 @@ if (!function_exists('woocommerce_grouped_add_to_cart')) {
 	function woocommerce_grouped_add_to_cart() {
 
 		global $_product;
-		
 		?>
 		<form action="<?php echo esc_url( $_product->add_to_cart_url() ); ?>" class="cart" method="post">
 			<table cellspacing="0" class="group_table">
@@ -506,9 +505,7 @@ if (!function_exists('woocommerce_product_attributes_tab')) {
 		
 		global $_product;
 		
-		$show_attributes_tab = apply_filters('woocommerce_show_attributes_tab', $_product->has_attributes(), $_product);
-		
-		if ($show_attributes_tab) : ?><li><a href="#tab-attributes"><?php echo apply_filters('woocommerce_product_additional_information_heading', __('Additional Information', 'woothemes')); ?></a></li><?php endif;
+		if ($_product->has_attributes()) : ?><li><a href="#tab-attributes"><?php _e('Additional Information', 'woothemes'); ?></a></li><?php endif;
 		
 	}
 }
@@ -536,7 +533,6 @@ if (!function_exists('woocommerce_product_attributes_panel')) {
 		echo '<div class="panel" id="tab-attributes">';
 		echo '<h2>' . apply_filters('woocommerce_product_additional_information_heading', __('Additional Information', 'woothemes')) . '</h2>';
 		$_product->list_attributes();
-		do_action('woocommerce_product_additional_information_content', $_product); 
 		echo '</div>';
 	}
 }
