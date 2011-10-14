@@ -84,6 +84,8 @@ class woocommerce_cart {
 		endif;
 		
 		if (!is_array($this->cart_contents)) $this->cart_contents = array();
+		
+		apply_filters('woocommerce_get_cart_from_session', $this);
 	}
 	
 	/**
@@ -101,6 +103,8 @@ class woocommerce_cart {
 		
 		// Calculate totals
 		$this->calculate_totals();
+		
+		do_action('woocommerce_set_session_cart', $this);
 	}
 	
 	/**
@@ -122,6 +126,7 @@ class woocommerce_cart {
 		$this->shipping_total = 0;
 		unset($_SESSION['cart']);
 		unset($_SESSION['coupons']);
+		do_action('woocommerce_empty_cart', $this);
 	}
 	
 	/**
