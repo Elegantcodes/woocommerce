@@ -74,6 +74,8 @@ class woocommerce_cart {
 		endif;
 		
 		if (!is_array($this->cart_contents)) $this->cart_contents = array();
+		
+		apply_filters('woocommerce_get_cart_from_session', $this);
 	}
 	
 	/** sets the php session data for the cart and coupon */
@@ -84,12 +86,15 @@ class woocommerce_cart {
 		
 		$_SESSION['coupons'] = $this->applied_coupons;
 		$this->calculate_totals();
+		
+		do_action('woocommerce_set_session_cart', $this);
 	}
 	
 	/** Empty the cart */
 	function empty_cart() {
 		unset($_SESSION['cart']);
 		unset($_SESSION['coupons']);
+		do_action('woocommerce_empty_cart', $this);
 	}
 	
 	/**
