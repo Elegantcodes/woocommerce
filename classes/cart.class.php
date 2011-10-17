@@ -247,6 +247,8 @@ class woocommerce_cart {
 
 		do_action('woocommerce_add_to_cart', $this, $product_id, $added_quantity, $variation, $variation_id);
 		
+		do_action('woocommerce_add_to_cart', $this, $product_id, $added_quantity, $variation, $variation_id);
+		
 		$this->set_session();
 		
 		return true;
