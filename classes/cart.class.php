@@ -133,6 +133,8 @@ class woocommerce_cart {
 	function add_to_cart( $product_id, $quantity = 1, $variation = '', $variation_id = '' ) {
 		global $woocommerce;
 		
+		$added_quantity = $quantity;
+		
 		if ($quantity < 1) $quantity = 1;
 		
 		$found_cart_item_key = $this->find_product_in_cart($product_id, $variation_id, $variation);
@@ -188,6 +190,8 @@ class woocommerce_cart {
 			
 		endif;
 		
+		do_action('woocommerce_add_to_cart', $this, $product_id, $added_quantity, $variation, $variation_id);
+		
 		$this->set_session();
 		
 		return true;
@@ -200,6 +204,7 @@ class woocommerce_cart {
 	 * @param   string	quantity	contains the quantity of the item
 	 */
 	function set_quantity( $cart_item, $quantity = 1 ) {
+		do_action('woocommerce_set_quantity', $this, $cart_item, $quantity);
 		if ($quantity==0 || $quantity<0) :
 			unset($this->cart_contents[$cart_item]);
 		else :
