@@ -131,8 +131,17 @@ class woocommerce_product {
 			if ($this->is_type('variable') || $this->is_type('grouped')) :
 			
 				$child_post_type = ($this->is_type('variable')) ? 'product_variation' : 'product';
+				
+				$children_query_args = array(
+					'post_parent' => $this->id,
+					'post_type' => $child_post_type,
+					'orderby' => 'menu_order',
+					'order' => 'ASC'
+				);
+				
+				$children_query_args = apply_filters('woocommerce_get_children_args', $children_query_args);
 			
-				if ( $children_products =& get_children( 'post_parent='.$this->id.'&post_type='.$child_post_type.'&orderby=menu_order&order=ASC' ) ) :
+				if ( $children_products =& get_children( $children_query_args ) ) :
 	
 					if ($children_products) foreach ($children_products as $child) :
 						
