@@ -63,6 +63,7 @@ function woocommerce_reports() {
 			),
 		)
 	);
+	$charts = apply_filters('woocommerce_reports_charts', $charts);
     ?>
 	<div class="wrap woocommerce">
 		<div class="icon32 icon32-woocommerce-reports" id="icon-woocommerce"><br></div><h2 class="nav-tab-wrapper woo-nav-tab-wrapper">
