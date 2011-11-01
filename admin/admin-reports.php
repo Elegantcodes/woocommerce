@@ -1097,6 +1097,7 @@ function woocommerce_product_sales() {
 					'order'				=> 'ASC',
 					'orderby'			=> 'title'
 				);
+				$args = apply_filters('woocommerce_product_sales_select_args', $args);
 				$products = get_posts( $args );
 				
 				if ($products) foreach ($products as $product) :
