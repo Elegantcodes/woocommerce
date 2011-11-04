@@ -9,12 +9,12 @@
  * @author		WooThemes
  */
  
-function get_woocommerce_cart( $atts ) {
-	global $woocommerce;
-	return $woocommerce->shortcode_wrapper('woocommerce_cart', $atts);
-}
-
-function woocommerce_cart( $atts ) {
+ /**
+  * This function will process changes to shipping information or coupons on page load, rather than
+  * at the start of the shortcode, allowing elements that rely on updated coupon information which
+  * appear earlier in the page load process to get accurate information.
+  */
+function woocommerce_cart_apply_changes() {
 	global $woocommerce;
 	$errors = array();
 	$validation = &new woocommerce_validation();
@@ -61,6 +61,16 @@ function woocommerce_cart( $atts ) {
 		endif;
 			
 	endif;
+}
+add_action('init', 'woocommerce_cart_apply_changes');
+ 
+function get_woocommerce_cart( $atts ) {
+	global $woocommerce;
+	return $woocommerce->shortcode_wrapper('woocommerce_cart', $atts);
+}
+
+function woocommerce_cart( $atts ) {
+	global $woocommerce;
 	
 	do_action('woocommerce_check_cart_items');
 	
