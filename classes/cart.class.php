@@ -485,6 +485,10 @@ class woocommerce_cart {
 			endif;
 		endforeach;
 		
+		// CF: We've added a filter here so that we can put in our own custom promotion calculation
+		// to apply only one coupon to each item in the cart, or the cart itself.
+		$this->discount_total = apply_filters('woocommerce_discount_total_cart', $this->discount_total, $this);
+		
 		// Cart Shipping
 		if ($this->needs_shipping()) $woocommerce->shipping->calculate_shipping(); else $woocommerce->shipping->reset_shipping();
 		
