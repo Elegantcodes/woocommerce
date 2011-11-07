@@ -105,7 +105,7 @@ class woocommerce_cart {
      * @param array $variation array of attributre values
      * @return int|null
      */
-	function find_product_in_cart($product_id, $variation_id, $variation = array()) {
+	function find_product_in_cart($product_id, $variation_id = null, $variation = array()) {
 
         foreach ($this->cart_contents as $cart_item_key => $cart_item) :
         
@@ -429,6 +429,10 @@ class woocommerce_cart {
 			endif;
 		endforeach;
 		
+		// CF: We've added a filter here so that we can put in our own custom promotion calculation
+		// to apply only one coupon to each item in the cart, or the cart itself.
+		$this->discount_total = apply_filters('woocommerce_discount_total_cart', $this->discount_total, $this);
+		
 		// Cart Shipping
 		if ($this->needs_shipping()) $woocommerce->shipping->calculate_shipping(); else $woocommerce->shipping->reset_shipping();
 		
@@ -590,6 +594,7 @@ class woocommerce_cart {
 			endforeach;
 			
 			$this->applied_coupons[] = $coupon_code;
+			do_action('woocommerce_add_discount_cart', $this, $coupon_code, $the_coupon);
 			$this->set_session();
 			$woocommerce->add_message( __('Discount code applied successfully.', 'woothemes') );
 			return true;
