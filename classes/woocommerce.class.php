@@ -148,13 +148,13 @@ class woocommerce {
 		
 			if (isset($this->errors) && sizeof($this->errors)>0) :
 				foreach ($this->errors as $error) {
-					echo '<div class="woocommerce_error">'.esc_html($error).'</div>';
+					echo '<div class="woocommerce_error">'.$error.'</div>';
 				}
 				$this->clear_messages();
 				return true;
 			elseif (isset($this->messages) && sizeof($this->messages)>0) :
 				foreach ($this->messages as $message) {
-					echo '<div class="woocommerce_message">'.esc_html($message).'</div>';
+					echo '<div class="woocommerce_message">'.$message.'</div>';
 				}
 				$this->clear_messages();
 				return true;
