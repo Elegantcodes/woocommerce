@@ -145,22 +145,22 @@ class woocommerce {
 		 * Output the errors and messages
 		 */
 		function show_messages() {
+			$return_val = false;
 		
 			if (isset($this->errors) && sizeof($this->errors)>0) :
 				foreach ($this->errors as $error) {
 					echo '<div class="woocommerce_error">'.$error.'</div>';
 				}
-				$this->clear_messages();
-				return true;
-			elseif (isset($this->messages) && sizeof($this->messages)>0) :
+				$return_val = true;
+			endif;
+			if (isset($this->messages) && sizeof($this->messages)>0) :
 				foreach ($this->messages as $message) {
 					echo '<div class="woocommerce_message">'.$message.'</div>';
 				}
-				$this->clear_messages();
-				return true;
-			else :
-				return false;
+				$return_val = true;
 			endif;
+			$this->clear_messages();
+			return $return_val;
 		}
 		
 		/**
