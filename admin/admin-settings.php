@@ -235,7 +235,7 @@ $woocommerce_settings['pages'] = apply_filters('woocommerce_page_settings', arra
 		'desc' 		=> __( 'This title to show on the shop base page. Leave blank to use the page title.', 'woothemes' ),
 		'id' 		=> 'woocommerce_shop_page_title',
 		'type' 		=> 'text',
-		'std' 		=> 'All Products' // Default value for the page title - changed in settings
+		'std' 		=> __('All Products', 'woothemes')
 	),
 
 	array(  
