@@ -63,6 +63,7 @@ function woocommerce_reports() {
 			),
 		)
 	);
+	$charts = apply_filters('woocommerce_reports_charts', $charts);
     ?>
 	<div class="wrap woocommerce">
 		<div class="icon32 icon32-woocommerce-reports" id="icon-woocommerce"><br></div><h2 class="nav-tab-wrapper woo-nav-tab-wrapper">
@@ -1094,6 +1095,7 @@ function woocommerce_product_sales() {
 					'order'				=> 'ASC',
 					'orderby'			=> 'title'
 				);
+				$args = apply_filters('woocommerce_product_sales_select_args', $args);
 				$products = get_posts( $args );
 				
 				if ($products) foreach ($products as $product) :
@@ -1488,7 +1490,7 @@ function woocommerce_stock_overview() {
 							if ($stock>$nostockamount) continue;
 							echo '<li><a href="';
 							if ($product->post_type=='product') echo admin_url('post.php?post='.$product->ID.'&action=edit'); else echo admin_url('post.php?post='.$product->post_parent.'&action=edit');
-							echo '"><small>'.$stock.__(' in stock', 'woothemes').'</small> '.$product->post_title.'</a></li>';
+							echo '"><small>'.apply_filters('woocommerce_out_of_stock_small_text', sprintf(_n('%d in stock', '%d in stock', $stock, 'woothemes'), $stock), $product).'</small> '.$product->post_title.'</a></li>';
 						endforeach;
 						echo '</ul>';
 					else :

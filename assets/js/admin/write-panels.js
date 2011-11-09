@@ -1,7 +1,7 @@
 jQuery( function($){
 	
 	// Prevent enter submitting post form
-	jQuery("form#post").bind("keypress", function(e) {
+	jQuery("#upsell_product_data").bind("keypress", function(e) {
 		if (e.keyCode == 13) return false;
 	});
 	
@@ -57,6 +57,7 @@ jQuery( function($){
 					
 					if (!itemCost) itemCost = 0;
 					if (!itemTax) itemTax = 0;
+					if (!itemQty) itemQty = 0;
 					
 					totalItemTax = 0;
 					

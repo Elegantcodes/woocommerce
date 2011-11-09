@@ -145,18 +145,22 @@ class woocommerce {
 		 * Output the errors and messages
 		 */
 		function show_messages() {
+			$return_val = false;
 		
 			if (isset($this->errors) && sizeof($this->errors)>0) :
-				echo '<div class="woocommerce_error">'.$this->errors[0].'</div>';
-				$this->clear_messages();
-				return true;
-			elseif (isset($this->messages) && sizeof($this->messages)>0) :
-				echo '<div class="woocommerce_message">'.$this->messages[0].'</div>';
-				$this->clear_messages();
-				return true;
-			else :
-				return false;
+				foreach ($this->errors as $error) {
+					echo '<div class="woocommerce_error">'.$error.'</div>';
+				}
+				$return_val = true;
 			endif;
+			if (isset($this->messages) && sizeof($this->messages)>0) :
+				foreach ($this->messages as $message) {
+					echo '<div class="woocommerce_message">'.$message.'</div>';
+				}
+				$return_val = true;
+			endif;
+			$this->clear_messages();
+			return $return_val;
 		}
 		
 		/**
@@ -200,11 +204,17 @@ class woocommerce {
 		function attribute_label( $name ) { 
 			global $wpdb;
 			
-			$name = str_replace( 'pa_', '', sanitize_title( $name ) );
+			if (strstr( $name, 'pa_' )) :
+				$name = str_replace( 'pa_', '', sanitize_title( $name ) );
 	
-			$label = $wpdb->get_var( $wpdb->prepare( "SELECT attribute_label FROM ".$wpdb->prefix."woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name ) );
+				$label = $wpdb->get_var( $wpdb->prepare( "SELECT attribute_label FROM ".$wpdb->prefix."woocommerce_attribute_taxonomies WHERE attribute_name = %s;", $name ) );
+				
+				if ($label) return $label; else return ucfirst($name);
+			else :
+				return $name;
+			endif;
 	
-			if ($label) return $label; else return ucfirst($name);
+			
 		}
 		
     /*-----------------------------------------------------------------------------------*/

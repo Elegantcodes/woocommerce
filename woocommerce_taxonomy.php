@@ -29,6 +29,8 @@ function woocommerce_post_type() {
 	
 	if (get_option('woocommerce_prepend_shop_page_to_products')=='yes') :
 		$product_base = trailingslashit($base_slug);
+	else :
+		$product_base = trailingslashit(__('product', 'woothemes'));
 	endif;
 	
 	if (get_option('woocommerce_prepend_category_to_products')=='yes') :
@@ -298,9 +300,6 @@ function woocommerce_product_cat_filter_post_link( $permalink, $post, $leavename
     
     // Abort early if the placeholder rewrite tag isn't in the generated URL
     if ( false === strpos( $permalink, '%product_cat%' ) ) return $permalink;
-    
-    // Sample aborts
-    if ($sample) return $permalink;
 
     // Get the custom taxonomy terms in use by this post
     $terms = get_the_terms( $post->ID, 'product_cat' );
@@ -320,7 +319,7 @@ add_filter( 'post_type_link', 'woocommerce_product_cat_filter_post_link', 10, 4 
 
 
 /**
- * Add product_cat ordering to get_terms
+ * Add term ordering to get_terms
  * 
  * It enables the support a 'menu_order' parameter to get_terms for the product_cat taxonomy.
  * By default it is 'ASC'. It accepts 'DESC' too
@@ -331,11 +330,18 @@ add_filter( 'post_type_link', 'woocommerce_product_cat_filter_post_link', 10, 4 
 add_filter( 'terms_clauses', 'woocommerce_terms_clauses', 10, 3);
 
 function woocommerce_terms_clauses($clauses, $taxonomies, $args ) {
-	global $wpdb;
+	global $wpdb, $woocommerce;
 	
-	// wordpress should give us the taxonomies asked when calling the get_terms function
-	if( !in_array('product_cat', (array)$taxonomies) ) return $clauses;
-	
+	// wordpress should give us the taxonomies asked when calling the get_terms function. Only apply to categories and pa_ attributes
+	$found = false;
+	foreach ((array) $taxonomies as $taxonomy) :
+		if ($taxonomy=='product_cat' || strstr($taxonomy, 'pa_')) :
+			$found = true;
+			break;
+		endif;
+	endforeach;
+	if (!$found) return $clauses;
+		
 	// query order
 	if( isset($args['menu_order']) && !$args['menu_order']) return $clauses; // menu_order is false so we do not add order clause
 	

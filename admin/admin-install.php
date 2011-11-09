@@ -69,7 +69,7 @@ function woocommerce_populate_custom_fields() {
 	); 
 	$attachments = get_posts($args);
 	if ($attachments) foreach ($attachments as $id) :
-		add_post_meta($id, '_woocommerce_exclude_image', 0);
+		update_post_meta($id, '_woocommerce_exclude_image', 0);
 	endforeach;
 	
 }

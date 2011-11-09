@@ -9,15 +9,13 @@
  * @author		WooThemes
  */
  
-function get_woocommerce_cart( $atts ) {
+ /**
+  * This function will process changes to shipping information or coupons on page load, rather than
+  * at the start of the shortcode, allowing elements that rely on updated coupon information which
+  * appear earlier in the page load process to get accurate information.
+  */
+function woocommerce_cart_apply_changes() {
 	global $woocommerce;
-	return $woocommerce->shortcode_wrapper('woocommerce_cart', $atts);
-}
-
-function woocommerce_cart( $atts ) {
-	global $woocommerce;
-	$errors = array();
-	$validation = &new woocommerce_validation();
 	
 	// Process Discount Codes
 	if (isset($_POST['apply_coupon']) && $_POST['apply_coupon'] && $woocommerce->verify_nonce('cart')) :
@@ -27,6 +25,7 @@ function woocommerce_cart( $atts ) {
 
 	// Update Shipping
 	elseif (isset($_POST['calc_shipping']) && $_POST['calc_shipping'] && $woocommerce->verify_nonce('cart')) :
+		$validation = &new woocommerce_validation();
 
 		unset($_SESSION['_chosen_shipping_method']);
 		$country 	= $_POST['calc_shipping_country'];
@@ -61,6 +60,16 @@ function woocommerce_cart( $atts ) {
 		endif;
 			
 	endif;
+}
+add_action('init', 'woocommerce_cart_apply_changes');
+ 
+function get_woocommerce_cart( $atts ) {
+	global $woocommerce;
+	return $woocommerce->shortcode_wrapper('woocommerce_cart', $atts);
+}
+
+function woocommerce_cart( $atts ) {
+	global $woocommerce;
 	
 	$result = $woocommerce->cart->check_cart_item_stock();
 	if (is_wp_error($result)) :

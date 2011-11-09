@@ -215,7 +215,7 @@ function woocommerce_add_order_item() {
 		<td class="center">
 			<input type="hidden" name="item_id[<?php echo $index; ?>]" value="<?php echo esc_attr( $_product->id ); ?>" />
 			<input type="hidden" name="item_name[<?php echo $index; ?>]" value="<?php echo esc_attr( $_product->get_title() ); ?>" />
-			<input type="hidden" name="item_variation[<?php echo $loop; ?>]" value="<?php if (isset($_product->variation_id)) echo $_product->variation_id; ?>" />
+			<input type="hidden" name="item_variation[<?php echo $index; ?>]" value="<?php if (isset($_product->variation_id)) echo $_product->variation_id; ?>" />
 			<button type="button" class="remove_row button">&times;</button>
 		</td>
 	</tr>
@@ -442,7 +442,9 @@ function woocommerce_add_to_cart_action( $url = false ) {
 
                 $taxonomy = 'attribute_' . sanitize_title($attribute['name']);
                 if (!empty($_POST[$taxonomy])) :
-                    $variations[$taxonomy] = esc_attr(stripslashes($_POST[$taxonomy]));
+                    // $variations[$taxonomy] = esc_attr(stripslashes($_POST[$taxonomy]));
+                    // Use name so it looks nicer in the cart widget/order page etc - instead of a sanitized string
+                    $variations[esc_attr($attribute['name'])] = esc_attr(stripslashes($_POST[$taxonomy]));
 				else :
                     $all_variations_set = false;
                 endif;

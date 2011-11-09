@@ -140,6 +140,14 @@ $woocommerce_settings['pages'] = apply_filters('woocommerce_page_settings', arra
 		'type' 		=> 'single_select_page',
 		'std' 		=> ''
 	),
+	
+	array(  
+		'name' => __( 'Base Page Title', 'woothemes' ),
+		'desc' 		=> __( 'This title to show on the shop base page. Leave blank to use the page title.', 'woothemes' ),
+		'id' 		=> 'woocommerce_shop_page_title',
+		'type' 		=> 'text',
+		'std' 		=> __('All Products', 'woothemes')
+	),
 
 	array(  
 		'name' => __( 'Terms page ID', 'woothemes' ),
@@ -177,7 +185,7 @@ $woocommerce_settings['pages'] = apply_filters('woocommerce_page_settings', arra
 		'name' => __( 'Product base category', 'woothemes' ),
 		'desc' 		=> __( 'Prepend product permalinks with product category', 'woothemes' ),
 		'id' 		=> 'woocommerce_prepend_category_to_products',
-		'std' 		=> 'yes',
+		'std' 		=> 'no',
 		'type' 		=> 'checkbox',
 		'checkboxgroup'		=> 'end'
 	),
