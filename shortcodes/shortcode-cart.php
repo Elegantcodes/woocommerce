@@ -16,8 +16,6 @@
   */
 function woocommerce_cart_apply_changes() {
 	global $woocommerce;
-	$errors = array();
-	$validation = &new woocommerce_validation();
 	
 	// Process Discount Codes
 	if (isset($_POST['apply_coupon']) && $_POST['apply_coupon'] && $woocommerce->verify_nonce('cart')) :
@@ -27,6 +25,7 @@ function woocommerce_cart_apply_changes() {
 
 	// Update Shipping
 	elseif (isset($_POST['calc_shipping']) && $_POST['calc_shipping'] && $woocommerce->verify_nonce('cart')) :
+		$validation = &new woocommerce_validation();
 
 		unset($_SESSION['_chosen_shipping_method']);
 		$country 	= $_POST['calc_shipping_country'];
