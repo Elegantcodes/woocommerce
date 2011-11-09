@@ -468,7 +468,7 @@ function woocommerce_exclude_image_from_product_page_field_save( $post, $attachm
 	endif;
 		
 	return $post;
-				
+
 }
 
 
