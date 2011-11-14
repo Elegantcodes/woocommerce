@@ -129,7 +129,7 @@ class woocommerce_product {
 			$this->children = array();
 			
 			if ($this->is_type('variable') || $this->is_type('grouped')) :
-			
+
 				$child_post_type = ($this->is_type('variable')) ? 'product_variation' : 'product';
 				
 				$children_query_args = array(

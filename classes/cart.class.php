@@ -249,6 +249,8 @@ class woocommerce_cart {
 		
 		do_action('woocommerce_add_to_cart', $this, $product_id, $added_quantity, $variation, $variation_id);
 		
+		do_action('woocommerce_add_to_cart', $this, $product_id, $added_quantity, $variation, $variation_id);
+		
 		$this->set_session();
 		
 		return true;
@@ -311,6 +313,7 @@ class woocommerce_cart {
 	 */
 	function set_quantity( $cart_item_key, $quantity = 1 ) {
 		do_action('woocommerce_set_quantity', $this, $cart_item_key, $quantity);
+		
 		if ($quantity==0 || $quantity<0) :
 			unset($this->cart_contents[$cart_item_key]);
 		else :
