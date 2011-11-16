@@ -247,10 +247,6 @@ class woocommerce_cart {
 
 		do_action('woocommerce_add_to_cart', $this, $product_id, $added_quantity, $variation, $variation_id);
 		
-		do_action('woocommerce_add_to_cart', $this, $product_id, $added_quantity, $variation, $variation_id);
-		
-		do_action('woocommerce_add_to_cart', $this, $product_id, $added_quantity, $variation, $variation_id);
-		
 		$this->set_session();
 		
 		return true;
@@ -294,6 +290,7 @@ class woocommerce_cart {
 			endforeach;
 			
 			$this->applied_coupons[] = $coupon_code;
+			do_action('woocommerce_add_discount_cart', $this, $coupon_code, $the_coupon);
 			$this->set_session();
 			$woocommerce->add_message( __('Discount code applied successfully.', 'woothemes') );
 			return true;
