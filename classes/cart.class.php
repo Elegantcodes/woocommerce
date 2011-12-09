@@ -562,6 +562,7 @@ class woocommerce_cart {
 	 * Check cart items for errors
 	 */
 	function check_cart_items() {
+		global $woocommerce;
 	
 		$result = $this->check_cart_item_stock();
 		if (is_wp_error($result)) $woocommerce->add_error( $result->get_error_message() );
