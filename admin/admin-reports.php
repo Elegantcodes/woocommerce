@@ -69,7 +69,8 @@ function woocommerce_reports() {
 		<div class="icon32 icon32-woocommerce-reports" id="icon-woocommerce"><br /></div><h2 class="nav-tab-wrapper woo-nav-tab-wrapper">
 			<?php
 				foreach ($charts as $name => $value) :
-					echo '<a href="'.esc_url(admin_url('admin.php?page=woocommerce_reports&tab='.$name)).'" class="nav-tab ';
+					$esc_name = str_replace(' ', '+', $name);
+					echo '<a href="'.esc_url(admin_url('admin.php?page=woocommerce_reports&tab='.$esc_name)).'" class="nav-tab ';
 					if($current_tab==$name) echo 'nav-tab-active';
 					echo '">'.ucfirst($name).'</a>';
 				endforeach;

@@ -290,9 +290,9 @@ class woocommerce_cart {
 			endforeach;
 			
 			$this->applied_coupons[] = $coupon_code;
-			do_action('woocommerce_add_discount_cart', $this, $coupon_code, $the_coupon);
 			$this->set_session();
 			$woocommerce->add_message( __('Discount code applied successfully.', 'woothemes') );
+			do_action('woocommerce_add_discount_cart', $this, $coupon_code, $the_coupon);
 			return true;
 		
 		else :
