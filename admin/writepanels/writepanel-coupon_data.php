@@ -98,8 +98,6 @@ function woocommerce_process_shop_coupon_meta( $post_id, $post ) {
 		update_post_meta( $post_id, 'exclude_product_ids', $exclude_product_ids );
 		update_post_meta( $post_id, 'usage_limit', $usage_limit );
 		update_post_meta( $post_id, 'expiry_date', $expiry_date );
-		
-		do_action('woocommerce_coupon_options');
 	
 	// Error Handling
 		if (sizeof($woocommerce_errors)>0) update_option('woocommerce_errors', $woocommerce_errors);
