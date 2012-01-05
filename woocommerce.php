@@ -265,7 +265,7 @@ function woocommerce_frontend_scripts() {
 	wp_localize_script( 'woocommerce', 'woocommerce_params', $woocommerce_params );
 	
 }
-add_action('template_redirect', 'woocommerce_frontend_scripts');
+add_action('wp_enqueue_scripts', 'woocommerce_frontend_scripts');
 
 /**
  * WooCommerce conditionals
