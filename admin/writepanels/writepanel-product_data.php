@@ -382,26 +382,7 @@ function woocommerce_product_data_box() {
 			echo '</div>';
 			?>
 		</div>
-		<div id="downloadable_product_data" class="panel woocommerce_options_panel">
-			<?php
-	
-				// File URL
-				$file_path = get_post_meta($post->ID, 'file_path', true);
-				$field = array( 'id' => 'file_path', 'label' => __('File path', 'woothemes') );
-				echo '<p class="form-field"><label for="'.$field['id'].'">'.$field['label'].':</label>
-					<input type="text" class="short file_path" name="'.$field['id'].'" id="'.$field['id'].'" value="'.$file_path.'" placeholder="'.__('File path/URL', 'woothemes').'" />
-					<input type="button"  class="upload_file_button button" value="'.__('Upload a file', 'woothemes').'" />
-				</p>';
-					
-				// Download Limit
-				$download_limit = get_post_meta($post->ID, 'download_limit', true);
-				$field = array( 'id' => 'download_limit', 'label' => __('Download Limit', 'woothemes') );
-				echo '<p class="form-field">
-					<label for="'.$field['id'].'">'.$field['label'].':</label>
-					<input type="text" class="short" name="'.$field['id'].'" id="'.$field['id'].'" value="'.$download_limit.'" placeholder="'.__('Unlimited', 'woothemes').'" /> <span class="description">' . __('Leave blank for unlimited re-downloads.', 'woothemes') . '</span></p>';
-	
-			?>
-		</div>
+		<?php echo apply_filters('woocommerce_product_data_panel_downloadable_product_data', ''); ?>
 		
 		<?php do_action('woocommerce_product_write_panels'); ?>
 		
@@ -409,6 +390,33 @@ function woocommerce_product_data_box() {
 	<?php
 }
 
+function woocommerce_product_data_panel_downloadable_product_data($content) {
+	ob_start();
+	?>
+	<div id="downloadable_product_data" class="panel woocommerce_options_panel">
+		<?php
+	
+			// File URL
+			$file_path = get_post_meta($post->ID, 'file_path', true);
+			$field = array( 'id' => 'file_path', 'label' => __('File path', 'woothemes') );
+			echo '<p class="form-field"><label for="'.$field['id'].'">'.$field['label'].':</label>
+				<input type="text" class="short file_path" name="'.$field['id'].'" id="'.$field['id'].'" value="'.$file_path.'" placeholder="'.__('File path/URL', 'woothemes').'" />
+				<input type="button"  class="upload_file_button button" value="'.__('Upload a file', 'woothemes').'" />
+			</p>';
+					
+			// Download Limit
+			$download_limit = get_post_meta($post->ID, 'download_limit', true);
+			$field = array( 'id' => 'download_limit', 'label' => __('Download Limit', 'woothemes') );
+			echo '<p class="form-field">
+				<label for="'.$field['id'].'">'.$field['label'].':</label>
+				<input type="text" class="short" name="'.$field['id'].'" id="'.$field['id'].'" value="'.$download_limit.'" placeholder="'.__('Unlimited', 'woothemes').'" /> <span class="description">' . __('Leave blank for unlimited re-downloads.', 'woothemes') . '</span></p>';
+
+			?>
+		</div>
+	<?php
+	return ob_get_clean();
+}
+add_filter('woocommerce_product_data_panel_downloadable_product_data', 'woocommerce_product_data_panel_downloadable_product_data', 1, 1);
 
 /**
  * Product Data Save
