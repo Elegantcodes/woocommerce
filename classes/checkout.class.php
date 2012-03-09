@@ -188,11 +188,13 @@ class woocommerce_checkout {
 			
 			echo '<p>'.__('Create an account by entering the information below. If you are a returning customer please login with your username at the top of the page.', 'woothemes').'</p>'; 
 			
-			$this->checkout_form_field( 'account_username', array( 
-				'type' => 'text', 
-				'label' => __('Account username', 'woothemes'), 
-				'placeholder' => __('Username', 'woothemes') 
-				));
+			if (apply_filters('woocommerce_show_registering_username', 1, $this)) {
+				$this->checkout_form_field( 'account_username', array( 
+					'type' => 'text', 
+					'label' => __('Account username', 'woothemes'), 
+					'placeholder' => __('Username', 'woothemes') 
+					));
+			}
 			$this->checkout_form_field( 'account_password', array( 
 				'type' => 'password', 
 				'label' => __('Account password', 'woothemes'), 
