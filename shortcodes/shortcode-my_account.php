@@ -16,7 +16,8 @@ function woocommerce_my_account( $atts ) {
 	global $woocommerce;
 	
 	extract(shortcode_atts(array(
-    	'recent_orders' => 5
+		'recent_orders' => 5,
+		'hello_header' => 1
 	), $atts));
 
   	$recent_orders = ('all' == $recent_orders) ? -1 : $recent_orders;
@@ -29,8 +30,13 @@ function woocommerce_my_account( $atts ) {
 	
 	if (is_user_logged_in()) :
 	
+
+		if ($hello_header) {
 		?>
 		<p><?php echo sprintf( __('Hello, <strong>%s</strong>. From your account dashboard you can view your recent orders, manage your shipping and billing addresses and <a href="%s">change your password</a>.', 'woothemes'), $current_user->display_name, get_permalink(get_option('woocommerce_change_password_page_id'))); ?></p>
+		<?php
+		}
+		?>
 		
 		<?php do_action('woocommerce_before_my_account'); ?>
 		
