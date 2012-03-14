@@ -312,7 +312,7 @@ function woocommerce_email_order_meta( $order, $sent_to_admin ) {
  * Customer new account welcome email
  **/
 function woocommerce_customer_new_account( $user_id, $plaintext_pass ) {
-	global $email_heading, $user_login, $user_pass, $blogname;
+	global $email_heading, $user_login, $user_email, $user_pass, $blogname;
 	
 	if ( empty($plaintext_pass) ) return;
 	
