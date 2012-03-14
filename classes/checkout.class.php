@@ -186,8 +186,9 @@ class woocommerce_checkout {
 			
 			echo '<div class="create-account">';
 			
-			echo '<p>'.__('Create an account by entering the information below. If you are a returning customer please login with your username at the top of the page.', 'woothemes').'</p>'; 
+			echo '<p>'.__('Create an account by entering the information below. If you are a returning customer please login at the top of the page.', 'woothemes').'</p>'; 
 			
+			do_action('woocommerce_before_checkout_registration_form', $this);
 			if (apply_filters('woocommerce_show_registering_username', 1, $this)) {
 				$this->checkout_form_field( 'account_username', array( 
 					'type' => 'text', 
@@ -209,6 +210,7 @@ class woocommerce_checkout {
 				'label_class' => array('hidden')
 				));
 			
+			do_action('woocommerce_after_checkout_registration_form', $this);
 			echo '</div>';
 							
 		endif;
