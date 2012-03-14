@@ -551,6 +551,8 @@ class woocommerce_checkout {
 		
 		                    // Change role
 		                    wp_update_user( array ('ID' => $user_id, 'role' => 'customer') ) ;
+
+							do_action('woocommerce_created_customer', $user_id, &$this);
 		
 		                    // send the user a confirmation and their login details
 		                    woocommerce_customer_new_account( $user_id, $user_pass );
