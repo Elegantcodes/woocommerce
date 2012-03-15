@@ -172,13 +172,13 @@ jQuery(document).ready(function($) {
 	$(".plus").live('click', function() {
 	    var currentVal = parseInt($(this).prev(".qty").val());
 	    if (!currentVal || currentVal=="" || currentVal == "NaN") currentVal = 0;
-	    $(this).prev(".qty").val(currentVal + 1); 
+	    $(this).prev(".qty").val(currentVal + 1).change(); 
 	});
 	
 	$(".minus").live('click', function() {
 	    var currentVal = parseInt($(this).next(".qty").val());
 	    if (!currentVal || currentVal=="" || currentVal == "NaN") currentVal = 1;
-	    if (currentVal > 0)  $(this).next(".qty").val(currentVal - 1);
+	    if (currentVal > 0)  $(this).next(".qty").val(currentVal - 1).change();
 	});
 	
 	/* states */
