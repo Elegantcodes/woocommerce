@@ -167,7 +167,8 @@ function woocommerce_completed_order_customer_notification( $id ) {
 		$email_heading 	= __('Order Complete', 'woothemes');
 	endif;
 	
-	$email_heading = apply_filters('woocommerce_completed_order_customer_notification_subject', $email_heading);
+	$email_heading = apply_filters('woocommerce_completed_order_customer_notification_heading', $email_heading);
+	$subject = apply_filters('woocommerce_completed_order_customer_notification_subject', $email_heading);
 
 	$subject = sprintf($subject, get_bloginfo('name'));
 	
