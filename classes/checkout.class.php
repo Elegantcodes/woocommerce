@@ -550,7 +550,11 @@ class woocommerce_checkout {
 			                }
 		
 		                    // Change role
-		                    wp_update_user( array ('ID' => $user_id, 'role' => 'customer') ) ;
+							$new_role = get_option('woocommerce_new_customer_role');
+							if (empty($new_role) || is_null(get_role($new_role))) {
+								$new_role = 'customer';
+							}
+		                    wp_update_user( array ('ID' => $user_id, 'role' => $new_role) ) ;
 
 							do_action('woocommerce_created_customer', $user_id, &$this);
 		

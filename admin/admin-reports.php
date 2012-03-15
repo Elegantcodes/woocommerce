@@ -1153,9 +1153,14 @@ function woocommerce_customer_overview() {
 	$total_customer_orders = 0;
 	$total_guest_orders = 0;
 	
+	$query_role = get_option('woocommerce_new_customer_role');
+	if (empty($query_role) || is_null(get_role($query_role))) {
+		$query_role = 'customer';
+	}
+
 	$users_query = new WP_User_Query( array( 
 		'fields' => array('user_registered'), 
-		'role' => 'customer'
+		'role' => $query_role
 		) );
 	$customers = $users_query->get_results();
 	$total_customers = (int) sizeof($customers);
@@ -1334,9 +1339,13 @@ function woocommerce_stock_overview() {
 	$total_customer_orders = 0;
 	$total_guest_orders = 0;
 	
+	$query_role = get_option('woocommerce_new_customer_role');
+	if (empty($query_role) || is_null(get_role($query_role))) {
+		$query_role = 'customer';
+	}
 	$users_query = new WP_User_Query( array( 
 		'fields' => array('user_registered'), 
-		'role' => 'customer'
+		'role' => $query_role
 		) );
 	$customers = $users_query->get_results();
 	$total_customers = (int) sizeof($customers);
