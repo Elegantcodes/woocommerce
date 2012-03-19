@@ -17,7 +17,9 @@ function woocommerce_my_account( $atts ) {
 	
 	extract(shortcode_atts(array(
 		'recent_orders' => 5,
-		'hello_header' => 1
+		'hello_header' => 1,
+		'show_downloads' => 1,
+		'show_addresses' => 1
 	), $atts));
 
   	$recent_orders = ('all' == $recent_orders) ? -1 : $recent_orders;
@@ -40,16 +42,26 @@ function woocommerce_my_account( $atts ) {
 		
 		<?php do_action('woocommerce_before_my_account'); ?>
 		
-		<?php if ($downloads = $woocommerce->customer->get_downloadable_products()) : ?>
+		<?php 
+		if ($show_downloads) :
+			if ($downloads = $woocommerce->customer->get_downloadable_products()) : 
+		?>
 		<h2><?php _e('Available downloads', 'woothemes'); ?></h2>
 		<ul class="digital-downloads">
 			<?php foreach ($downloads as $download) : ?>
 				<li><?php if (is_numeric($download['downloads_remaining'])) : ?><span class="count"><?php echo $download['downloads_remaining'] . _n(' download Remaining', ' downloads Remaining', $download['downloads_remaining'], 'woothemes'); ?></span><?php endif; ?> <a href="<?php echo esc_url( $download['download_url'] ); ?>"><?php echo $download['download_name']; ?></a></li>
 			<?php endforeach; ?>
 		</ul>
-		<?php endif; ?>	
+		<?php 
+			endif; 
+		endif;
+		?>	
 		
 		
+		<?php
+		if ('none' !== $recent_orders) :
+		?>
+		<div class="recent_orders">
 		<h2><?php _e('Recent Orders', 'woothemes'); ?></h2>		
 		<table class="shop_table my_account_orders">
 		
@@ -88,11 +100,16 @@ function woocommerce_my_account( $atts ) {
 			?></tbody>
 		
 		</table>
-		
-		<h2><?php _e('My Addresses', 'woothemes'); ?></h2>	
-		<p><?php _e('The following addresses will be used on the checkout page by default.', 'woothemes'); ?></p>
+		</div>
+		<?php
+		endif;
+
+		if ($show_addresses) :
+		?>
 		<div class="col2-set addresses">
 
+		<h2><?php _e('My Addresses', 'woothemes'); ?></h2>	
+		<p><?php _e('The following addresses will be used on the checkout page by default.', 'woothemes'); ?></p>
 			<div class="col-1">
 			
 				<header class="title">				
@@ -153,6 +170,8 @@ function woocommerce_my_account( $atts ) {
 		
 		</div><!-- /.col2-set -->
 		<?php
+		endif;
+
 		do_action('woocommerce_after_my_account');
 		
 	else :
