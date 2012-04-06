@@ -1140,7 +1140,7 @@ function woocommerce_product_sales() {
 					'order'				=> 'ASC',
 					'orderby'			=> 'title'
 				);
-				$products = get_posts( $args );
+				$products = get_posts( apply_filters('woocommerce_product_sales_select_args', $args) );
 				
 				if ($products) foreach ($products as $product) :
 					
