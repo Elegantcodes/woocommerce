@@ -1474,6 +1474,7 @@ class WC_Cart {
 				$this->set_session();
 				
 				$woocommerce->add_message( __('Discount code applied successfully.', 'woocommerce') );
+				do_action('woocommerce_add_discount_cart', $this, $coupon_code, $the_coupon);
 				return true;
 			
 			} else {
