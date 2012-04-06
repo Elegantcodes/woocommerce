@@ -195,11 +195,11 @@ class WC_Email {
 			$email_heading 	= __('Order Complete', 'woocommerce');
 		endif;
 		
-		$email_heading = apply_filters( 'woocommerce_completed_order_customer_notification_subject', $email_heading );
+		$email_heading = apply_filters( 'woocommerce_completed_order_customer_notification_heading', $email_heading );
 		
 		$blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
 		
-		$subject = apply_filters( 'woocommerce_email_subject_customer_completed_order', sprintf( $subject, $blogname ), $order );
+		$subject = apply_filters( 'woocommerce_completed_order_customer_notification_subject', sprintf( $subject, $blogname ), $order );
 		
 		// Buffer
 		ob_start();
