@@ -343,7 +343,7 @@ $woocommerce_settings['pages'] = apply_filters('woocommerce_page_settings', arra
 		'id' 		=> 'woocommerce_shop_page_title',
 		'type' 		=> 'text',
 		'css' 		=> 'min-width:300px;',
-		'std' 		=> 'All Products', // Default value for the page title - changed in settings
+		'std' 		=> __('All Products', 'woocommerce'), // Default value for the page title - changed in settings
 		'desc_tip'	=>  true,
 	),
 
