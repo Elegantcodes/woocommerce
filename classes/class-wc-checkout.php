@@ -286,6 +286,8 @@ class WC_Checkout {
 		                	$woocommerce->add_error( '<strong>' . __('ERROR', 'woocommerce') . '</strong>: ' . __('Couldn&#8217;t register you... please contact us if you continue to have problems.', 'woocommerce') );
 		                    break;
 		                endif;
+		                
+		            	do_action('woocommerce_created_customer', $user_id);
 	
 	                    // Change role
 	                    wp_update_user( array ('ID' => $user_id, 'role' => 'customer') ) ;
