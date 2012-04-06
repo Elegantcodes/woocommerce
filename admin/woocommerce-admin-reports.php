@@ -65,10 +65,10 @@ function woocommerce_reports() {
 	));
     ?>
 	<div class="wrap woocommerce">
-		<div class="icon32 icon32-woocommerce-reports" id="icon-woocommerce"><br></div><h2 class="nav-tab-wrapper woo-nav-tab-wrapper">
+		<div class="icon32 icon32-woocommerce-reports" id="icon-woocommerce"><br /></div><h2 class="nav-tab-wrapper woo-nav-tab-wrapper">
 			<?php
 				foreach ($charts as $name => $value) :
-					echo '<a href="'.admin_url('admin.php?page=woocommerce_reports&tab='.$name).'" class="nav-tab ';
+					echo '<a href="'.admin_url('admin.php?page=woocommerce_reports&tab='.urlencode($name)).'" class="nav-tab ';
 					if( $current_tab == $name ) echo 'nav-tab-active';
 					echo '">'.ucfirst($name).'</a>';
 				endforeach;
@@ -79,7 +79,7 @@ function woocommerce_reports() {
 		<?php if (sizeof($charts[$current_tab])>1) : ?><ul class="subsubsub"><li><?php
 			$links = array();
 			foreach ($charts[$current_tab] as $key => $chart) :
-				$link = '<a href="admin.php?page=woocommerce_reports&tab='.$current_tab.'&amp;chart='.$key.'" class="';
+				$link = '<a href="admin.php?page=woocommerce_reports&tab='.urlencode($current_tab).'&amp;chart='.urlencode($key).'" class="';
 				if ($key==$current_chart) $link .= 'current';
 				$link .= '">'.$chart['title'].'</a>';
 				$links[] = $link;
