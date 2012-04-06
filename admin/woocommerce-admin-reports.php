@@ -1519,7 +1519,7 @@ function woocommerce_stock_overview() {
 							if ($stock>$nostockamount) continue;
 							echo '<li><a href="';
 							if ($product->post_type=='product') echo admin_url('post.php?post='.$product->ID.'&action=edit'); else echo admin_url('post.php?post='.$product->post_parent.'&action=edit');
-							echo '"><small>'._n('%d in stock', '%d in stock', $stock, 'woocommerce').'</small> '.$product->post_title.'</a></li>';
+							echo '"><small>'.apply_filters('woocommerce_out_of_stock_small_text', _n('%d in stock', '%d in stock', $stock, 'woocommerce'), $product).'</small> '.$product->post_title.'</a></li>';
 						endforeach;
 						echo '</ul>';
 					else :
