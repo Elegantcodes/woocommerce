@@ -170,8 +170,20 @@ class WC_Product {
 				$transient_name = 'wc_product_children_ids_' . $this->id;
         
 	        	if ( false === ( $this->children = get_transient( $transient_name ) ) ) :
+	        	
+	        		$get_children_args = array(
+	        			'post_parent' => $this->id,
+	        			'post_type' => $child_post_type,
+	        			'orderby' => 'menu_order',
+	        			'order' => 'ASC',
+	        			'fields' => 'ids',
+	        			'post_status' => 'any',
+	        			'numberposts' => -1
+	        		);
+	        		
+	        		$get_children_args = apply_filters('woocommerce_get_children_args', $get_children_args, $this);
 	        			
-			        $this->children = get_posts( 'post_parent=' . $this->id . '&post_type=' . $child_post_type . '&orderby=menu_order&order=ASC&fields=ids&post_status=any&numberposts=-1' );
+			        $this->children = get_posts( $get_children_args );
 					
 					set_transient( $transient_name, $this->children );
 					
