@@ -560,9 +560,11 @@ class WC_Cart {
 	     * @param array $cart_item_data other cart item data passed which affects this items uniqueness in the cart
 	     * @return string cart item key
 	     */
-	    function generate_cart_id( $product_id, $variation_id = '', $variation = '', $cart_item_data = '' ) {
+	    function generate_cart_id( $product_id, $variation_id = '', $variation = '', $cart_item_data = null ) {
 	        
 	        $id_parts = array( $product_id );
+	        
+	        $cart_item_data = (array) $cart_item_data;
 	        
 	        if ( $variation_id ) $id_parts[] = $variation_id;
 	 
