@@ -236,6 +236,7 @@ function woocommerce_sales_overview() {
 	$order_items = 0;
 	
 	$args = array(
+	    'fields'          => 'ids',
 	    'numberposts'     => -1,
 	    'orderby'         => 'post_date',
 	    'order'           => 'DESC',
@@ -250,11 +251,11 @@ function woocommerce_sales_overview() {
 			)
 	    )
 	);
-	$orders = get_posts( $args );
-	foreach ($orders as $order) :
-		$order_items_array = (array) get_post_meta($order->ID, '_order_items', true);
+	$order_ids = get_posts( $args );
+	foreach ($order_ids as $order_id) :
+		$order_items_array = (array) get_post_meta($order_id, '_order_items', true);
 		foreach ($order_items_array as $item) $order_items += (int) $item['qty'];
-		$total_sales += get_post_meta($order->ID, '_order_total', true);
+		$total_sales += get_post_meta($order_id, '_order_total', true);
 		$total_orders++;
 	endforeach;
 	
@@ -289,13 +290,13 @@ function woocommerce_sales_overview() {
 				<h3><span><?php _e('Last 5 orders', 'woothemes'); ?></span></h3>
 				<div class="inside">
 					<?php
-					if ($orders) :
+					if ($order_ids) :
 						$count = 0;
 						echo '<ul class="recent-orders">';
-						foreach ($orders as $order) :
-							
-							$this_order = &new woocommerce_order( $order->ID );
-							
+						foreach ($order_ids as $order_id) :
+
+							$this_order = &new woocommerce_order( $order_id );
+
 							if ($this_order->user_id > 0) :
 								$customer = get_user_by('id', $this_order->user_id);
 								$customer = $customer->user_login;
@@ -305,7 +306,7 @@ function woocommerce_sales_overview() {
 							
 							echo '
 							<li>
-								<span class="order-status '.sanitize_title($this_order->status).'">'.ucwords($this_order->status).'</span> <a href="'.admin_url('post.php?post='.$order->ID).'&action=edit">'.date_i18n('jS M Y (h:i A)', strtotime($this_order->order_date)).'</a><br />
+								<span class="order-status '.sanitize_title($this_order->status).'">'.ucwords($this_order->status).'</span> <a href="'.admin_url('post.php?post='.$order_id).'&action=edit">'.date_i18n('jS M Y (h:i A)', strtotime($this_order->order_date)).'</a><br />
 								<small>'.sizeof($this_order->items).' '._n('item', 'items', sizeof($this_order->items), 'woothemes').' <span class="order-cost">'.__('Total:', 'woothemes') . ' ' . woocommerce_price($this_order->order_total).'</span> <span class="order-customer">'.$customer.'</span></small>
 							</li>';
 							
