@@ -320,7 +320,7 @@ class woocommerce_paypal extends woocommerce_payment_gateway {
 	 **/
 	function check_ipn_response() {
 			
-		if (isset($_POST['mc_gross']) && isset($_POST['receipt_id'])):
+		if (isset($_GET['paypalListener']) && $_GET['paypalListener'] == 'paypal_standard_IPN'):
 		
         	$_POST = stripslashes_deep($_POST);
         	
