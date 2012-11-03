@@ -141,7 +141,17 @@ class woocommerce_order {
 	function get_total_tax() {
 		return $this->order_tax + $this->order_shipping_tax;
 	}
-	
+
+	/**
+	 * Gets order total.
+	 *
+	 * @access public
+	 * @return float
+	 */
+	function get_total() {
+		return number_format( (double) $this->order_total, 2, '.', '' );
+	}
+
 	/** Gets subtotal */
 	function get_subtotal_to_display() {
 		global $woocommerce;

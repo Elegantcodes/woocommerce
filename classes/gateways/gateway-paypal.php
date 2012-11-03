@@ -320,7 +320,7 @@ class woocommerce_paypal extends woocommerce_payment_gateway {
 	 **/
 	function check_ipn_response() {
 			
-		if (isset($_GET['paypalListener']) && $_GET['paypalListener'] == 'paypal_standard_IPN'):
+		if (isset($_POST['mc_gross']) && isset($_POST['receipt_id'])):
 		
         	$_POST = stripslashes_deep($_POST);
         	
@@ -352,7 +352,16 @@ class woocommerce_paypal extends woocommerce_payment_gateway {
 	        
 	        // Sandbox fix
 	        if ($posted['test_ipn']==1 && $posted['payment_status']=='Pending') $posted['payment_status'] = 'completed';
-	        			
+
+			// Validate Amount
+			if ( $order->get_total() != $posted['mc_gross'] ) {
+
+				// Put this order on-hold for manual checking
+				$order->update_status( 'on-hold', sprintf( __( 'Validation error: PayPal amounts do not match (gross %s).', 'woocommerce' ), $posted['mc_gross'] ) );
+
+				exit;
+			}
+
 			if ($order->status !== 'completed') :
 		        // We are here so lets check status and do actions
 		        switch (strtolower($posted['payment_status'])) :
