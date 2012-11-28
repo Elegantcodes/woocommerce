@@ -146,9 +146,9 @@ class woocommerce_product {
 					if ($children_products) foreach ($children_products as $child) :
 						
 						if ($this->is_type('variable')) :
-							$child->product = &new woocommerce_product_variation( $child->ID, $this->id, $this->product_custom_fields );
+							$child->product = new woocommerce_product_variation( $child->ID, $this->id, $this->product_custom_fields );
 						else :
-							$child->product = &new woocommerce_product( $child->ID );
+							$child->product = new woocommerce_product( $child->ID );
 						endif;
 						
 					endforeach;
