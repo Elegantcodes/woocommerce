@@ -421,7 +421,7 @@ class WC_Tax {
 			// Multiple taxes
 			foreach ( $rates as $key => $rate ) {
 
-				if ( $rate['compound'] == 'yes' )
+				if ( $rate['compound'] === 'yes' )
 					continue;
 
 				$tax_amount = $price * ( $rate['rate'] / 100 );
@@ -449,7 +449,7 @@ class WC_Tax {
 			// Compound taxes
 			foreach ( $rates as $key => $rate ) {
 
-				if ( $rate['compound'] != 'yes' )
+				if ( $rate['compound'] !== 'yes' )
 					continue;
 
 				$the_price_inc_tax = $price + ( $pre_compound_total * 100 );
