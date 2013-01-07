@@ -1,8 +1,6 @@
 (
 	function(){
 	
-		var icon_url = '../wp-content/plugins/woocommerce/assets/images/icons/wc_icon.png';
-	
 		tinymce.create(
 			"tinymce.plugins.WooCommerceShortcodes",
 			{
@@ -13,8 +11,7 @@
 					if(d=="woocommerce_shortcodes_button"){
 					
 						d=e.createMenuButton( "woocommerce_shortcodes_button",{
-							title:"Insert WooCommerce Shortcode",
-							image:icon_url,
+							title:"Insert Shortcode",
 							icons:false
 							});
 							
@@ -23,7 +20,8 @@
 								
 								a.addImmediate(b,"Product price/cart button", '[add_to_cart id="" sku=""]');
 								a.addImmediate(b,"Product by SKU/ID", '[product id="" sku=""]');
-								a.addImmediate(b,"Products by SKU/ID", '[product ids="" skus=""]');
+								a.addImmediate(b,"Products by SKU/ID", '[products ids="" skus=""]');
+								a.addImmediate(b,"Product categories", '[product_categories number=""]');
 								a.addImmediate(b,"Products by category slug", '[product_category category="" per_page="12" columns="4" orderby="date" order="desc"]');
 								
 								b.addSeparator();
@@ -33,7 +31,11 @@
 								
 								b.addSeparator();
 								
-								c=b.addMenu({title:"WooCommerce Pages"});
+								a.addImmediate(b,"Shop Messages", '[woocommerce_messages]');
+								
+								b.addSeparator();
+								
+								c=b.addMenu({title:"Pages"});
 										a.addImmediate(c,"Cart","[woocommerce_cart]" );
 										a.addImmediate(c,"Checkout","[woocommerce_checkout]" );
 										a.addImmediate(c,"Order tracking","[woocommerce_order_tracking]" );

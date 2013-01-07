@@ -29,7 +29,7 @@ jQuery(function(){
 	
 	var placeholder = jQuery("#placeholder");
 	 
-	var plot = jQuery.plot(placeholder, [ { label: "Number of sales", data: d }, { label: "Sales amount", data: d2, yaxis: 2 } ], {
+	var plot = jQuery.plot(placeholder, [ { label: params.number_of_sales, data: d }, { label: params.sales_amount, data: d2, yaxis: 2 } ], {
 		series: {
 			lines: { show: true },
 			points: { show: true }
@@ -48,10 +48,11 @@ jQuery(function(){
 		xaxis: { 
 			mode: "time",
 			timeformat: "%d %b", 
+			monthNames: params.month_names,
 			tickLength: 1,
 			minTickSize: [1, "day"]
 		},
-		yaxes: [ { min: 0, tickSize: 1, tickDecimals: 0 }, { position: "right", min: 0, tickDecimals: 2 } ],
+		yaxes: [ { min: 0, tickSize: 10, tickDecimals: 0 }, { position: "right", min: 0, tickDecimals: 2 } ],
    		colors: ["#8a4b75", "#47a03e"]
  	});
  	
@@ -77,15 +78,15 @@ jQuery(function(){
                 
                 jQuery("#tooltip").remove();
                 
-                if (item.series.label=="Number of sales") {
+                if (item.series.label==params.number_of_sales) {
                 	
                 	var y = item.datapoint[1];
-                	showTooltip(item.pageX, item.pageY, item.series.label + " - " + y);
+                	showTooltip(item.pageX, item.pageY, item.series.label + ": " + y);
                 	
                 } else {
                 	
                 	var y = item.datapoint[1].toFixed(2);
-                	showTooltip(item.pageX, item.pageY, item.series.label + " - " + params.currency_symbol + y);
+                	showTooltip(item.pageX, item.pageY, item.series.label + ": " + params.currency_symbol + y);
                 
                 }
 

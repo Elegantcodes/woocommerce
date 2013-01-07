@@ -3,17 +3,15 @@ jQuery(document).ready(function($) {
 
 	$('table.widefat.wp-list-table tbody th, table.widefat tbody td').css('cursor','move');
 		
-	$("table.widefat.wp-list-table tbody").sortable({
-		items: 'tr:not(.inline-edit-row)',
+	$("table.widefat.wp-list-table").sortable({
+		items: 'tbody tr:not(.inline-edit-row)',
 		cursor: 'move',
 		axis: 'y',
-		//containment: 'table.widefat',
+		forcePlaceholderSize: true,
+		helper: 'clone',
+		opacity: 0.65,
 		placeholder: 'product-cat-placeholder',
 		scrollSensitivity: 40,
-		helper: function(e, ui) {					
-			ui.children().each(function() { jQuery(this).width(jQuery(this).width()); });
-			return ui;
-		},
 		start: function(event, ui) {
 			if ( ! ui.item.hasClass('alternate') ) ui.item.css( 'background-color', '#ffffff' );
 			ui.item.children('td,th').css('border-bottom-width','0');
@@ -45,7 +43,7 @@ jQuery(document).ready(function($) {
 			
 			// if previous and next not at same tree level, or next not at same tree level and the previous is the parent of the next, or just moved item beneath its own children 					
 			if ( ( prevtermid == undefined && nexttermid == undefined ) || ( nexttermid == undefined && nexttermparent == prevtermid ) || ( nexttermid != undefined && prevtermparent == termid ) ) {
-				$("table.widefat tbody").sortable('cancel');
+				$("table.widefat.wp-list-table").sortable('cancel');
 				return;
 			}
 						
