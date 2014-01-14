@@ -91,7 +91,7 @@ function woocommerce_status_report() {
             </tr>
             <tr>
                 <td><?php _e( 'WP Version','woocommerce' ); ?>:</td>
-                <td><?php if ( is_multisite() ) echo 'WPMU'; else echo 'WP'; ?> <?php echo bloginfo('version'); ?></td>
+                <td><?php if ( is_multisite() ) echo 'WPMU'; else echo 'WP'; ?> <?php bloginfo('version'); ?></td>
             </tr>
             <tr>
                 <td><?php _e( 'Web Server Info','woocommerce' ); ?>:</td>
@@ -125,24 +125,14 @@ function woocommerce_status_report() {
                 <td><?php _e( 'WP Max Upload Size','woocommerce' ); ?>:</td>
                 <td><?php echo size_format( wp_max_upload_size() ); ?></td>
             </tr>
-            <?php if ( function_exists( 'ini_get' ) ) : ?>
-	            <tr>
-	                <td><?php _e('PHP Post Max Size','woocommerce' ); ?>:</td>
-	                <td><?php echo size_format( woocommerce_let_to_num( ini_get('post_max_size') ) ); ?></td>
-	            </tr>
-	            <tr>
-	                <td><?php _e('PHP Time Limit','woocommerce' ); ?>:</td>
-	                <td><?php echo ini_get('max_execution_time'); ?></td>
-	            </tr>
-	            <tr>
-	                <td><?php _e( 'PHP Max Input Vars','woocommerce' ); ?>:</td>
-	                <td><?php echo ini_get('max_input_vars'); ?></td>
-	            </tr>
-	            <tr>
-	                <td><?php _e( 'SUHOSIN Installed','woocommerce' ); ?>:</td>
-	                <td><?php echo extension_loaded( 'suhosin' ) ? __( 'Yes', 'woocommerce' ) : __( 'No', 'woocommerce' ); ?></td>
-	            </tr>
-	        <?php endif; ?>
+            <tr>
+                <td><?php _e('PHP Post Max Size','woocommerce' ); ?>:</td>
+                <td><?php if ( function_exists( 'ini_get' ) ) echo size_format( woocommerce_let_to_num( ini_get('post_max_size') ) ); ?></td>
+            </tr>
+            <tr>
+                <td><?php _e('PHP Time Limit','woocommerce' ); ?>:</td>
+                <td><?php if ( function_exists( 'ini_get' ) ) echo ini_get('max_execution_time'); ?></td>
+            </tr>
             <tr>
                 <td><?php _e( 'WC Logging','woocommerce' ); ?>:</td>
                 <td><?php
@@ -152,6 +142,17 @@ function woocommerce_status_report() {
                 		echo '<mark class="error">' . __( 'Log directory (<code>woocommerce/logs/</code>) is not writable. Logging will not be possible.', 'woocommerce' ) . '</mark>';
                 ?></td>
             </tr>
+			<tr>
+				<td><?php _e( 'Default Timezone','woocommerce' ); ?>:</td>
+				<td><?php
+					$default_timezone = date_default_timezone_get();
+					if ( 'UTC' !== $default_timezone ) {
+						echo '<mark class="error">' . sprintf( __( 'Default timezone is %s - it should be UTC', 'woocommerce' ), $default_timezone ) . '</mark>';
+					} else {
+						echo '<mark class="yes">' . sprintf( __( 'Default timezone is %s', 'woocommerce' ), $default_timezone ) . '</mark>';
+					} ?>
+				</td>
+			</tr>
             <?php
 				$posting = array();
 
@@ -248,7 +249,7 @@ function woocommerce_status_report() {
 							if ( strstr( $dirname, 'woocommerce' ) ) {
 
 								if ( false === ( $version_data = get_transient( $plugin . '_version_data' ) ) ) {
-									$changelog = wp_remote_get( 'http://www.woothemes.com/changelogs/extensions/' . $dirname . '/changelog.txt' );
+									$changelog = wp_remote_get( 'http://dzv365zjfbd8v.cloudfront.net/changelogs/' . $dirname . '/changelog.txt' );
 									$cl_lines  = explode( "\n", wp_remote_retrieve_body( $changelog ) );
 									if ( ! empty( $cl_lines ) ) {
 										foreach ( $cl_lines as $line_num => $cl_line ) {
@@ -318,6 +319,14 @@ function woocommerce_status_report() {
 							'option' => 'woocommerce_checkout_page_id',
 							'shortcode' => '[woocommerce_checkout]'
 						),
+					__( 'Pay', 'woocommerce' ) => array(
+							'option' => 'woocommerce_pay_page_id',
+							'shortcode' => '[woocommerce_pay]'
+						),
+					__( 'Thanks', 'woocommerce' ) => array(
+							'option' => 'woocommerce_thanks_page_id',
+							'shortcode' => '[woocommerce_thankyou]'
+						),
 					__( 'My Account', 'woocommerce' ) => array(
 							'option' => 'woocommerce_myaccount_page_id',
 							'shortcode' => '[woocommerce_my_account]'
@@ -325,6 +334,14 @@ function woocommerce_status_report() {
 					__( 'Edit Address', 'woocommerce' ) => array(
 							'option' => 'woocommerce_edit_address_page_id',
 							'shortcode' => '[woocommerce_edit_address]'
+						),
+					__( 'View Order', 'woocommerce' ) => array(
+							'option' => 'woocommerce_view_order_page_id',
+							'shortcode' => '[woocommerce_view_order]'
+						),
+					__( 'Change Password', 'woocommerce' ) => array(
+							'option' => 'woocommerce_change_password_page_id',
+							'shortcode' => '[woocommerce_change_password]'
 						),
 					__( 'Lost Password', 'woocommerce' ) => array(
 							'option' => 'woocommerce_lost_password_page_id',
@@ -407,6 +424,67 @@ function woocommerce_status_report() {
             </tr>
 		</tbody>
 
+        	<thead>
+			<tr>
+				<th colspan="2"><?php _e( 'Theme', 'woocommerce' ); ?></th>
+			</tr>
+		</thead>
+
+        <?php
+        $active_theme = wp_get_theme();
+        if ( $active_theme->{'Author URI'} == 'http://www.woothemes.com' ) :
+		
+			$theme_dir = strtolower( str_replace( ' ','', $active_theme->Name ) );
+        
+			if ( false === ( $theme_version_data = get_transient( $theme_dir . '_version_data' ) ) ) :
+        	
+        		$theme_changelog = wp_remote_get( 'http://dzv365zjfbd8v.cloudfront.net/changelogs/' . $theme_dir . '/changelog.txt' );
+				$cl_lines  = explode( "\n", wp_remote_retrieve_body( $theme_changelog ) );
+				if ( ! empty( $cl_lines ) ) :
+			
+					foreach ( $cl_lines as $line_num => $cl_line ) {
+						if ( preg_match( '/^[0-9]/', $cl_line ) ) :
+
+							$theme_date    		= str_replace( '.' , '-' , trim( substr( $cl_line , 0 , strpos( $cl_line , '-' ) ) ) );
+							$theme_version      = preg_replace( '~[^0-9,.]~' , '' ,stristr( $cl_line , "version" ) );
+							$theme_update       = trim( str_replace( "*" , "" , $cl_lines[ $line_num + 1 ] ) );
+							$theme_version_data = array( 'date' => $theme_date , 'version' => $theme_version , 'update' => $theme_update , 'changelog' => $theme_changelog );
+							set_transient( $theme_dir . '_version_data', $theme_version_data , 60*60*12 );
+							break;
+					
+						endif;
+					}
+				
+				endif;
+			
+			endif;
+			
+		endif;
+		?>
+		<tbody>
+            <tr>
+                <td><?php _e( 'Theme Name', 'woocommerce' ); ?>:</td>
+                <td><?php
+					echo $active_theme->Name;
+                ?></td>
+            </tr>
+            <tr>
+                <td><?php _e( 'Theme Version', 'woocommerce' ); ?>:</td>
+                <td><?php
+					echo $active_theme->Version;
+					
+					if ( ! empty( $theme_version_data['version'] ) && version_compare( $theme_version_data['version'], $active_theme->Version, '!=' ) )
+						echo ' &ndash; <strong style="color:red;">' . $theme_version_data['version'] . ' ' . __( 'is available', 'woocommerce' ) . '</strong>';
+                ?></td>
+            </tr>
+            <tr>
+                <td><?php _e( 'Author URL', 'woocommerce' ); ?>:</td>
+                <td><?php
+					echo $active_theme->{'Author URI'};
+                ?></td>
+            </tr>
+		</tbody>
+
 		<thead>
 			<tr>
 				<th colspan="2"><?php _e( 'Templates', 'woocommerce' ); ?></th>
@@ -441,29 +519,16 @@ function woocommerce_status_report() {
 		</tbody>
 
 	</table>
-
 	<script type="text/javascript">
 
-		/*
-		@var i string default
-		@var l how many repeat s
-		@var s string to repeat
-		@var w where s should indent
-		*/
-		jQuery.wc_strPad = function(i,l,s,w) {
+		jQuery.wc_strPad = function(i,l,s) {
 			var o = i.toString();
 			if (!s) { s = '0'; }
 			while (o.length < l) {
-				// empty
-				if(w == 'undefined'){
-					o = s + o;
-				}else{
-					o = o + s;
-				}
+				o = o + s;
 			}
 			return o;
 		};
-
 
 		jQuery('a.debug-report').click(function(){
 
@@ -486,24 +551,7 @@ function woocommerce_status_report() {
 						name = jQuery.wc_strPad( jQuery.trim( $this.find('td:eq(0)').text() ), 25, ' ' );
 						value = jQuery.trim( $this.find('td:eq(1)').text() );
 
-
-						value_array = value.split( ', ' );
-						if( value_array.length > 1 ){
-
-							// if value have a list of plugins ','
-							// split to add new line
-							output = '';
-							temp_line ='';
-							jQuery.each( value_array, function(key, line){
-
-								tab = ( key == 0 )?0:25;
-							    temp_line = temp_line + jQuery.wc_strPad( '', tab, ' ', 'f' ) + line +'\n';
-							});
-
-							value = temp_line;
-						}
-
-						report = report +''+ name + value + "\n";
+						report = report + '' + name + value + "\n\n";
 					});
 
 				}

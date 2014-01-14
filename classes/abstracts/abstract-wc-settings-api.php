@@ -135,7 +135,7 @@ abstract class WC_Settings_API {
      * @access public
      * @param mixed $key
      * @param mixed $empty_value
-     * @return string The value specified for the option or a default value for the option
+     * @return void
      */
     public function get_option( $key, $empty_value = null ) {
 
@@ -186,7 +186,8 @@ abstract class WC_Settings_API {
 
     	$html = '';
     	foreach ( $form_fields as $k => $v ) {
-    		if ( ! isset( $v['type'] ) || ( $v['type'] == '' ) ) { $v['type'] == 'text'; } // Default to "text" field type.
+    		if ( ! isset( $v['type'] ) || ( $v['type'] == '' ) )
+    			$v['type'] = 'text'; // Default to "text" field type.
 
     		if ( method_exists( $this, 'generate_' . $v['type'] . '_html' ) ) {
     			$html .= $this->{'generate_' . $v['type'] . '_html'}( $k, $v );
@@ -645,11 +646,19 @@ abstract class WC_Settings_API {
 
     	foreach ( $form_fields as $k => $v ) {
     		if ( empty( $v['type'] ) )
-    			$v['type'] == 'text'; // Default to "text" field type.
+    			$v['type'] = 'text'; // Default to "text" field type.
 
-    		if ( method_exists( $this, 'validate_' . $v['type'] . '_field' ) ) {
+    		// Look for a validate_FIELDID_field method for special handling
+    		if ( method_exists( $this, 'validate_' . $k . '_field' ) ) {
+    			$field = $this->{'validate_' . $k . '_field'}( $k );
+    			$this->sanitized_fields[ $k ] = $field;
+
+    		// Look for a validate_FIELDTYPE_field method
+    		} elseif ( method_exists( $this, 'validate_' . $v['type'] . '_field' ) ) {
     			$field = $this->{'validate_' . $v['type'] . '_field'}( $k );
     			$this->sanitized_fields[ $k ] = $field;
+    		
+    		// Default to text
     		} else {
     			$field = $this->{'validate_text_field'}( $k );
     			$this->sanitized_fields[ $k ] = $field;
@@ -691,7 +700,7 @@ abstract class WC_Settings_API {
     	$text = $this->get_option( $key );
 
     	if ( isset( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ) {
-    		$text = esc_attr( trim( stripslashes( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ) );
+    		$text = wp_kses_post( trim( stripslashes( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ) );
     	}
 
     	return $text;
@@ -712,7 +721,7 @@ abstract class WC_Settings_API {
     	$text = $this->get_option( $key );
 
     	if ( isset( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ) {
-    		$text = esc_attr( woocommerce_clean( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) );
+    		$text = woocommerce_clean( stripslashes( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) );
     	}
 
     	return $text;
@@ -733,7 +742,14 @@ abstract class WC_Settings_API {
     	$text = $this->get_option( $key );
 
     	if ( isset( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ) {
-    		$text = esc_attr( trim( stripslashes( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ) );
+    		$text = wp_kses( trim( stripslashes( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ),
+    			array_merge(
+    				array(
+    					'iframe' => array( 'src' => true, 'style' => true, 'id' => true, 'class' => true )
+    				),
+    				wp_kses_allowed_html( 'post' )
+    			)
+    		);
     	}
 
     	return $text;
@@ -754,7 +770,7 @@ abstract class WC_Settings_API {
     	$value = $this->get_option( $key );
 
     	if ( isset( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ) {
-    		$value = esc_attr( woocommerce_clean( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) );
+    		$value = woocommerce_clean( stripslashes( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) );
     	}
 
     	return $value;
@@ -774,7 +790,7 @@ abstract class WC_Settings_API {
     	$value = $this->get_option( $key );
 
     	if ( isset( $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) ) {
-    		$value = array_map('esc_attr', array_map('woocommerce_clean', (array) $_POST[ $this->plugin_id . $this->id . '_' . $key ] ));
+    		$value = array_map( 'woocommerce_clean', array_map( 'stripslashes', (array) $_POST[ $this->plugin_id . $this->id . '_' . $key ] ) );
     	} else {
 	    	$value = '';
     	}

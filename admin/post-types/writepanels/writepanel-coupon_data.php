@@ -79,9 +79,10 @@ function woocommerce_coupon_data_meta_box( $post ) {
 						$product_ids = array_map( 'absint', explode( ',', $product_ids ) );
 						foreach ( $product_ids as $product_id ) {
 
-							$product = get_product( $product_id );
+							$product      = get_product( $product_id );
+							$product_name = woocommerce_get_formatted_product_name( $product );
 
-							echo '<option value="' . esc_attr( $product_id ) . '" selected="selected">' . wp_kses_post( $product->get_formatted_name() ) . '</option>';
+							echo '<option value="' . esc_attr( $product_id ) . '" selected="selected">' . wp_kses_post( $product_name ) . '</option>';
 						}
 					}
 				?>
@@ -98,9 +99,10 @@ function woocommerce_coupon_data_meta_box( $post ) {
 						$product_ids = array_map( 'absint', explode( ',', $product_ids ) );
 						foreach ( $product_ids as $product_id ) {
 
-							$product = get_product( $product_id );
+							$product      = get_product( $product_id );
+							$product_name = woocommerce_get_formatted_product_name( $product );
 
-							echo '<option value="' . esc_attr( $product_id ) . '" selected="selected">' . esc_html( $product->get_formatted_name() ) . '</option>';
+							echo '<option value="' . esc_attr( $product_id ) . '" selected="selected">' . esc_html( $product_name ) . '</option>';
 						}
 					}
 				?>

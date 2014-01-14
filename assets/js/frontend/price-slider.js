@@ -36,8 +36,6 @@ jQuery(document).ready(function($) {
 			$( ".price_slider_amount span.to" ).html( max + " " + woocommerce_price_slider_params.currency_symbol );
 
 		}
-
-		$('body').trigger('price_slider_updated', min, max );
 	});
 
 	$('.price_slider').slider({

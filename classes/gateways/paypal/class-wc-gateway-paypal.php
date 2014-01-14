@@ -74,7 +74,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
      * @return bool
      */
     function is_valid_for_use() {
-        if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paypal_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'TRY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP', 'RMB' ) ) ) ) return false;
+        if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paypal_supported_currencies', array( 'AUD', 'BRL', 'CAD', 'MXN', 'NZD', 'HKD', 'SGD', 'USD', 'EUR', 'JPY', 'TRY', 'NOK', 'CZK', 'DKK', 'HUF', 'ILS', 'MYR', 'PHP', 'PLN', 'SEK', 'CHF', 'TWD', 'THB', 'GBP', 'RMB', 'RUB' ) ) ) ) return false;
 
         return true;
     }
@@ -262,6 +262,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 				'return' 				=> add_query_arg( 'utm_nooverride', '1', $this->get_return_url( $order ) ),
 				'cancel_return'			=> $order->get_cancel_order_url(),
 				'page_style'			=> $this->page_style,
+				'BUTTONSOURCE'          => 'WooThemes_Cart',
 
 				// Order key + ID
 				'invoice'				=> $this->invoice_prefix . ltrim( $order->get_order_number(), '#' ),
@@ -307,7 +308,6 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 
 		// If prices include tax or have order discounts, send the whole order as a single item
 		if ( get_option( 'woocommerce_prices_include_tax' ) == 'yes' || $order->get_order_discount() > 0 || ( sizeof( $order->get_items() ) + sizeof( $order->get_fees() ) ) >= 9 ) {
-
 			// Discount
 			$paypal_args['discount_amount_cart'] = $order->get_order_discount();
 
@@ -355,7 +355,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 						if ( $meta = $item_meta->display( true, true ) )
 							$item_name .= ' ( ' . $meta . ' )';
 
-						$paypal_args[ 'item_name_' . $item_loop ] 	= $item_name;
+						$paypal_args[ 'item_name_' . $item_loop ] 	= html_entity_decode( $item_name, ENT_NOQUOTES, 'UTF-8' );
 						$paypal_args[ 'quantity_' . $item_loop ] 	= $item['qty'];
 						$paypal_args[ 'amount_' . $item_loop ] 		= $order->get_item_subtotal( $item, false );
 
@@ -423,7 +423,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 		}
 
 		$woocommerce->add_inline_js( '
-			$.blockUI({
+			jQuery("body").block({
 					message: "' . esc_js( __( 'Thank you for your order. We are now redirecting you to PayPal to make payment.', 'woocommerce' ) ) . '",
 					baseZ: 99999,
 					overlayCSS:
@@ -447,13 +447,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 
 		return '<form action="'.esc_url( $paypal_adr ).'" method="post" id="paypal_payment_form" target="_top">
 				' . implode( '', $paypal_args_array) . '
-				<!-- Button Fallback -->
-				<div class="payment_buttons">
-					<input type="submit" class="button alt" id="submit_paypal_payment_form" value="' . __( 'Pay via PayPal', 'woocommerce' ) . '" /> <a class="button cancel" href="'.esc_url( $order->get_cancel_order_url() ).'">'.__( 'Cancel order &amp; restore cart', 'woocommerce' ).'</a>
-				</div>
-				<script type="text/javascript">
-					jQuery(".payment_buttons").hide();
-				</script>
+				<input type="submit" class="button alt" id="submit_paypal_payment_form" value="' . __( 'Pay via PayPal', 'woocommerce' ) . '" /> <a class="button cancel" href="'.esc_url( $order->get_cancel_order_url() ).'">'.__( 'Cancel order &amp; restore cart', 'woocommerce' ).'</a>
 			</form>';
 
 	}
@@ -491,7 +485,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 
 			return array(
 				'result' 	=> 'success',
-				'redirect'	=> $order->get_checkout_payment_url( true )
+				'redirect'	=> add_query_arg('order', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay' ))))
 			);
 
 		}
@@ -507,7 +501,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
      */
 	function receipt_page( $order ) {
 
-		echo '<p>'.__( 'Thank you - your order is now pending payment. You should be automatically redirected to PayPal to make payment.', 'woocommerce' ).'</p>';
+		echo '<p>'.__( 'Thank you for your order, please click the button below to pay with PayPal.', 'woocommerce' ).'</p>';
 
 		echo $this->generate_paypal_form( $order );
 
@@ -519,14 +513,8 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 	function check_ipn_request_is_valid() {
 		global $woocommerce;
 
-		// Get url
-       	if ( $this->testmode == 'yes' )
-			$paypal_adr = $this->testurl;
-		else
-			$paypal_adr = $this->liveurl;
-
 		if ( 'yes' == $this->debug )
-			$this->log->add( 'paypal', 'Checking IPN response is valid via ' . $paypal_adr . '...' );
+			$this->log->add( 'paypal', 'Checking IPN response is valid...' );
 
     	// Get recieved values from post data
 		$received_values = array( 'cmd' => '_notify-validate' );
@@ -537,11 +525,19 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
         	'body' 			=> $received_values,
         	'sslverify' 	=> false,
         	'timeout' 		=> 60,
+        	'httpversion'   => '1.1',
+        	'headers'       => array( 'host' => 'www.paypal.com' ),
         	'user-agent'	=> 'WooCommerce/' . $woocommerce->version
         );
 
         if ( 'yes' == $this->debug )
 			$this->log->add( 'paypal', 'IPN Request: ' . print_r( $params, true ) );
+
+        // Get url
+       	if ( $this->testmode == 'yes' )
+			$paypal_adr = $this->testurl;
+		else
+			$paypal_adr = $this->liveurl;
 
 		// Post back to get a response
         $response = wp_remote_post( $paypal_adr, $params );
@@ -585,7 +581,7 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 
 		} else {
 
-			wp_die( "PayPal IPN Request Failure", "PayPal IPN", array( 'response' => 200 ) );
+			wp_die( "PayPal IPN Request Failure" );
 
    		}
 
@@ -717,19 +713,30 @@ class WC_Gateway_Paypal extends WC_Payment_Gateway {
 
 	            break;
 	            case "reversed" :
-	            case "chargeback" :
 
 	            	// Mark order as refunded
-	            	$order->update_status( 'refunded', sprintf( __( 'Payment %s via IPN.', 'woocommerce' ), strtolower( $posted['payment_status'] ) ) );
+	            	$order->update_status( 'on-hold', sprintf( __( 'Payment %s via IPN.', 'woocommerce' ), strtolower( $posted['payment_status'] ) ) );
 
 	            	$mailer = $woocommerce->mailer();
 
 	            	$message = $mailer->wrap_message(
-	            		__( 'Order refunded/reversed', 'woocommerce' ),
-	            		sprintf(__( 'Order %s has been marked as refunded - PayPal reason code: %s', 'woocommerce' ), $order->get_order_number(), $posted['reason_code'] )
+	            		__( 'Order reversed', 'woocommerce' ),
+	            		sprintf(__( 'Order %s has been marked on-hold due to a reversal - PayPal reason code: %s', 'woocommerce' ), $order->get_order_number(), $posted['reason_code'] )
 					);
 
-					$mailer->send( get_option( 'admin_email' ), sprintf( __( 'Payment for order %s refunded/reversed', 'woocommerce' ), $order->get_order_number() ), $message );
+					$mailer->send( get_option( 'admin_email' ), sprintf( __( 'Payment for order %s reversed', 'woocommerce' ), $order->get_order_number() ), $message );
+
+	            break;
+	            case "canceled_reversal" :
+
+	            	$mailer = $woocommerce->mailer();
+
+	            	$message = $mailer->wrap_message(
+	            		__( 'Reversal Cancelled', 'woocommerce' ),
+	            		sprintf( __( 'Order %s has had a reversal cancelled. Please check the status of payment and update the order status accordingly.', 'woocommerce' ), $order->get_order_number() )
+					);
+
+					$mailer->send( get_option( 'admin_email' ), sprintf( __( 'Reversal cancelled for order %s', 'woocommerce' ), $order->get_order_number() ), $message );
 
 	            break;
 	            default :

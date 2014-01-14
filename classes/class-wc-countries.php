@@ -402,7 +402,7 @@ class WC_Countries {
 	 * @return array
 	 */
 	public function get_european_union_countries() {
-		return array( 'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK' );
+		return array( 'AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HU', 'HR', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK' );
 	}
 
 
@@ -576,7 +576,7 @@ class WC_Countries {
 				'HK' => "{company}\n{first_name} {last_name_upper}\n{address_1}\n{address_2}\n{city_upper}\n{state_upper}\n{country}",
 				'HU' => "{name}\n{company}\n{city}\n{address_1}\n{address_2}\n{postcode}\n{country}",
 				'IS' => $postcode_before_city,
-				'IT' => "{company}\n{name}\n{address_1}\n{address_2}\n{postcode} {city} {state_upper}\n{country}",
+				'IS' => $postcode_before_city,
 				'LI' => $postcode_before_city,
 				'NL' => $postcode_before_city,
 				'NZ' => "{name}\n{company}\n{address_1}\n{address_2}\n{city} {postcode}\n{country}",
@@ -619,7 +619,7 @@ class WC_Countries {
 		$full_country 	= ( isset( $this->countries[ $country ] ) ) ? $this->countries[ $country ] : $country;
 
 		// Country is not needed if the same as base
-		if ( $country == $this->get_base_country() && ! apply_filters( 'woocommerce_formatted_address_force_country_display', false ) )
+		if ( $country == $this->get_base_country() )
 			$format = str_replace( '{country}', '', $format );
 
 		// Handle full state name
@@ -869,13 +869,6 @@ class WC_Countries {
 					'postcode_before_city' => true,
 					'state'		=> array(
 						'required' => false
-					)
-				),
-				'IT' => array(
-					'postcode_before_city' => true,
-					'state'		=> array(
-						'required' => true,
-						'label'    => __( 'Province', 'woocommerce' ),
 					)
 				),
 				'KR' => array(

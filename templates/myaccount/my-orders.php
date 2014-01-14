@@ -48,7 +48,7 @@ if ( $customer_orders ) : ?>
 
 				?><tr class="order">
 					<td class="order-number">
-						<a href="<?php echo $order->get_view_order_url(); ?>">
+						<a href="<?php echo esc_url( add_query_arg('order', $order->id, get_permalink( woocommerce_get_page_id( 'view_order' ) ) ) ); ?>">
 							<?php echo $order->get_order_number(); ?>
 						</a>
 					</td>
@@ -78,7 +78,7 @@ if ( $customer_orders ) : ?>
 								);
 
 							$actions['view'] = array(
-								'url'  => $order->get_view_order_url(),
+								'url'  => add_query_arg( 'order', $order->id, get_permalink( woocommerce_get_page_id( 'view_order' ) ) ),
 								'name' => __( 'View', 'woocommerce' )
 							);
 

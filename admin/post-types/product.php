@@ -23,7 +23,7 @@ function woocommerce_duplicate_product_link_row($actions, $post) {
 	if ( function_exists( 'duplicate_post_plugin_activation' ) )
 		return $actions;
 
-	if ( ! current_user_can( apply_filters( 'woocommerce_duplicate_product_capability', 'manage_woocommerce' ) ) ) return $actions;
+	if ( ! current_user_can( 'manage_woocommerce' ) ) return $actions;
 
 	if ( $post->post_type != 'product' )
 		return $actions;
@@ -49,7 +49,7 @@ function woocommerce_duplicate_product_post_button() {
 
 	if ( function_exists( 'duplicate_post_plugin_activation' ) ) return;
 
-	if ( ! current_user_can( apply_filters( 'woocommerce_duplicate_product_capability', 'manage_woocommerce' ) ) ) return $actions;
+	if ( ! current_user_can( 'manage_woocommerce' ) ) return;
 
 	if ( ! is_object( $post ) ) return;
 
@@ -467,24 +467,24 @@ add_filter( 'parse_query', 'woocommerce_admin_product_filter_query' );
 function woocommerce_admin_product_search( $wp ) {
     global $pagenow, $wpdb;
 
-	if ( 'edit.php' != $pagenow ) return;
-	if ( ! isset( $wp->query_vars['s'] ) ) return;
-	if ( 'product' != $wp->query_vars['post_type'] ) return;
+	if( 'edit.php' != $pagenow ) return;
+	if( !isset( $wp->query_vars['s'] ) ) return;
+	if ($wp->query_vars['post_type']!='product') return;
 
-	if ( '#' == substr( $wp->query_vars['s'], 0, 1 ) ) {
+	if( '#' == substr( $wp->query_vars['s'], 0, 1 ) ) :
 
 		$id = absint( substr( $wp->query_vars['s'], 1 ) );
 
-		if ( ! $id ) return;
+		if( !$id ) return;
 
 		unset( $wp->query_vars['s'] );
 		$wp->query_vars['p'] = $id;
 
-	} elseif( 'SKU:' == strtoupper( substr( $wp->query_vars['s'], 0, 4 ) ) ) {
+	elseif( 'SKU:' == strtoupper( substr( $wp->query_vars['s'], 0, 4 ) ) ) :
 
 		$sku = trim( substr( $wp->query_vars['s'], 4 ) );
 
-		if ( ! $sku ) return;
+		if( !$sku ) return;
 
 		$ids = $wpdb->get_col( 'SELECT post_id FROM ' . $wpdb->postmeta . ' WHERE meta_key="_sku" AND meta_value LIKE "%' . $sku . '%";' );
 
@@ -493,7 +493,8 @@ function woocommerce_admin_product_search( $wp ) {
 		unset( $wp->query_vars['s'] );
 		$wp->query_vars['post__in'] = $ids;
 		$wp->query_vars['sku'] = $sku;
-	}
+
+	endif;
 }
 
 
@@ -1052,7 +1053,7 @@ function woocommerce_admin_product_bulk_edit_save( $post_id, $post ) {
 				case 2 :
 					if ( strstr( $regular_price, '%' ) ) {
 						$percent = str_replace( '%', '', $regular_price ) / 100;
-						$new_price = $old_regular_price + ( $old_regular_price * $percent );
+						$new_price = $old_regular_price + ( round( $old_regular_price * $percent, absint( get_option( 'woocommerce_price_num_decimals' ) ) ) );
 					} else {
 						$new_price = $old_regular_price + $regular_price;
 					}
@@ -1060,7 +1061,7 @@ function woocommerce_admin_product_bulk_edit_save( $post_id, $post ) {
 				case 3 :
 					if ( strstr( $regular_price, '%' ) ) {
 						$percent = str_replace( '%', '', $regular_price ) / 100;
-						$new_price = $old_regular_price - ( $old_regular_price * $percent );
+						$new_price = $old_regular_price - ( round ( $old_regular_price * $percent, absint( get_option( 'woocommerce_price_num_decimals' ) ) ) );
 					} else {
 						$new_price = $old_regular_price - $regular_price;
 					}

@@ -35,11 +35,8 @@ class WC_Product {
 			$product = get_product( $product );
 		}
 
-		if ( $product instanceof WP_Post ) {
+		if ( is_object( $product ) ) {
 			$this->id   = absint( $product->ID );
-			$this->post = $product;
-		} elseif ( $product instanceof WC_Product ) {
-			$this->id   = absint( $product->id );
 			$this->post = $product;
 		} else {
 			$this->id   = absint( $product );
@@ -295,7 +292,7 @@ class WC_Product {
 
 		$file_paths = isset( $this->file_paths ) ? $this->file_paths : '';
 		$file_paths = maybe_unserialize( $file_paths );
-		$file_paths = apply_filters( 'woocommerce_file_download_paths', $file_paths, $this->id, null, null );
+		$file_paths = (array) apply_filters( 'woocommerce_file_download_paths', $file_paths, $this->id, null, null );
 
 		if ( ! $download_id && count( $file_paths ) == 1 ) {
 			// backwards compatibility for old-style download URLs and template files
@@ -708,6 +705,10 @@ class WC_Product {
 		elseif ( $this->get_price() === '' )
 			$purchasable = false;
 
+		// Check the product is published
+		elseif ( $this->post->post_status !== 'publish' && ! current_user_can( 'edit_post', $this->id ) )
+			$purchasable = false;
+
 		return apply_filters( 'woocommerce_is_purchasable', $purchasable, $this );
 	}
 
@@ -746,9 +747,9 @@ class WC_Product {
 
 				} elseif ( $tax_rates !== $base_tax_rates ) {
 
-					$base_taxes			= $_tax->calc_tax( $price * $qty, $base_tax_rates, true, true );
-					$modded_taxes		= $_tax->calc_tax( $price * $qty - array_sum( $base_taxes ), $tax_rates, false );
-					$price      		= round( $price * $qty - array_sum( $base_taxes ) + array_sum( $modded_taxes ), 2 );
+					$base_taxes			= $_tax->calc_tax( $price * $qty, $base_tax_rates, true );
+					$modded_taxes		= $_tax->calc_tax( ( $price * $qty ) - array_sum( $base_taxes ), $tax_rates, false );
+					$price      		= round( ( $price * $qty ) - array_sum( $base_taxes ) + array_sum( $modded_taxes ), 2 );
 
 				} else {
 
@@ -1273,22 +1274,4 @@ class WC_Product {
 
 		return $image;
     }
-
-
-	/**
-	 * Get product name with SKU or ID. Used within admin.
-	 *
-	 * @access public
-	 * @param mixed $product
-	 * @return string Formatted product name
-	 */
-	function get_formatted_name() {
-
-		if ( $this->get_sku() )
-			$identifier = $this->get_sku();
-		else
-			$identifier = '#' . $this->id;
-
-		return sprintf( __( '%s &ndash; %s', 'woocommerce' ), $identifier, $this->get_title() );
-	}
 }

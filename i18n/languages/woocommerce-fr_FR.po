@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: WooCommerce 2.0.10\n"
+"Project-Id-Version: WooCommerce 2.0.18\n"
 "Report-Msgid-Bugs-To: https://github.com/woothemes/woocommerce/issues\n"
 "POT-Creation-Date: 2013-04-29 16:02:06+00:00\n"
 "PO-Revision-Date: \n"
@@ -16,7 +16,7 @@ msgstr ""
 "_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
 "X-Poedit-Basepath: ../../\n"
 "X-Textdomain-Support: yes\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.7\n"
 "X-Poedit-SearchPath-0: ../..\n"
 
 #: assets/js/admin/editor_plugin_lang.php:5
@@ -46,7 +46,7 @@ msgstr "Catégories de produits"
 # @ woocommerce
 #: assets/js/admin/editor_plugin_lang.php:10
 msgid "Products by category slug"
-msgstr "Produits par slug catégorie"
+msgstr "Produits par identifiant de catégorie"
 
 # @ woocommerce
 #: assets/js/admin/editor_plugin_lang.php:11
@@ -93,7 +93,7 @@ msgstr "Mon Compte"
 # @ woocommerce
 #: assets/js/admin/editor_plugin_lang.php:19
 msgid "Edit Address"
-msgstr "Modifier adresse"
+msgstr "Modifier l'adresse"
 
 # @ woocommerce
 #: assets/js/admin/editor_plugin_lang.php:20
@@ -137,13 +137,13 @@ msgstr "Activer/Désactiver"
 #: classes/emails/class-wc-email-customer-invoice.php:140
 #: classes/emails/class-wc-email-new-order.php:117
 msgid "Enable this email notification"
-msgstr "Activer cet notification email"
+msgstr "Activer cette notification par email"
 
 # @ woocommerce
 #: classes/abstracts/abstract-wc-email.php:437
 #: classes/emails/class-wc-email-customer-invoice.php:144
 msgid "Email subject"
-msgstr "Sujet email"
+msgstr "Sujet de l'email"
 
 #: classes/abstracts/abstract-wc-email.php:439
 #: classes/abstracts/abstract-wc-email.php:446
@@ -162,7 +162,7 @@ msgstr "Par défaut à <code>%s</code>"
 #: classes/abstracts/abstract-wc-email.php:444
 #: classes/emails/class-wc-email-customer-invoice.php:151
 msgid "Email heading"
-msgstr "Entête email"
+msgstr "Entête de l'email"
 
 # @ woocommerce
 #: classes/abstracts/abstract-wc-email.php:451
@@ -198,7 +198,7 @@ msgstr "HTML"
 #: classes/emails/class-wc-email-customer-invoice.php:180
 #: classes/emails/class-wc-email-new-order.php:150
 msgid "Multipart"
-msgstr "Multipart"
+msgstr "Multi-parties"
 
 #: classes/abstracts/abstract-wc-email.php:495
 #: classes/abstracts/abstract-wc-email.php:516
@@ -245,7 +245,7 @@ msgstr ""
 
 #: classes/abstracts/abstract-wc-email.php:610
 msgid "Copy file to theme"
-msgstr "Copié le fichier dans le thème"
+msgstr "Copier le fichier dans le thème"
 
 #: classes/abstracts/abstract-wc-email.php:613
 msgid ""
@@ -304,13 +304,13 @@ msgstr " %s en stock"
 # @ woocommerce
 #: classes/abstracts/abstract-wc-product.php:560
 msgid "(backorders allowed)"
-msgstr "(réservation autorisé)"
+msgstr "(réservations autorisées)"
 
 # @ woocommerce
 #: classes/abstracts/abstract-wc-product.php:566
 #: classes/abstracts/abstract-wc-product.php:579 templates/cart/cart.php:76
 msgid "Available on backorder"
-msgstr "Disponible en backorder"
+msgstr "Disponible sur commande"
 
 # @ woocommerce
 #: classes/abstracts/abstract-wc-product.php:572
@@ -354,9 +354,10 @@ msgid ""
 "must add <code>_wc_session_</code> to the \"Ignored Query Strings\" option "
 "in W3 Total Cache settings <a href=\"%s\">here</a>."
 msgstr ""
-"Pour faire fonctionner le <strong>database caching</strong> avec WooCommerce "
-"vous devez ajouter <code>_wc_session_</code> à l'option \"Ignored Query "
-"Strings\" de W3 Total Cache dans <a href=\"%s\">ces paramètres</a>."
+"Pour que le <strong>cache de base de données</strong> fonctionne avec "
+"WooCommerce vous devez ajouter <code>_wc_session_</code> à l'option "
+"\"Ignored Query Strings\" dans les paramètres de W3 Total Cache <a href=\"%s"
+"\">ici</a>."
 
 # @ woocommerce
 #: classes/class-wc-cart.php:460
@@ -433,7 +434,7 @@ msgstr "Voir panier &rarr;"
 
 #: classes/class-wc-cart.php:869
 msgid "You already have this item in your cart."
-msgstr "Vous avez dèjà ce produit dans votre panier."
+msgstr "Vous avez déjà ce produit dans votre panier."
 
 # @ woocommerce
 #: classes/class-wc-cart.php:883 classes/class-wc-cart.php:891
@@ -459,23 +460,23 @@ msgstr "Nom d'utilisateur du compte"
 #: classes/class-wc-checkout.php:65
 msgctxt "placeholder"
 msgid "Username"
-msgstr "Nom d'Utilisateur"
+msgstr "Nom d'utilisateur"
 
 # @ woocommerce
 #: classes/class-wc-checkout.php:72
 msgid "Account password"
-msgstr "Mot de Passe du compte"
+msgstr "Mot de passe du compte"
 
 # @ woocommerce
 #: classes/class-wc-checkout.php:73
 msgctxt "placeholder"
 msgid "Password"
-msgstr "Mot de Passe"
+msgstr "Mot de passe"
 
 # @ woocommerce
 #: classes/class-wc-checkout.php:79
 msgid "Confirm password"
-msgstr "Confirmation mot de passe"
+msgstr "Confirmer le mot de passe"
 
 # @ woocommerce
 #: classes/class-wc-checkout.php:80
@@ -561,7 +562,7 @@ msgstr ""
 # @ woocommerce
 #: classes/class-wc-checkout.php:562
 msgid "Please enter an account password."
-msgstr "Entre un mot de passe, svp."
+msgstr "Veuillez saisir un mot de passe."
 
 # @ woocommerce
 #: classes/class-wc-checkout.php:565
@@ -619,17 +620,17 @@ msgstr "Aland Islands"
 # @ woocommerce
 #: classes/class-wc-countries.php:39
 msgid "Albania"
-msgstr "Albania"
+msgstr "Albanie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:40
 msgid "Algeria"
-msgstr "Algeria"
+msgstr "Algérie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:41
 msgid "Andorra"
-msgstr "Andorra"
+msgstr "Andorre"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:42
@@ -654,12 +655,12 @@ msgstr "Antigua and Barbuda"
 # @ woocommerce
 #: classes/class-wc-countries.php:46
 msgid "Argentina"
-msgstr "Argentina"
+msgstr "Argentine"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:47
 msgid "Armenia"
-msgstr "Armenia"
+msgstr "Arménie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:48
@@ -669,12 +670,12 @@ msgstr "Aruba"
 # @ woocommerce
 #: classes/class-wc-countries.php:49
 msgid "Australia"
-msgstr "Australia"
+msgstr "Australie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:50
 msgid "Austria"
-msgstr "Austria"
+msgstr "Autriche"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:51
@@ -739,7 +740,7 @@ msgstr "Bhutan"
 # @ woocommerce
 #: classes/class-wc-countries.php:63
 msgid "Bolivia"
-msgstr "Bolivia"
+msgstr "Bolivie"
 
 #: classes/class-wc-countries.php:64
 msgid "Bonaire, Saint Eustatius and Saba"
@@ -748,7 +749,7 @@ msgstr "Saba, Saint-Eustache et Bonaire"
 # @ woocommerce
 #: classes/class-wc-countries.php:65
 msgid "Bosnia and Herzegovina"
-msgstr "Bosnia and Herzegovina"
+msgstr "Bosnie-Herzégovine"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:66
@@ -763,17 +764,17 @@ msgstr "Île Bouvet"
 # @ woocommerce
 #: classes/class-wc-countries.php:68
 msgid "Brazil"
-msgstr "Brazil"
+msgstr "Brésil"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:69
 msgid "British Indian Ocean Territory"
-msgstr "British Indian Ocean Territory"
+msgstr "Territoire britannique de l'océan Indien"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:70
 msgid "British Virgin Islands"
-msgstr "British Virgin Islands"
+msgstr "Îles Vierges britanniques"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:71
@@ -783,7 +784,7 @@ msgstr "Brunei"
 # @ woocommerce
 #: classes/class-wc-countries.php:72
 msgid "Bulgaria"
-msgstr "Bulgaria"
+msgstr "Bulgarie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:73
@@ -798,12 +799,12 @@ msgstr "Burundi"
 # @ woocommerce
 #: classes/class-wc-countries.php:75
 msgid "Cambodia"
-msgstr "Cambodia"
+msgstr "Cambodge"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:76
 msgid "Cameroon"
-msgstr "Cameroon"
+msgstr "Cameroun"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:77
@@ -813,17 +814,17 @@ msgstr "Canada"
 # @ woocommerce
 #: classes/class-wc-countries.php:78
 msgid "Cape Verde"
-msgstr "Cape Verde"
+msgstr "Cap Vert"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:79
 msgid "Cayman Islands"
-msgstr "Cayman Islands"
+msgstr "Îles Caïmans"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:80
 msgid "Central African Republic"
-msgstr "Central African Republic"
+msgstr "République centrafricaine"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:81
@@ -833,12 +834,12 @@ msgstr "Chad"
 # @ woocommerce
 #: classes/class-wc-countries.php:82
 msgid "Chile"
-msgstr "Chile"
+msgstr "Chili"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:83
 msgid "China"
-msgstr "China"
+msgstr "Chine"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:84
@@ -853,7 +854,7 @@ msgstr "Cocos (Keeling) Islands"
 # @ woocommerce
 #: classes/class-wc-countries.php:86
 msgid "Colombia"
-msgstr "Colombia"
+msgstr "Colombie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:87
@@ -873,7 +874,7 @@ msgstr "Congo (Kinshasa)"
 # @ woocommerce
 #: classes/class-wc-countries.php:90
 msgid "Cook Islands"
-msgstr "Cook Islands"
+msgstr "Îles Cook"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:91
@@ -883,7 +884,7 @@ msgstr "Costa Rica"
 # @ woocommerce
 #: classes/class-wc-countries.php:92
 msgid "Croatia"
-msgstr "Croatia"
+msgstr "Croatie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:93
@@ -897,17 +898,17 @@ msgstr "Curaçao"
 # @ woocommerce
 #: classes/class-wc-countries.php:95
 msgid "Cyprus"
-msgstr "Cyprus"
+msgstr "Chypre"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:96
 msgid "Czech Republic"
-msgstr "Czech Republic"
+msgstr "République tchèque"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:97
 msgid "Denmark"
-msgstr "Denmark"
+msgstr "Danemark"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:98
@@ -917,22 +918,22 @@ msgstr "Djibouti"
 # @ woocommerce
 #: classes/class-wc-countries.php:99
 msgid "Dominica"
-msgstr "Dominica"
+msgstr "Dominique"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:100
 msgid "Dominican Republic"
-msgstr "Dominican Republic"
+msgstr "République dominicaine"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:101
 msgid "Ecuador"
-msgstr "Ecuador"
+msgstr "Équateur"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:102
 msgid "Egypt"
-msgstr "Egypt"
+msgstr "Égypte"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:103
@@ -942,32 +943,32 @@ msgstr "El Salvador"
 # @ woocommerce
 #: classes/class-wc-countries.php:104
 msgid "Equatorial Guinea"
-msgstr "Equatorial Guinea"
+msgstr "Guinée équatoriale"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:105
 msgid "Eritrea"
-msgstr "Eritrea"
+msgstr "Erythrée"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:106
 msgid "Estonia"
-msgstr "Estonia"
+msgstr "Estonie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:107
 msgid "Ethiopia"
-msgstr "Ethiopia"
+msgstr "Éthiopie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:108
 msgid "Falkland Islands"
-msgstr "Falkland Islands"
+msgstr "Îles Falkland"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:109
 msgid "Faroe Islands"
-msgstr "Faroe Islands"
+msgstr "Îles Féroé"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:110
@@ -977,7 +978,7 @@ msgstr "Fiji"
 # @ woocommerce
 #: classes/class-wc-countries.php:111
 msgid "Finland"
-msgstr "Finland"
+msgstr "Finlande"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:112
@@ -987,17 +988,17 @@ msgstr "France"
 # @ woocommerce
 #: classes/class-wc-countries.php:113
 msgid "French Guiana"
-msgstr "French Guiana"
+msgstr "Guyane française"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:114
 msgid "French Polynesia"
-msgstr "French Polynesia"
+msgstr "Polynésie française"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:115
 msgid "French Southern Territories"
-msgstr "French Southern Territories"
+msgstr "Terres australes françaises"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:116
@@ -1007,7 +1008,7 @@ msgstr "Gabon"
 # @ woocommerce
 #: classes/class-wc-countries.php:117
 msgid "Gambia"
-msgstr "Gambia"
+msgstr "Gambie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:118 i18n/states/US.php:23
@@ -1017,7 +1018,7 @@ msgstr "Georgia"
 # @ woocommerce
 #: classes/class-wc-countries.php:119
 msgid "Germany"
-msgstr "Germany"
+msgstr "Allemagne"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:120
@@ -1032,17 +1033,17 @@ msgstr "Gibraltar"
 # @ woocommerce
 #: classes/class-wc-countries.php:122
 msgid "Greece"
-msgstr "Greece"
+msgstr "Grèce"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:123
 msgid "Greenland"
-msgstr "Greenland"
+msgstr "Groenland"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:124
 msgid "Grenada"
-msgstr "Grenada"
+msgstr "Grenade"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:125
@@ -1057,22 +1058,22 @@ msgstr "Guatemala"
 # @ woocommerce
 #: classes/class-wc-countries.php:127
 msgid "Guernsey"
-msgstr "Guernsey"
+msgstr "Guernesey"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:128
 msgid "Guinea"
-msgstr "Guinea"
+msgstr "Guinée"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:129
 msgid "Guinea-Bissau"
-msgstr "Guinea-Bissau"
+msgstr "Guinée-Bissau"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:130
 msgid "Guyana"
-msgstr "Guyana"
+msgstr "Guyane"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:131
@@ -1095,22 +1096,22 @@ msgstr "Hong Kong"
 # @ woocommerce
 #: classes/class-wc-countries.php:135
 msgid "Hungary"
-msgstr "Hungary"
+msgstr "Hongrie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:136
 msgid "Iceland"
-msgstr "Iceland"
+msgstr "Islande"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:137
 msgid "India"
-msgstr "India"
+msgstr "Inde"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:138
 msgid "Indonesia"
-msgstr "Indonesia"
+msgstr "Indonésie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:139
@@ -1139,22 +1140,22 @@ msgstr "Israel"
 # @ woocommerce
 #: classes/class-wc-countries.php:144
 msgid "Italy"
-msgstr "Italy"
+msgstr "Italie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:145
 msgid "Ivory Coast"
-msgstr "Ivory Coast"
+msgstr "Côte-d'Ivoire"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:146
 msgid "Jamaica"
-msgstr "Jamaica"
+msgstr "Jamaïque"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:147
 msgid "Japan"
-msgstr "Japan"
+msgstr "Japon"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:148
@@ -1219,7 +1220,7 @@ msgstr "Liberia"
 # @ woocommerce
 #: classes/class-wc-countries.php:160
 msgid "Libya"
-msgstr "Libya"
+msgstr "Libye"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:161
@@ -1229,7 +1230,7 @@ msgstr "Liechtenstein"
 # @ woocommerce
 #: classes/class-wc-countries.php:162
 msgid "Lithuania"
-msgstr "Lithuania"
+msgstr "Lituanie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:163
@@ -1239,12 +1240,12 @@ msgstr "Luxembourg"
 # @ woocommerce
 #: classes/class-wc-countries.php:164
 msgid "Macao S.A.R., China"
-msgstr "Macao S.A.R., China"
+msgstr "Macao S.A.R., Chine"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:165
 msgid "Macedonia"
-msgstr "Macedonia"
+msgstr "Macédoine"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:166
@@ -1259,7 +1260,7 @@ msgstr "Malawi"
 # @ woocommerce
 #: classes/class-wc-countries.php:168
 msgid "Malaysia"
-msgstr "Malaysia"
+msgstr "Malaisie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:169
@@ -1274,12 +1275,12 @@ msgstr "Mali"
 # @ woocommerce
 #: classes/class-wc-countries.php:171
 msgid "Malta"
-msgstr "Malta"
+msgstr "Malte"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:172
 msgid "Marshall Islands"
-msgstr "Marshall Islands"
+msgstr "Îles Marshall"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:173
@@ -1289,12 +1290,12 @@ msgstr "Martinique"
 # @ woocommerce
 #: classes/class-wc-countries.php:174
 msgid "Mauritania"
-msgstr "Mauritania"
+msgstr "Mauritanie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:175
 msgid "Mauritius"
-msgstr "Mauritius"
+msgstr "Maurice"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:176
@@ -1304,17 +1305,17 @@ msgstr "Mayotte"
 # @ woocommerce
 #: classes/class-wc-countries.php:177
 msgid "Mexico"
-msgstr "Mexico"
+msgstr "Mexique"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:178
 msgid "Micronesia"
-msgstr "Micronesia"
+msgstr "Micronésie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:179
 msgid "Moldova"
-msgstr "Moldova"
+msgstr "Moldovie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:180
@@ -1324,7 +1325,7 @@ msgstr "Monaco"
 # @ woocommerce
 #: classes/class-wc-countries.php:181
 msgid "Mongolia"
-msgstr "Mongolia"
+msgstr "Mongolie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:182
@@ -1339,7 +1340,7 @@ msgstr "Montserrat"
 # @ woocommerce
 #: classes/class-wc-countries.php:184
 msgid "Morocco"
-msgstr "Morocco"
+msgstr "Maroc"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:185
@@ -1354,7 +1355,7 @@ msgstr "Myanmar"
 # @ woocommerce
 #: classes/class-wc-countries.php:187
 msgid "Namibia"
-msgstr "Namibia"
+msgstr "Namibie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:188
@@ -1369,22 +1370,22 @@ msgstr "Nepal"
 # @ woocommerce
 #: classes/class-wc-countries.php:190
 msgid "Netherlands"
-msgstr "Netherlands"
+msgstr "Pays-Bas"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:191
 msgid "Netherlands Antilles"
-msgstr "Netherlands Antilles"
+msgstr "Antilles néerlandaises"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:192
 msgid "New Caledonia"
-msgstr "New Caledonia"
+msgstr "Nouvelle-Calédonie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:193
 msgid "New Zealand"
-msgstr "New Zealand"
+msgstr "Nouvelle-Zélande"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:194
@@ -1409,17 +1410,17 @@ msgstr "Niue"
 # @ woocommerce
 #: classes/class-wc-countries.php:198
 msgid "Norfolk Island"
-msgstr "Norfolk Island"
+msgstr "Île Norfolk"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:199
 msgid "North Korea"
-msgstr "North Korea"
+msgstr "Corée du Nord"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:200
 msgid "Norway"
-msgstr "Norway"
+msgstr "Norvège"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:201
@@ -1434,7 +1435,7 @@ msgstr "Pakistan"
 # @ woocommerce
 #: classes/class-wc-countries.php:203
 msgid "Palestinian Territory"
-msgstr "Palestinian Territory"
+msgstr "Territoire palestinien"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:204
@@ -1444,7 +1445,7 @@ msgstr "Panama"
 # @ woocommerce
 #: classes/class-wc-countries.php:205
 msgid "Papua New Guinea"
-msgstr "Papua New Guinea"
+msgstr "Papouasie-Nouvelle-Guinée"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:206
@@ -1454,7 +1455,7 @@ msgstr "Paraguay"
 # @ woocommerce
 #: classes/class-wc-countries.php:207
 msgid "Peru"
-msgstr "Peru"
+msgstr "Pérou"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:208
@@ -1469,7 +1470,7 @@ msgstr "Pitcairn"
 # @ woocommerce
 #: classes/class-wc-countries.php:210
 msgid "Poland"
-msgstr "Poland"
+msgstr "Pologne"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:211
@@ -1484,17 +1485,17 @@ msgstr "Qatar"
 # @ woocommerce
 #: classes/class-wc-countries.php:213
 msgid "Reunion"
-msgstr "Reunion"
+msgstr "Réunion"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:214
 msgid "Romania"
-msgstr "Romania"
+msgstr "Roumanie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:215
 msgid "Russia"
-msgstr "Russia"
+msgstr "Russie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:216
@@ -1514,17 +1515,17 @@ msgstr "Saint Helena"
 # @ woocommerce
 #: classes/class-wc-countries.php:219
 msgid "Saint Kitts and Nevis"
-msgstr "Saint Kitts and Nevis"
+msgstr "Saint-Kitts-et-Nevis"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:220
 msgid "Saint Lucia"
-msgstr "Saint Lucia"
+msgstr "Sainte-Lucie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:221
 msgid "Saint Martin (French part)"
-msgstr "Saint Martin (French part)"
+msgstr "Saint-Martin (partie française)"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:222
@@ -1534,12 +1535,12 @@ msgstr "Saint-Martin (partie allemande)"
 # @ woocommerce
 #: classes/class-wc-countries.php:223
 msgid "Saint Pierre and Miquelon"
-msgstr "Saint Pierre and Miquelon"
+msgstr "Saint Pierre et Miquelon"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:224
 msgid "Saint Vincent and the Grenadines"
-msgstr "Saint Vincent and the Grenadines"
+msgstr "Saint-Vincent-et-les-Grenadines"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:225
@@ -1549,22 +1550,22 @@ msgstr "San Marino"
 # @ woocommerce
 #: classes/class-wc-countries.php:226
 msgid "S&atilde;o Tom&eacute; and Pr&iacute;ncipe"
-msgstr "Sao Tome and Principe"
+msgstr "Sao Tomé-et-Principe"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:227
 msgid "Saudi Arabia"
-msgstr "Saudi Arabia"
+msgstr "Arabie Saoudite"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:228
 msgid "Senegal"
-msgstr "Senegal"
+msgstr "Sénégal"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:229
 msgid "Serbia"
-msgstr "Serbia"
+msgstr "Serbie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:230
@@ -1579,42 +1580,42 @@ msgstr "Sierra Leone"
 # @ woocommerce
 #: classes/class-wc-countries.php:232
 msgid "Singapore"
-msgstr "Singapore"
+msgstr "Singapour"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:233
 msgid "Slovakia"
-msgstr "Slovakia"
+msgstr "Slovaquie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:234
 msgid "Slovenia"
-msgstr "Slovenia"
+msgstr "Slovénie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:235
 msgid "Solomon Islands"
-msgstr "Solomon Islands"
+msgstr "Îles Salomon"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:236
 msgid "Somalia"
-msgstr "Somalia"
+msgstr "Somalie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:237
 msgid "South Africa"
-msgstr "South Africa"
+msgstr "Afrique du Sud"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:238
 msgid "South Georgia/Sandwich Islands"
-msgstr "South Georgia/Sandwich Islands"
+msgstr "Géorgie du Sud / îles Sandwich"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:239
 msgid "South Korea"
-msgstr "South Korea"
+msgstr "Corée du Sud"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:240
@@ -1624,7 +1625,7 @@ msgstr "Soudan du Sud"
 # @ woocommerce
 #: classes/class-wc-countries.php:241
 msgid "Spain"
-msgstr "Spain"
+msgstr "Espagne"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:242
@@ -1634,7 +1635,7 @@ msgstr "Sri Lanka"
 # @ woocommerce
 #: classes/class-wc-countries.php:243
 msgid "Sudan"
-msgstr "Sudan"
+msgstr "Soudan"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:244
@@ -1644,7 +1645,7 @@ msgstr "Suriname"
 # @ woocommerce
 #: classes/class-wc-countries.php:245
 msgid "Svalbard and Jan Mayen"
-msgstr "Svalbard and Jan Mayen"
+msgstr "Svalbard et Jan Mayen"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:246
@@ -1654,7 +1655,7 @@ msgstr "Swaziland"
 # @ woocommerce
 #: classes/class-wc-countries.php:247
 msgid "Sweden"
-msgstr "Sweden"
+msgstr "Suède"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:248
@@ -1664,7 +1665,7 @@ msgstr "Suisse"
 # @ woocommerce
 #: classes/class-wc-countries.php:249
 msgid "Syria"
-msgstr "Syria"
+msgstr "Syrie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:250
@@ -1679,12 +1680,12 @@ msgstr "Tajikistan"
 # @ woocommerce
 #: classes/class-wc-countries.php:252
 msgid "Tanzania"
-msgstr "Tanzania"
+msgstr "Tanzanie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:253
 msgid "Thailand"
-msgstr "Thailand"
+msgstr "Thailande"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:254
@@ -1709,27 +1710,27 @@ msgstr "Tonga"
 # @ woocommerce
 #: classes/class-wc-countries.php:258
 msgid "Trinidad and Tobago"
-msgstr "Trinidad and Tobago"
+msgstr "Trinité-et-Tobago"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:259
 msgid "Tunisia"
-msgstr "Tunisia"
+msgstr "Tunisie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:260
 msgid "Turkey"
-msgstr "Turkey"
+msgstr "Turquie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:261
 msgid "Turkmenistan"
-msgstr "Turkmenistan"
+msgstr "Turkménistan"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:262
 msgid "Turks and Caicos Islands"
-msgstr "Turks and Caicos Islands"
+msgstr "Îles Turques et Caïques"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:263
@@ -1794,17 +1795,17 @@ msgstr "Vietnam"
 # @ woocommerce
 #: classes/class-wc-countries.php:275
 msgid "Wallis and Futuna"
-msgstr "Wallis and Futuna"
+msgstr "Wallis et Futuna"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:276
 msgid "Western Sahara"
-msgstr "Western Sahara"
+msgstr "Sahara occidental"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:277
 msgid "Western Samoa"
-msgstr "Samoa"
+msgstr "Samoa-Occidental"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:278
@@ -1814,7 +1815,7 @@ msgstr "Yemen"
 # @ woocommerce
 #: classes/class-wc-countries.php:279
 msgid "Zambia"
-msgstr "Zambia"
+msgstr "Zambie"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:280
@@ -1956,7 +1957,7 @@ msgstr "État"
 # @ woocommerce
 #: classes/class-wc-countries.php:970
 msgid "Postcode"
-msgstr "Code Postal"
+msgstr "Codep"
 
 # @ woocommerce
 #: classes/class-wc-countries.php:973
@@ -1976,7 +1977,7 @@ msgstr "Téléphone"
 # @ woocommerce
 #: classes/class-wc-coupon.php:421
 msgid "Coupon code applied successfully."
-msgstr "Code Promo appliqué avec succès."
+msgstr "Code promo appliqué avec succès."
 
 # @ woocommerce
 #: classes/class-wc-coupon.php:442
@@ -1986,7 +1987,7 @@ msgstr "Code promo invalide."
 # @ woocommerce
 #: classes/class-wc-coupon.php:445 classes/class-wc-coupon.php:495
 msgid "Coupon does not exist!"
-msgstr "Code Promo inexistant !"
+msgstr "Code promo inexistant !"
 
 #: classes/class-wc-coupon.php:448
 msgid ""
@@ -2007,7 +2008,7 @@ msgstr ""
 # @ woocommerce
 #: classes/class-wc-coupon.php:454
 msgid "Coupon code already applied!"
-msgstr "Code Promo déjà appliqué !"
+msgstr "Code promo déjà appliqué !"
 
 # @ woocommerce
 #: classes/class-wc-coupon.php:457
@@ -2020,16 +2021,16 @@ msgstr ""
 
 #: classes/class-wc-coupon.php:460
 msgid "Coupon usage limit has been reached."
-msgstr "La limite d'utilisation du coupon a été atteinte."
+msgstr "La limite d'utilisation du code promo a été atteinte."
 
 # @ woocommerce
 #: classes/class-wc-coupon.php:463
 msgid "This coupon has expired."
-msgstr "Ce code promo esr expiré."
+msgstr "Ce code promo est expiré."
 
 #: classes/class-wc-coupon.php:466
 msgid "The minimum spend for this coupon is %s."
-msgstr "Le minimum de dépense pour ce coupon est %s."
+msgstr "Le minimum de dépense pour ce code promo est %s."
 
 #: classes/class-wc-coupon.php:469
 msgid "Sorry, this coupon is not applicable to your cart contents."
@@ -2037,12 +2038,12 @@ msgstr "Désolé, ce code promo ne s'applique pas au contenu de votre panier."
 
 #: classes/class-wc-coupon.php:472
 msgid "Sorry, this coupon is not valid for sale items."
-msgstr "Désolé, ce code promo ne s'applique pas aux articles en promo."
+msgstr "Désolé, ce code promo ne s'applique pas aux articles en promotion."
 
 # @ woocommerce
 #: classes/class-wc-coupon.php:498
 msgid "Please enter a coupon code."
-msgstr "Veuillez entrer un code de remise."
+msgstr "Veuillez entrer un code promo."
 
 # @ woocommerce
 #: classes/class-wc-customer.php:628 classes/class-wc-customer.php:638
@@ -2109,7 +2110,7 @@ msgstr "&nbsp;<small>%s via %s</small>"
 # @ woocommerce
 #: classes/class-wc-order.php:950
 msgid "Cart Subtotal:"
-msgstr "Sous-Total du panier :"
+msgstr "Sous-total du panier :"
 
 # @ woocommerce
 #: classes/class-wc-order.php:956
@@ -2161,7 +2162,7 @@ msgstr "Articles de la commande sortis du stock."
 # @ woocommerce
 #: classes/class-wc-product-external.php:56
 msgid "Buy product"
-msgstr "Achater le produit"
+msgstr "Acheter le produit"
 
 # @ woocommerce
 #: classes/class-wc-shortcodes.php:571
@@ -2218,7 +2219,7 @@ msgstr "Sujet"
 #: classes/emails/class-wc-email-customer-completed-order.php:148
 #: classes/emails/class-wc-email-new-order.php:135
 msgid "Email Heading"
-msgstr "Entête Email"
+msgstr "Entête de l'email"
 
 # @ woocommerce
 #: classes/emails/class-wc-email-customer-completed-order.php:155
@@ -2227,7 +2228,7 @@ msgstr "Sujet (téléchargeable)"
 
 #: classes/emails/class-wc-email-customer-completed-order.php:162
 msgid "Email Heading (downloadable)"
-msgstr "Entête email (téléchargeable)"
+msgstr "Entête de l'email (téléchargeable)"
 
 # @ woocommerce
 #: classes/emails/class-wc-email-customer-invoice.php:27
@@ -2262,11 +2263,11 @@ msgstr "Détails de la commande {order_number}"
 
 #: classes/emails/class-wc-email-customer-invoice.php:158
 msgid "Email subject (paid)"
-msgstr "Sujet email (payée)"
+msgstr "Sujet de l'email (payée)"
 
 #: classes/emails/class-wc-email-customer-invoice.php:165
 msgid "Email heading (paid)"
-msgstr "Entête email (payée)"
+msgstr "Entête de l'email (payée)"
 
 # @ woocommerce
 #: classes/emails/class-wc-email-customer-new-account.php:31
@@ -2333,7 +2334,7 @@ msgstr "Votre reçu de commande {blogname} du {order_date}"
 # @ woocommerce
 #: classes/emails/class-wc-email-customer-reset-password.php:36
 msgid "Reset password"
-msgstr "Réinitialisation mot de passe"
+msgstr "Réinitialisation du mot de passe"
 
 #: classes/emails/class-wc-email-customer-reset-password.php:37
 msgid ""
@@ -2381,8 +2382,8 @@ msgid ""
 "Enter recipients (comma separated) for this email. Defaults to <code>%s</"
 "code>."
 msgstr ""
-"Entrez les destinataires (séparés par un virgule) pour cet email. Par défaut "
-"à <code>%s</code>."
+"Entrez les destinataires (séparés par une virgule) pour cet email. Par "
+"défaut à <code>%s</code>."
 
 # @ woocommerce
 #: classes/emails/class-wc-email-new-order.php:130
@@ -2489,14 +2490,14 @@ msgstr "Nom du Compte"
 #: classes/gateways/bacs/class-wc-gateway-bacs.php:164
 #: classes/gateways/bacs/class-wc-gateway-bacs.php:204
 msgid "Account Number"
-msgstr "Numéro de Compte"
+msgstr "Numéro du Compte"
 
 # @ woocommerce
 #: classes/gateways/bacs/class-wc-gateway-bacs.php:100
 #: classes/gateways/bacs/class-wc-gateway-bacs.php:165
 #: classes/gateways/bacs/class-wc-gateway-bacs.php:205
 msgid "Sort Code"
-msgstr "Sort Code"
+msgstr "Code de Tri"
 
 # @ woocommerce
 #: classes/gateways/bacs/class-wc-gateway-bacs.php:106
@@ -2562,7 +2563,7 @@ msgstr "Activer le Paiement par Chèque"
 #: classes/gateways/cheque/class-wc-gateway-cheque.php:66
 #: classes/gateways/cheque/class-wc-gateway-cheque.php:90
 msgid "Cheque Payment"
-msgstr "Paiement Chèque"
+msgstr "Paiement par Chèque"
 
 # @ woocommerce
 #: classes/gateways/cheque/class-wc-gateway-cheque.php:72
@@ -2614,7 +2615,7 @@ msgstr ""
 # COD : Cash On Delivery
 #: classes/gateways/cod/class-wc-gateway-cod.php:80
 msgid "Enable COD"
-msgstr "Activer"
+msgstr "Activer le paiement à la livraison"
 
 #: classes/gateways/cod/class-wc-gateway-cod.php:81
 msgid "Enable Cash on Delivery"
@@ -2800,21 +2801,21 @@ msgid ""
 "Please enter your PayPal email address; this is needed in order to take "
 "payment."
 msgstr ""
-"Veuillez entrez votre adresse email PayPal, ceci est nécessaire dans la "
-"commande pour prendre le paiement."
+"Veuillez entrer votre adresse email PayPal, cela est nécessaire pour valider "
+"le paiement."
 
 # @ woocommerce
 #: classes/gateways/paypal/class-wc-gateway-paypal.php:147
 msgid "Receiver Email"
-msgstr "Email Destinataire"
+msgstr "Email du Destinataire"
 
 #: classes/gateways/paypal/class-wc-gateway-paypal.php:149
 msgid ""
 "If this differs from the email entered above, input your main receiver email "
 "for your PayPal account. This is used to validate IPN requests."
 msgstr ""
-"S'il diffère de l'email renseigné ci-dessus, saisissez l'email principal de "
-"votre compte PayPal. Il est utilisé pour valider les requêtes IPN."
+"Si cela diffère de l'email saisi ci-dessus, renseignez l'email principal de "
+"votre compte Paypal. Cela est nécessaire pour valider les requêtes IPN."
 
 #: classes/gateways/paypal/class-wc-gateway-paypal.php:155
 msgid "Invoice Prefix"
@@ -2868,12 +2869,12 @@ msgstr "Optionnel"
 # @ woocommerce
 #: classes/gateways/paypal/class-wc-gateway-paypal.php:177
 msgid "Shipping options"
-msgstr "Options des livraison"
+msgstr "Options de livraison"
 
 # @ woocommerce
 #: classes/gateways/paypal/class-wc-gateway-paypal.php:182
 msgid "Shipping details"
-msgstr "Détails Expédition"
+msgstr "Détails d'expédition"
 
 # @ woocommerce
 #: classes/gateways/paypal/class-wc-gateway-paypal.php:184
@@ -2886,7 +2887,7 @@ msgid ""
 "PayPal allows us to send 1 address. If you are using PayPal for shipping "
 "labels you may prefer to send the shipping address rather than billing."
 msgstr ""
-"PayPal permet d'envoyer 1 adresse. Si vous utilisez PayPal pour les "
+"PayPal permet d'envoyer à une adresse. Si vous utilisez PayPal pour les "
 "étiquettes de livraison, vous pouvez préférer envoyer l'adresse de livraison "
 "plutôt que celle de facturation."
 
@@ -2994,8 +2995,7 @@ msgstr "Erreur de validation : les quantités Paypal ne correspondent pas (%s)."
 msgid ""
 "Validation error: PayPal IPN response from a different email address (%s)."
 msgstr ""
-"Erreur de validation : réponse IPN de Paypal d'une adresse email différente "
-"(%s)."
+"Erreur de validation : réponse de Paypal IPN depuis un email différent (%s)."
 
 # @ woocommerce
 #: classes/gateways/paypal/class-wc-gateway-paypal.php:673
@@ -3056,14 +3056,14 @@ msgstr ""
 # @ woocommerce
 #: classes/integrations/google-analytics/class-wc-google-analytics.php:69
 msgid "Set Domain Name"
-msgstr "Définir le Nom de Domaine"
+msgstr "Définir le Nom de domaine"
 
 #: classes/integrations/google-analytics/class-wc-google-analytics.php:70
 msgid ""
 "(Optional) Sets the <code>_setDomainName</code> variable. <a href=\"%s\">See "
 "here for more information</a>."
 msgstr ""
-"(Optionnel) Renseignez  la variable <code>_setDomainName</code>. <a href=\"%s"
+"(Optionnel) Indiquez la variable <code>_setDomainName</code>. <a href=\"%s"
 "\">Voir ici pour plus d'informations</a>."
 
 # @ woocommerce
@@ -3321,7 +3321,7 @@ msgstr ""
 # @ woocommerce
 #: classes/shipping/flat-rate/class-wc-shipping-flat-rate.php:128
 msgid "Additional Rates"
-msgstr "Taxes Additionnelles"
+msgstr "Taux Additionnels"
 
 #: classes/shipping/flat-rate/class-wc-shipping-flat-rate.php:130
 msgid ""
@@ -3330,12 +3330,13 @@ msgid ""
 "<code>Priority Mail | 6.95 | order</code>."
 msgstr ""
 "Options de livraison optionnelles avec des coûts additionnels (un par "
-"ligne) : Nom de l'option | Coût | Coût Par Type (order, class ou item). "
-"Exemple : <code>Expédition prioritaire | 6.95 | order</code>."
+"ligne) : Nom de l'option | Coût | Type de Coût (order, class ou item). "
+"Exemple : <code>Expédition prioritaire|6.95|order</code>."
 
 #: classes/shipping/flat-rate/class-wc-shipping-flat-rate.php:133
 msgid "Option Name | Additional Cost | Per Cost Type (order, class, or item)"
-msgstr "Nom Option | Coût Additionnel | Coût Par Type (order, class ou item)"
+msgstr ""
+"Nom de l'Option | Coût Additionnel | Type de Coût (order, class, ou item)"
 
 # @ woocommerce
 #: classes/shipping/flat-rate/class-wc-shipping-flat-rate.php:136
@@ -3422,7 +3423,7 @@ msgstr "Frais H.T.. Entrez un montant, ex.: 2.50, ou un pourcentage, ex.: 5%."
 # @ woocommerce
 #: classes/shipping/flat-rate/class-wc-shipping-flat-rate.php:492
 msgid "+ Add Cost"
-msgstr "+ Ajouter un Coût"
+msgstr "+ Ajouter Coût"
 
 #: classes/shipping/flat-rate/class-wc-shipping-flat-rate.php:492
 msgid "Delete selected costs"
@@ -3677,9 +3678,10 @@ msgid ""
 "pages are required for the checkout to function correctly. Please configure "
 "the pages <a href=\"%s\">here</a>."
 msgstr ""
-"Erreur de Config WooCommerce : Les pages de commande remerciement/paiement "
-"sont manquantes - ces pages sont requises pour que la commande fonctionne "
-"correctement. Veuillez configurer les pages <a href=\"%s\">ici</a>."
+"Erreur de Configuration WooCommerce : les pages de commande remerciement/"
+"paiement sont manquantes - ces pages sont nécessaires pour que la commande "
+"fonctionne correctement. Veuillez configurer les pages <a href=\"%s\">ici</"
+"a>."
 
 # @ woocommerce
 #: classes/shortcodes/class-wc-shortcode-checkout.php:73
@@ -3797,7 +3799,7 @@ msgstr "Total :"
 #: classes/shortcodes/class-wc-shortcode-pay.php:103
 #: templates/checkout/thankyou.php:53
 msgid "Payment method:"
-msgstr "Méthode de Paiement :"
+msgstr "Méthode de paiement :"
 
 # @ woocommerce
 #: classes/shortcodes/class-wc-shortcode-view-order.php:51
@@ -4092,7 +4094,7 @@ msgstr "Afficher compteur articles"
 # @ woocommerce
 #: classes/widgets/class-wc-widget-product-categories.php:201
 msgid "Show hierarchy"
-msgstr "Afficher Hiérarchie"
+msgstr "Afficher la hiérarchie"
 
 #: classes/widgets/class-wc-widget-product-categories.php:204
 msgid "Only show children for the current category"
@@ -5913,7 +5915,7 @@ msgstr "Code Promo"
 # @ woocommerce
 #: templates/cart/cart.php:127 templates/checkout/form-coupon.php:29
 msgid "Apply Coupon"
-msgstr "Valider Code Promo"
+msgstr "Appliquer le Code Promo"
 
 # @ woocommerce
 #: templates/cart/cart.php:134
@@ -5948,7 +5950,7 @@ msgstr "Commander &rarr;"
 # @ woocommerce
 #: templates/cart/shipping-calculator.php:22
 msgid "Calculate Shipping"
-msgstr "Calculer frais d'expédition"
+msgstr "Calculer les frais d'expédition"
 
 # @ woocommerce
 #: templates/cart/shipping-calculator.php:28 woocommerce-template.php:1334
@@ -5975,7 +5977,7 @@ msgstr "Ville"
 # @ woocommerce
 #: templates/cart/shipping-calculator.php:85
 msgid "Update Totals"
-msgstr "Mise à jour totaux"
+msgstr "Mettre à jour les totaux"
 
 # @ woocommerce
 #: templates/cart/shipping-methods.php:32
@@ -6098,7 +6100,7 @@ msgstr "Adresse de Facturation"
 # @ woocommerce
 #: templates/checkout/form-billing.php:42
 msgid "Create an account?"
-msgstr "Créer un Compte?"
+msgstr "Créer un Compte ?"
 
 # @ woocommerce
 #: templates/checkout/form-billing.php:51
@@ -6179,7 +6181,7 @@ msgstr ""
 # @ woocommerce
 #: templates/checkout/form-pay.php:87
 msgid "Pay for order"
-msgstr "Règlement pour la commande"
+msgstr "Payer la commande"
 
 # @ woocommerce
 #: templates/checkout/form-shipping.php:32
@@ -6234,12 +6236,12 @@ msgstr ""
 # @ woocommerce
 #: templates/checkout/review-order.php:185
 msgid "Update totals"
-msgstr "Mise à Jour Totaux"
+msgstr "Mise à jour des totaux"
 
 # @ woocommerce
 #: templates/checkout/review-order.php:192
 msgid "Place order"
-msgstr "Payer"
+msgstr "Commander"
 
 # @ woocommerce
 #: templates/checkout/review-order.php:199
@@ -6296,7 +6298,7 @@ msgstr "Commande : %s"
 #: templates/emails/plain/admin-new-order.php:38
 #: templates/order/order-details.php:97
 msgid "Customer details"
-msgstr "Détails Client"
+msgstr "Détails du client"
 
 # @ woocommerce
 #: templates/emails/admin-new-order.php:53
@@ -6394,7 +6396,7 @@ msgstr ""
 #: templates/emails/customer-reset-password.php:15
 #: templates/emails/plain/customer-reset-password.php:15
 msgid "Username: %s"
-msgstr "Nom d'Utilisateur : %s"
+msgstr "Nom d'utilisateur : %s"
 
 #: templates/emails/customer-reset-password.php:16
 #: templates/emails/plain/customer-reset-password.php:16
@@ -6417,13 +6419,13 @@ msgstr "Cliquez ici pour réinitialiser votre mot de passe"
 #: templates/emails/email-addresses.php:18
 #: templates/emails/plain/email-addresses.php:12
 msgid "Billing address"
-msgstr "Adresse de Facturation"
+msgstr "Adresse de facturation"
 
 # @ woocommerce
 #: templates/emails/email-addresses.php:28
 #: templates/emails/plain/email-addresses.php:17
 msgid "Shipping address"
-msgstr "Adresse de Livraison"
+msgstr "Adresse de livraison"
 
 # @ woocommerce
 #: templates/emails/email-order-items.php:47
@@ -6442,7 +6444,7 @@ msgstr "Téléchargement :"
 #: templates/emails/plain/customer-note.php:27
 #: templates/emails/plain/customer-processing-order.php:19
 msgid "Order number: %s"
-msgstr "Numéro commande : %s"
+msgstr "Numéro de commande : %s"
 
 # @ woocommerce
 #: templates/emails/plain/admin-new-order.php:20
@@ -6451,7 +6453,7 @@ msgstr "Numéro commande : %s"
 #: templates/emails/plain/customer-note.php:28
 #: templates/emails/plain/customer-processing-order.php:20
 msgid "Order date: %s"
-msgstr "Date commande : %s"
+msgstr "Date de commande : %s"
 
 #: templates/emails/plain/admin-new-order.php:20
 msgid "jS F Y"
@@ -6483,7 +6485,7 @@ msgstr "Lire Plus"
 # @ woocommerce
 #: templates/loop/add-to-cart.php:33
 msgid "Select options"
-msgstr "Choix options"
+msgstr "Choix des options"
 
 # @ woocommerce
 #: templates/loop/add-to-cart.php:37
@@ -6559,12 +6561,12 @@ msgstr "Réentrez le nouveau mot de passe"
 #: templates/myaccount/form-change-password.php:29
 #: templates/myaccount/form-lost-password.php:45
 msgid "Save"
-msgstr "Sauver"
+msgstr "Sauvegarder"
 
 # @ woocommerce
 #: templates/myaccount/form-edit-address.php:43
 msgid "Save Address"
-msgstr "Sauver Adresse"
+msgstr "Sauvegarder l'Adresse"
 
 # @ woocommerce
 #: templates/myaccount/form-login.php:26 templates/myaccount/form-login.php:40
@@ -6598,7 +6600,7 @@ msgstr "S'enregistrer"
 # @ woocommerce
 #: templates/myaccount/form-login.php:66
 msgid "Username"
-msgstr "Nom d'Utilisateur"
+msgstr "Nom d'utilisateur"
 
 # @ woocommerce
 #: templates/myaccount/form-login.php:78
@@ -6636,7 +6638,7 @@ msgid ""
 "recent orders, manage your shipping and billing addresses and <a href=\"%s"
 "\">change your password</a>."
 msgstr ""
-"Hello, <strong>%s</strong>. Vous pouvez voir vos commandes récentes, gérer "
+"Bonjour, <strong>%s</strong>. Vous pouvez voir vos commandes récentes, gérer "
 "vos adresses de livraison et de facturation et <a href=\"%s\">changer votre "
 "mot de passe</a> à partir du tableau de bord de votre compte"
 
@@ -6648,13 +6650,13 @@ msgstr "Mes Adresses"
 # @ woocommerce
 #: templates/myaccount/my-address.php:23
 msgid "My Address"
-msgstr "Mes Adresses"
+msgstr "Mon Adresse"
 
 # @ woocommerce
 #: templates/myaccount/my-address.php:35
 msgid "The following addresses will be used on the checkout page by default."
 msgstr ""
-"Les adresse suivantes seront utilisées par défaut sur la page de commande."
+"Les adresses suivantes seront utilisées par défaut sur la page de commande."
 
 # @ woocommerce
 #: templates/myaccount/my-address.php:45 woocommerce.php:951
@@ -6671,7 +6673,7 @@ msgstr "Vous n'avez pas encore défini ce type d'adresse."
 # @ woocommerce
 #: templates/myaccount/my-downloads.php:18
 msgid "Available downloads"
-msgstr "Téléchargements Disponibles"
+msgstr "Téléchargements disponibles"
 
 # @ woocommerce
 #: templates/myaccount/my-downloads.php:27
@@ -6757,7 +6759,7 @@ msgstr "Suivi"
 # @ woocommerce
 #: templates/order/order-details.php:16
 msgid "Order Details"
-msgstr "Détails Commande"
+msgstr "Détails de la Commande"
 
 # @ woocommerce
 #: templates/order/order-details.php:64
@@ -6861,7 +6863,7 @@ msgstr "Dimensions"
 # @ woocommerce
 #: templates/single-product/related.php:36
 msgid "Related Products"
-msgstr "Produits en Rapport"
+msgstr "Produits en Relation"
 
 # @ woocommerce
 #: templates/single-product/review.php:26
@@ -6880,7 +6882,7 @@ msgstr "propriétaire vérifié"
 # @ woocommerce
 #: templates/single-product/tabs/description.php:14
 msgid "Product Description"
-msgstr "Description Produit"
+msgstr "Description du Produit"
 
 # @ woocommerce
 #: templates/single-product/up-sells.php:39
@@ -6937,7 +6939,7 @@ msgid ""
 "\"inline show_review_form\">submit yours</a>?"
 msgstr ""
 "Il n'y a pas encore d'avis, voulez-vous <a href=\"#review_form\" class="
-"\"inline show_review_form\">donner le votre</a> ?"
+"\"inline show_review_form\">donner le vôtre</a> ?"
 
 # @ woocommerce
 #: templates/single-product-reviews.php:89
@@ -6972,12 +6974,12 @@ msgstr "Moyen"
 # @ woocommerce
 #: templates/single-product-reviews.php:101
 msgid "Not that bad"
-msgstr "Pas Mal"
+msgstr "Pas mal"
 
 # @ woocommerce
 #: templates/single-product-reviews.php:102
 msgid "Very Poor"
-msgstr "Très Mauvais"
+msgstr "Très mauvais"
 
 # @ woocommerce
 #: templates/single-product-reviews.php:107
@@ -7231,7 +7233,7 @@ msgstr "Gestionnaire Boutique"
 
 #: woocommerce-core-functions.php:2494
 msgid "Unpaid order cancelled - time limit reached."
-msgstr "Commande impayée annulée - temp limite atteind."
+msgstr "Commande impayée annulée - temps limite atteint."
 
 # @ woocommerce
 #: woocommerce-functions.php:226 woocommerce-functions.php:271
@@ -7324,7 +7326,7 @@ msgstr "Entrez à nouveau votre mot de passe."
 
 #: woocommerce-functions.php:762
 msgid "Anti-spam field was filled in."
-msgstr "Le champ Anti-spam a été rempli."
+msgstr "Le champ anti-spam a été rempli."
 
 #: woocommerce-functions.php:870
 msgid "The cart has been filled with the items from your previous order."
@@ -7706,7 +7708,7 @@ msgstr "Produits"
 # @ woocommerce
 #: woocommerce.php:985
 msgid "Add Product"
-msgstr "Ajouter"
+msgstr "Ajouter produit"
 
 # @ woocommerce
 #: woocommerce.php:986
@@ -7880,7 +7882,7 @@ msgstr "Codes Promo"
 # @ woocommerce
 #: woocommerce.php:1098
 msgid "Add Coupon"
-msgstr "Ajouter Code Promo"
+msgstr "Ajouter un Code Promo"
 
 # @ woocommerce
 #: woocommerce.php:1099
@@ -7890,7 +7892,7 @@ msgstr "Ajouter un nouveau Code Promo"
 # @ woocommerce
 #: woocommerce.php:1101
 msgid "Edit Coupon"
-msgstr "Modifier Code Promo"
+msgstr "Modifier le Code Promo"
 
 # @ woocommerce
 #: woocommerce.php:1102
@@ -7900,12 +7902,12 @@ msgstr "Nouveau Code Promo"
 # @ woocommerce
 #: woocommerce.php:1103
 msgid "View Coupons"
-msgstr "Voir Codes Promo"
+msgstr "Voir les Codes Promo"
 
 # @ woocommerce
 #: woocommerce.php:1104
 msgid "View Coupon"
-msgstr "Voir Code Promo"
+msgstr "Voir le Code Promo"
 
 # @ woocommerce
 #: woocommerce.php:1105
@@ -7982,11 +7984,11 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Flat rate"
-#~ msgstr "Taux Fixe"
+#~ msgstr "Taux fixe"
 
 # @ woocommerce
 #~ msgid "Flat Rates"
-#~ msgstr "Taux Fixes"
+#~ msgstr "Taux fixes"
 
 # @ woocommerce
 #~ msgid "Calculation Type"
@@ -8013,7 +8015,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "+ Add Flat Rate"
-#~ msgstr "+ Ajout Taux Fixe"
+#~ msgstr "+ Ajout Taux fixe"
 
 #~ msgid ""
 #~ "Add rates for shipping classes here &mdash; they will override the "
@@ -8044,7 +8046,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "My account"
-#~ msgstr "Mon Compte"
+#~ msgstr "Mon compte"
 
 # @ woocommerce
 #~ msgid "Logout"
@@ -8052,7 +8054,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Lost password?"
-#~ msgstr "Mot de Passe perdu ?"
+#~ msgstr "Mot de passe perdu ?"
 
 #~ msgid "Logged out title:"
 #~ msgstr "Titre Déconnecté :"
@@ -8085,7 +8087,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Invalid coupon"
-#~ msgstr "Code Promo non valide"
+#~ msgstr "Code promo non valide"
 
 # @ woocommerce
 #~ msgid "Ship to"
@@ -8204,7 +8206,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "View product"
-#~ msgstr "Voir Produit"
+#~ msgstr "Voir le produit"
 
 # @ woocommerce
 #~ msgid "Add&nbsp;meta"
@@ -8232,7 +8234,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Order status"
-#~ msgstr "États de commande"
+#~ msgstr "État de la commande"
 
 # @ woocommerce
 #~ msgid "Search Order statuses"
@@ -8938,22 +8940,22 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 #~ msgstr "Code promo mis à jour."
 
 #~ msgid "Coupon restored to revision from %s"
-#~ msgstr "Code Promo restoré à la révision de %s"
+#~ msgstr "Code promo restoré à la révision de %s"
 
 # @ woocommerce
 #~ msgid "Coupon saved."
-#~ msgstr "Code Promo sauvegardé."
+#~ msgstr "Code promo sauvegardé."
 
 # @ woocommerce
 #~ msgid "Coupon submitted."
-#~ msgstr "Code Promo soumis."
+#~ msgstr "Code promo soumis."
 
 #~ msgid "Coupon scheduled for: <strong>%1$s</strong>."
-#~ msgstr "Code Promo programmé pour : <strong>%1$s</strong>."
+#~ msgstr "Code promo programmé pour : <strong>%1$s</strong>."
 
 # @ woocommerce
 #~ msgid "Coupon draft updated."
-#~ msgstr "Code Promo en brouillon mis à jour."
+#~ msgstr "Code promo en brouillon mis à jour."
 
 # @ woocommerce
 #~ msgid "Order notes"
@@ -9014,7 +9016,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 # @ woocommerce
 #~ msgctxt "page_slug"
 #~ msgid "pay"
-#~ msgstr "Payer"
+#~ msgstr "payer"
 
 # @ woocommerce
 #~ msgid "Checkout &rarr; Pay"
@@ -9172,7 +9174,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "No sales :("
-#~ msgstr "Pas de Ventes :("
+#~ msgstr "Pas de vente :("
 
 # @ woocommerce
 #~ msgid "Search for a product&hellip;"
@@ -9543,7 +9545,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 #~ msgstr "Serveur"
 
 #~ msgid "WP Max Upload Size"
-#~ msgstr "WP Téléchargement  max."
+#~ msgstr "WP Téléchargement max."
 
 #~ msgid "Server upload_max_filesize"
 #~ msgstr "Serveur upload_max_filesize"
@@ -9828,7 +9830,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Tags"
-#~ msgstr "Mots-Clés"
+#~ msgstr "Mots-clés"
 
 #~ msgid "Edit this item inline"
 #~ msgstr "Editer cet article en ligne"
@@ -9960,11 +9962,11 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "In stock?"
-#~ msgstr "En Stock ?"
+#~ msgstr "En stock ?"
 
 # @ woocommerce
 #~ msgid "Manage stock?"
-#~ msgstr "Gérer les stocks?"
+#~ msgstr "Gérer les stocks ?"
 
 # @ woocommerce
 #~ msgid "Stock Qty"
@@ -11504,7 +11506,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Taxonomy base page"
-#~ msgstr "Page de base de la taxinomie"
+#~ msgstr "Page de base de la taxonomie"
 
 # @ woocommerce
 #~ msgid "Prepend shop categories/tags with shop base page (<code>%s</code>)"
@@ -11795,7 +11797,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Image Options"
-#~ msgstr "Options images"
+#~ msgstr "Options d'images"
 
 # @ woocommerce
 #~ msgid ""
@@ -11840,7 +11842,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Inventory Options"
-#~ msgstr "Options inventaire"
+#~ msgstr "Options d'inventaire"
 
 # @ woocommerce
 #~ msgid "Manage stock"
@@ -12122,7 +12124,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Shipping Methods"
-#~ msgstr "Expédition"
+#~ msgstr "Méthodes d'Expédition"
 
 #~ msgid "Drag and drop methods to control their display order."
 #~ msgstr ""
@@ -12254,7 +12256,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Postcodes/zips"
-#~ msgstr "Codes Postaux"
+#~ msgstr "Codes postaux"
 
 #~ msgid "Cities"
 #~ msgstr "Villes"
@@ -12315,11 +12317,11 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Discount code already applied!"
-#~ msgstr "Code Promo déjà appliqué !"
+#~ msgstr "Code promo déjà appliqué !"
 
 # @ woocommerce
 #~ msgid "Discount code applied successfully."
-#~ msgstr "Code Promo appliqué avec succès."
+#~ msgstr "Code promo appliqué avec succès."
 
 # @ woocommerce
 #~ msgid "Customer IP Address"
@@ -12331,7 +12333,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Coupon Code Used: %s"
-#~ msgstr "Code Promo utilisé : %s"
+#~ msgstr "Code promo utilisé : %s"
 
 # @ woocommerce
 #~ msgid "Palau"
@@ -12480,7 +12482,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Email me my details"
-#~ msgstr "M'envoyer par email mes infos"
+#~ msgstr "M'envoyer mes infos par email"
 
 #~ msgid "Configure ShareYourCart"
 #~ msgstr "Configurez ShareYourCart"
@@ -12897,7 +12899,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 #~ msgstr "Base Boutique"
 
 #~ msgid "Thanks"
-#~ msgstr "Thanks"
+#~ msgstr "Merci"
 
 # @ woocommerce
 #~ msgid "Page does not exist"
@@ -13614,7 +13616,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "ZIP/Postcode"
-#~ msgstr "Code Postal"
+#~ msgstr "Code postal"
 
 #~ msgid ""
 #~ "Postcode for this rule. Semi-colon (;) separate multiple values. Leave "
@@ -13922,7 +13924,7 @@ msgstr "L'action a échoué. Rafraîchissez la page et essayez à nouveau, svp."
 
 # @ woocommerce
 #~ msgid "Post/zip codes"
-#~ msgstr "Codes Postaux"
+#~ msgstr "Codes postaux"
 
 #~ msgid "PHP Sessions"
 #~ msgstr "Sessions PHP"

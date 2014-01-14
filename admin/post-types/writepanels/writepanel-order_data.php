@@ -126,7 +126,7 @@ function woocommerce_order_data_meta_box($post) {
 						?>
 					</p>
 
-					<?php if ( apply_filters( 'woocommerce_enable_order_notes_field', get_option( 'woocommerce_enable_order_comments', 'yes' ) == 'yes' ) ) : ?>
+					<?php if ( get_option( 'woocommerce_enable_order_comments' ) != 'no' ) : ?>
 
 						<p class="form-field form-field-wide"><label for="excerpt"><?php _e( 'Customer Note:', 'woocommerce' ) ?></label>
 						<textarea rows="1" cols="40" name="excerpt" tabindex="6" id="excerpt" placeholder="<?php _e( 'Customer\'s notes about the order', 'woocommerce' ); ?>"><?php echo wp_kses_post( $post->post_excerpt ); ?></textarea></p>
@@ -373,7 +373,7 @@ function woocommerce_order_items_meta_box( $post ) {
 							break;
 						}
 
-						do_action( 'woocommerce_order_item_' . $item['type'] . '_html' );
+						do_action( 'woocommerce_order_item_' . $item['type'] . '_html', $item_id, $item );
 
 					}
 				?>
@@ -792,7 +792,9 @@ function woocommerce_process_shop_order_meta( $post_id, $post ) {
 		$date = strtotime( $_POST['order_date'] . ' ' . (int) $_POST['order_date_hour'] . ':' . (int) $_POST['order_date_minute'] . ':00' );
 	}
 
-	$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_date = %s WHERE ID = %s", date_i18n( 'Y-m-d H:i:s', $date ), $post_id ) );
+	$date = date_i18n( 'Y-m-d H:i:s', $date );
+
+	$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET post_date = %s, post_date_gmt = %s WHERE ID = %s", $date, get_gmt_from_date( $date ), $post_id ) );
 
 
 	// Tax rows

@@ -226,9 +226,10 @@ class WC_Product_Variation extends WC_Product {
 	/**
      * Get variation price HTML. Prices are not inherited from parents.
      *
+	 * @param string $price (default: '')
      * @return string containing the formatted price
      */
-	public function get_price_html() {
+	public function get_price_html( $price = '' ) {
 
 		if ( $this->price !== '' ) {
 			if ( $this->price == $this->sale_price && $this->sale_price < $this->regular_price ) {
@@ -271,8 +272,8 @@ class WC_Product_Variation extends WC_Product {
 			$image = get_the_post_thumbnail( $this->variation_id, $size, $attr );
 		} elseif ( has_post_thumbnail( $this->id ) ) {
 			$image = get_the_post_thumbnail( $this->id, $size, $attr );
-		} elseif ( $parent_id = wp_get_post_parent_id( $this->id ) && has_post_thumbnail( $parent_id ) ) {
-			$image = get_the_post_thumbnail( $parent_id, $size , $attr);
+		} elseif ( ( $parent_id = wp_get_post_parent_id( $this->id ) ) && has_post_thumbnail( $parent_id ) ) {
+			$image = get_the_post_thumbnail( $parent_id, $size, $attr);
 		} else {
 			$image = woocommerce_placeholder_img( $size );
 		}
@@ -440,7 +441,7 @@ class WC_Product_Variation extends WC_Product {
 	public function get_file_download_path( $download_id ) {
 
 		$file_path = '';
-		$file_paths = apply_filters( 'woocommerce_file_download_paths', get_post_meta( $this->variation_id, '_file_paths', true ), $this->variation_id, null, null );
+		$file_paths = (array) apply_filters( 'woocommerce_file_download_paths', get_post_meta( $this->variation_id, '_file_paths', true ), $this->variation_id, null, null );
 
 		if ( ! $download_id && count( $file_paths ) == 1 ) {
 			// backwards compatibility for old-style download URLs and template files
@@ -451,26 +452,5 @@ class WC_Product_Variation extends WC_Product {
 
 		// allow overriding based on the particular file being requested
 		return apply_filters( 'woocommerce_file_download_path', $file_path, $this->variation_id, $download_id );
-	}
-
-
-	/**
-	 * Get product name with extra details such as SKU, price and attributes. Used within admin.
-	 *
-	 * @access public
-	 * @param mixed $product
-	 * @return string Formatted product name, including attributes and price
-	 */
-	public function get_formatted_name() {
-
-		if ( $this->get_sku() )
-			$identifier = $this->get_sku();
-		else
-			$identifier = '#' . $this->variation_id;
-
-		$attributes = $this->get_variation_attributes();
-		$extra_data = ' &ndash; ' . implode( ', ', $attributes ) . ' &ndash; ' . woocommerce_price( $this->get_price() );
-
-		return sprintf( __( '%s &ndash; %s%s', 'woocommerce' ), $identifier, $this->get_title(), $extra_data );
 	}
 }

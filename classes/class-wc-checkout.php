@@ -24,6 +24,9 @@ class WC_Checkout {
 	/** @var bool Whether or not signups are allowed. */
 	public $enable_signup;
 
+	/** @var bool True when the user is creating an account. */
+	public $creating_account;
+
 	/** @var object The shipping method being used. */
 	private $shipping_method;
 
@@ -54,21 +57,30 @@ class WC_Checkout {
 		$this->checkout_fields['billing'] 	= $woocommerce->countries->get_address_fields( $this->get_value('billing_country'), 'billing_' );
 		$this->checkout_fields['shipping'] 	= $woocommerce->countries->get_address_fields( $this->get_value('shipping_country'), 'shipping_' );
 
-		if ( get_option( 'woocommerce_registration_generate_username' ) == 'no' ) {
+		if ( get_option( 'woocommerce_registration_email_for_username' ) == 'no' ) {
+
 			$this->checkout_fields['account']['account_username'] = array(
 				'type' 			=> 'text',
 				'label' 		=> __( 'Account username', 'woocommerce' ),
 				'placeholder' 	=> _x( 'Username', 'placeholder', 'woocommerce' )
 			);
+
 		}
 
-		if ( get_option( 'woocommerce_registration_generate_password' ) == 'no' ) {
-			$this->checkout_fields['account']['account_password'] = array(
-				'type' 				=> 'password',
-				'label' 			=> __( 'Account password', 'woocommerce' ),
-				'placeholder' 		=> _x( 'Password', 'placeholder', 'woocommerce' )
-			);
-		}
+		$this->checkout_fields['account']['account_password'] = array(
+			'type' 				=> 'password',
+			'label' 			=> __( 'Account password', 'woocommerce' ),
+			'placeholder' 		=> _x( 'Password', 'placeholder', 'woocommerce' ),
+			'class' 			=> array( 'form-row-first' )
+		);
+
+		$this->checkout_fields['account']['account_password-2'] = array(
+			'type' 				=> 'password',
+			'label' 			=> __( 'Confirm password', 'woocommerce' ),
+			'placeholder' 		=> _x( 'Confirm password', 'placeholder', 'woocommerce' ),
+			'class' 			=> array( 'form-row-last' ),
+			'label_class' 		=> array( 'hidden' )
+		);
 
 		$this->checkout_fields['order']	= array(
 			'order_comments' => array(
@@ -175,7 +187,7 @@ class WC_Checkout {
 		}
 
 		if ( $create_new_order ) {
-			$order_id = wp_insert_post( $order_data );
+			$order_id = wp_insert_post( $order_data, true );
 
 			if ( is_wp_error( $order_id ) )
 				throw new Exception( 'Error: Unable to create order. Please try again.' );
@@ -184,15 +196,37 @@ class WC_Checkout {
 		}
 
 		// Store user data
-		if ( $this->checkout_fields['billing'] )
-			foreach ( $this->checkout_fields['billing'] as $key => $field )
+		if ( $this->checkout_fields['billing'] ) {
+			foreach ( $this->checkout_fields['billing'] as $key => $field ) {
+
 				update_post_meta( $order_id, '_' . $key, $this->posted[ $key ] );
+
+				// User
+				if ( $this->customer_id && ! empty( $this->posted[ $key ] ) ) {
+					update_user_meta( $this->customer_id, $key, $this->posted[ $key ] );
+
+					// Special fields
+					switch ( $key ) {
+						case "billing_email" :
+							if ( ! email_exists( $this->posted[ $key ] ) )
+								wp_update_user( array ( 'ID' => $this->customer_id, 'user_email' => $this->posted[ $key ] ) ) ;
+						break;
+						case "billing_first_name" :
+							wp_update_user( array ( 'ID' => $this->customer_id, 'first_name' => $this->posted[ $key ] ) ) ;
+						break;
+						case "billing_last_name" :
+							wp_update_user( array ( 'ID' => $this->customer_id, 'last_name' => $this->posted[ $key ] ) ) ;
+						break;
+					}
+				}
+			}
+		}
 
 		if ( $this->checkout_fields['shipping'] && ( $woocommerce->cart->needs_shipping() || get_option('woocommerce_require_shipping_address') == 'yes' ) ) {
 			foreach ( $this->checkout_fields['shipping'] as $key => $field ) {
 				$postvalue = false;
 
-				if ( $this->posted['ship_to_different_address'] == false ) {
+				if ( $this->posted['shiptobilling'] ) {
 					if ( isset( $this->posted[ str_replace( 'shipping_', 'billing_', $key ) ] ) ) {
 						$postvalue = $this->posted[ str_replace( 'shipping_', 'billing_', $key ) ];
 						update_post_meta( $order_id, '_' . $key, $postvalue );
@@ -244,7 +278,7 @@ class WC_Checkout {
 			 		woocommerce_add_order_item_meta( $item_id, apply_filters( 'woocommerce_backordered_item_meta_name', __( 'Backordered', 'woocommerce' ), $cart_item_key, $order_id ), $values['quantity'] - max( 0, $_product->get_total_stock() ) );
 
 			 	// Allow plugins to add order item meta
-			 	do_action( 'woocommerce_add_order_item_meta', $item_id, $values, $cart_item_key );
+			 	do_action( 'woocommerce_add_order_item_meta', $item_id, $values );
 		 	}
 		}
 
@@ -356,21 +390,15 @@ class WC_Checkout {
 		do_action( 'woocommerce_checkout_process' );
 
 		// Checkout fields (not defined in checkout_fields)
-		$this->posted['terms']                     = isset( $_POST['terms'] ) ? 1 : 0;
-		$this->posted['createaccount']             = isset( $_POST['createaccount'] ) ? 1 : 0;
-		$this->posted['payment_method']            = isset( $_POST['payment_method'] ) ? stripslashes( $_POST['payment_method'] ) : '';
-		$this->posted['shipping_method']           = isset( $_POST['shipping_method'] ) ? stripslashes( $_POST['shipping_method'] ) : '';
-		$this->posted['ship_to_different_address'] = isset( $_POST['ship_to_different_address'] ) ? true : false;
-
-		if ( isset( $_POST['shiptobilling'] ) ) {
-			_deprecated_argument( 'WC_Checkout::process_checkout()', '2.1', 'The "shiptobilling" field is deprecated. THe template files are out of date' );
-
-			$this->posted['ship_to_different_address'] = $_POST['shiptobilling'] ? false : true;
-		}
+		$this->posted['shiptobilling'] 		= isset( $_POST['shiptobilling'] ) ? 1 : 0;
+		$this->posted['terms'] 				= isset( $_POST['terms'] ) ? 1 : 0;
+		$this->posted['createaccount'] 		= isset( $_POST['createaccount'] ) ? 1 : 0;
+		$this->posted['payment_method'] 	= isset( $_POST['payment_method'] ) ? woocommerce_clean( $_POST['payment_method'] ) : '';
+		$this->posted['shipping_method']	= isset( $_POST['shipping_method'] ) ? woocommerce_clean( $_POST['shipping_method'] ) : '';
 
 		// Ship to billing only option
 		if ( $woocommerce->cart->ship_to_billing_address_only() )
-			$this->posted['ship_to_different_address']  = false;
+			$this->posted['shiptobilling'] = 1;
 
 		// Update customer shipping and payment method to posted method
 		$woocommerce->session->chosen_shipping_method 	= $this->posted['shipping_method'];
@@ -385,8 +413,8 @@ class WC_Checkout {
 		// Get posted checkout_fields and do validation
 		foreach ( $this->checkout_fields as $fieldset_key => $fieldset ) {
 
-			// Skip shipping if not needed
-			if ( $fieldset_key == 'shipping' && ( $this->posted['ship_to_different_address'] == false || ( ! $woocommerce->cart->needs_shipping() && get_option('woocommerce_require_shipping_address') == 'no' ) ) ) {
+			// Skip shipping if its not needed
+			if ( $fieldset_key == 'shipping' && ( $woocommerce->cart->ship_to_billing_address_only() || $this->posted['shiptobilling'] || ( ! $woocommerce->cart->needs_shipping() && get_option('woocommerce_require_shipping_address') == 'no' ) ) ) {
 				$skipped_shipping = true;
 				continue;
 			}
@@ -504,6 +532,49 @@ class WC_Checkout {
 		// Update cart totals now we have customer address
 		$woocommerce->cart->calculate_totals();
 
+		// Handle accounts
+		if ( is_user_logged_in() )
+			$this->creating_account = false;
+		elseif ( ! empty( $this->posted['createaccount'] ) )
+			$this->creating_account = true;
+		elseif ($this->must_create_account)
+			$this->creating_account = true;
+		else
+			$this->creating_account = false;
+
+		if ( $this->creating_account ) {
+
+			if ( get_option( 'woocommerce_registration_email_for_username' ) == 'no' ) {
+
+				if ( empty( $this->posted['account_username'] ) )
+					$woocommerce->add_error( __( 'Please enter an account username.', 'woocommerce' ) );
+
+				// Check the username
+				if ( ! validate_username( $this->posted['account_username'] ) )
+					$woocommerce->add_error( __( 'Invalid email/username.', 'woocommerce' ) );
+
+				elseif ( username_exists( $this->posted['account_username'] ) )
+					$woocommerce->add_error( __( 'An account is already registered with that username. Please choose another.', 'woocommerce' ) );
+
+			} else {
+
+				$this->posted['account_username'] = $this->posted['billing_email'];
+
+			}
+
+			// Validate passwords
+			if ( empty($this->posted['account_password']) )
+				$woocommerce->add_error( __( 'Please enter an account password.', 'woocommerce' ) );
+
+			if ( $this->posted['account_password-2'] !== $this->posted['account_password'] )
+				$woocommerce->add_error( __( 'Passwords do not match.', 'woocommerce' ) );
+
+			// Check the e-mail address
+			if ( email_exists( $this->posted['billing_email'] ) )
+				$woocommerce->add_error( __( 'An account is already registered with your email address. Please login.', 'woocommerce' ) );
+
+		}
+
 		// Terms
 		if ( ! isset( $_POST['woocommerce_checkout_update_totals'] ) && empty( $this->posted['terms'] ) && woocommerce_get_page_id( 'terms' ) > 0 )
 			$woocommerce->add_error( __( 'You must accept our Terms &amp; Conditions.', 'woocommerce' ) );
@@ -540,30 +611,62 @@ class WC_Checkout {
 
 		if ( ! isset( $_POST['woocommerce_checkout_update_totals'] ) && $woocommerce->error_count() == 0 ) {
 
+			$this->customer_id = get_current_user_id();
+
 			try {
 
-				// Customer accounts
-				$this->customer_id = get_current_user_id();
+				// Create customer account and log them in
+				if ( $this->creating_account && ! $this->customer_id ) {
 
-				if ( ! is_user_logged_in() && ( $this->must_create_account || ! empty( $this->posted['createaccount'] ) ) ) {
+					$reg_errors = new WP_Error();
 
-					$username     = ! empty( $this->posted['account_username'] ) ? $this->posted['account_username'] : '';
-					$password     = ! empty( $this->posted['account_password'] ) ? $this->posted['account_password'] : '';
-					$new_customer = woocommerce_create_new_customer( $this->posted['billing_email'], $username, $password );
+					do_action( 'woocommerce_register_post', $this->posted['account_username'], $this->posted['billing_email'], $reg_errors );
 
-                	if ( is_wp_error( $new_customer ) )
-                		throw new Exception( $new_customer->get_error_message() );
+					$errors = apply_filters( 'woocommerce_registration_errors', $reg_errors, $this->posted['account_username'], $this->posted['billing_email'] );
 
-                	$this->customer_id = $new_customer;
+	                // if there are no errors, let's create the user account
+					if ( ! $reg_errors->get_error_code() ) {
 
-                	woocommerce_set_customer_auth_cookie( $this->customer_id );
+		                $user_pass = esc_attr( $this->posted['account_password'] );
+
+		                $new_customer_data = array(
+		                	'user_login' => $this->posted['account_username'],
+		                	'user_pass'  => $user_pass,
+		                	'user_email' => $this->posted['billing_email'],
+		                	'role'       => 'customer'
+		                );
+
+		                $this->customer_id = wp_insert_user( apply_filters( 'woocommerce_new_customer_data', $new_customer_data ) );
+
+		                if ( is_wp_error( $this->customer_id ) ) {
+		                	throw new Exception( '<strong>' . __( 'ERROR', 'woocommerce' ) . '</strong>: ' . __( 'Couldn&#8217;t register you&hellip; please contact us if you continue to have problems.', 'woocommerce' ) );
+						}
+
+                        // Set the global user object
+                        $current_user = get_user_by ( 'id', $this->customer_id );
+
+	                    // Action
+	                    do_action( 'woocommerce_created_customer', $this->customer_id );
+
+	                    // send the user a confirmation and their login details
+	                    $mailer = $woocommerce->mailer();
+						$mailer->customer_new_account( $this->customer_id, $user_pass );
+
+	                    // set the WP login cookie
+	                    $secure_cookie = is_ssl() ? true : false;
+	                    wp_set_auth_cookie( $this->customer_id, true, $secure_cookie );
+
+					} else {
+						throw new Exception( $reg_errors->get_error_message() );
+					}
+
+                	// As we are now logged in, checkout will need to refresh to serve a new nonce
+                	$woocommerce->session->set( 'refresh_totals', true );
 
                 	// Add customer info from other billing fields
                 	if ( $this->posted['billing_first_name'] )
                 		wp_update_user( array ( 'ID' => $this->customer_id, 'first_name' => $this->posted['billing_first_name'], 'display_name' => $this->posted['billing_first_name'] ) );
 
-                	if ( $this->posted['billing_last_name'] )
-                		wp_update_user( array ( 'ID' => $this->customer_id, 'last_name' => $this->posted['billing_last_name'] ) ) ;
 				}
 
 				// Abort if errors are present
@@ -612,20 +715,21 @@ class WC_Checkout {
 					$woocommerce->cart->empty_cart();
 
 					// Get redirect
-					$return_url = $order->get_checkout_order_received_url();
+					$return_url = get_permalink( woocommerce_get_page_id( 'thanks' ) );
+					$return_url = add_query_arg( 'key', $order->order_key, add_query_arg( 'order', $order->id, $return_url ) );
 
 					// Redirect to success/confirmation/payment page
 					if ( is_ajax() ) {
 						echo '<!--WC_START-->' . json_encode(
 							array(
 								'result' 	=> 'success',
-								'redirect' => apply_filters( 'woocommerce_checkout_no_payment_needed_redirect', $return_url, $order )
+								'redirect'  => apply_filters( 'woocommerce_checkout_no_payment_needed_redirect', $return_url, $order )
 							)
 						) . '<!--WC_END-->';
 						exit;
 					} else {
 						wp_safe_redirect(
-							apply_filters( 'woocommerce_checkout_no_payment_needed_redirect', $return_url, $order )
+							apply_filters( 'woocommerce_checkout_no_payment_needed_redirect', $return_url, $order)
 						);
 						exit;
 					}
@@ -635,7 +739,7 @@ class WC_Checkout {
 			} catch ( Exception $e ) {
 
 				if ( ! empty( $e ) )
-					$woocommerce->add_error( $e );
+					$woocommerce->add_error( $e->getMessage() );
 
 			}
 

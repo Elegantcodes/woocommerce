@@ -9,7 +9,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-global $product, $woocommerce, $woocommerce_loop;
+global $woocommerce_loop, $woocommerce, $product;
 
 $crosssells = $woocommerce->cart->get_cross_sells();
 
@@ -20,16 +20,16 @@ $meta_query = $woocommerce->query->get_meta_query();
 $args = array(
 	'post_type'           => 'product',
 	'ignore_sticky_posts' => 1,
+	'posts_per_page'      => apply_filters( 'woocommerce_cross_sells_total', 2 ),
 	'no_found_rows'       => 1,
-	'posts_per_page'      => apply_filters( 'woocommerce_cross_sells_total', $posts_per_page ),
-	'orderby'             => $orderby,
+	'orderby'             => 'rand',
 	'post__in'            => $crosssells,
 	'meta_query'          => $meta_query
 );
 
 $products = new WP_Query( $args );
 
-$woocommerce_loop['columns'] = apply_filters( 'woocommerce_cross_sells_columns', $columns );
+$woocommerce_loop['columns'] 	= apply_filters( 'woocommerce_cross_sells_columns', 2 );
 
 if ( $products->have_posts() ) : ?>
 

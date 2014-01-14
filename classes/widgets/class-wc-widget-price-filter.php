@@ -7,31 +7,40 @@
  * @author 		WooThemes
  * @category 	Widgets
  * @package 	WooCommerce/Widgets
- * @version 	2.1.0
- * @extends 	WC_Widget
+ * @version 	1.6.4
+ * @extends 	WP_Widget
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-class WC_Widget_Price_Filter extends WC_Widget {
+class WC_Widget_Price_Filter extends WP_Widget {
+
+	var $woo_widget_cssclass;
+	var $woo_widget_description;
+	var $woo_widget_idbase;
+	var $woo_widget_name;
 
 	/**
-	 * Constructor
+	 * constructor
+	 *
+	 * @access public
+	 * @return void
 	 */
-	public function __construct() {
-		$this->widget_cssclass    = 'woocommerce widget_price_filter';
-		$this->widget_description = __( 'Shows a price filter slider in a widget which lets you narrow down the list of shown products when viewing product categories.', 'woocommerce' );
-		$this->widget_id          = 'woocommerce_price_filter';
-		$this->widget_name        = __( 'WooCommerce Price Filter', 'woocommerce' );
-		$this->settings           = array(
-			'title'  => array(
-				'type'  => 'text',
-				'std'   => __( 'Filter by price', 'woocommerce' ),
-				'label' => __( 'Title', 'woocommerce' )
-			)
-		);
-		parent::__construct();
+	function WC_Widget_Price_Filter() {
+
+		/* Widget variable settings. */
+		$this->woo_widget_cssclass = 'woocommerce widget_price_filter';
+		$this->woo_widget_description = __( 'Shows a price filter slider in a widget which lets you narrow down the list of shown products when viewing product categories.', 'woocommerce' );
+		$this->woo_widget_idbase = 'woocommerce_price_filter';
+		$this->woo_widget_name = __( 'WooCommerce Price Filter', 'woocommerce' );
+
+		/* Widget settings. */
+		$widget_ops = array( 'classname' => $this->woo_widget_cssclass, 'description' => $this->woo_widget_description );
+
+		/* Create the widget. */
+		$this->WP_Widget('price_filter', $this->woo_widget_name, $widget_ops);
 	}
+
 
 	/**
 	 * widget function.
@@ -42,46 +51,48 @@ class WC_Widget_Price_Filter extends WC_Widget {
 	 * @param array $instance
 	 * @return void
 	 */
-	public function widget( $args, $instance ) {
-		global $_chosen_attributes, $wpdb, $woocommerce, $wp_query, $wp;
-
+	function widget( $args, $instance ) {
 		extract( $args );
 
-		if ( ! is_tax( 'product_cat' ) && ! is_post_type_archive( 'product' ) && ! is_tax( 'product_tag' ) )
-			return; // Not on product page - return
+		global $_chosen_attributes, $wpdb, $woocommerce, $wp_query, $wp;
 
-		if ( sizeof( $woocommerce->query->unfiltered_product_ids ) == 0 )
-			return; // None shown - return
+		if ( ! is_post_type_archive('product') && ! is_tax( get_object_taxonomies( 'product' ) ) ) return; // Not on product page - return
+
+		if ( sizeof( $woocommerce->query->unfiltered_product_ids ) == 0 ) return; // None shown - return
 
 		$min_price = isset( $_GET['min_price'] ) ? esc_attr( $_GET['min_price'] ) : '';
 		$max_price = isset( $_GET['max_price'] ) ? esc_attr( $_GET['max_price'] ) : '';
 
 		wp_enqueue_script( 'wc-price-slider' );
 
-		$title  = apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base );
+		wp_localize_script( 'wc-price-slider', 'woocommerce_price_slider_params', array(
+			'currency_symbol' 	=> get_woocommerce_currency_symbol(),
+			'currency_pos'      => get_option( 'woocommerce_currency_pos' ),
+			'min_price'			=> $min_price,
+			'max_price'			=> $max_price
+		) );
+
+		$title = $instance['title'];
+		$title = apply_filters('widget_title', $title, $instance, $this->id_base);
 
 		// Remember current filters/search
 		$fields = '';
 
-		if ( get_search_query() )
-			$fields .= '<input type="hidden" name="s" value="' . get_search_query() . '" />';
+		if (get_search_query()) $fields = '<input type="hidden" name="s" value="'.get_search_query().'" />';
+		if (isset($_GET['post_type'])) $fields .= '<input type="hidden" name="post_type" value="'.esc_attr( $_GET['post_type'] ).'" />';
+		if (isset($_GET['product_cat'])) $fields .= '<input type="hidden" name="product_cat" value="'.esc_attr( $_GET['product_cat'] ).'" />';
+		if (isset($_GET['product_tag'])) $fields .= '<input type="hidden" name="product_tag" value="'.esc_attr( $_GET['product_tag'] ).'" />';
+		if (isset($_GET['orderby'])) $fields .= '<input type="hidden" name="orderby" value="' . esc_attr( $_GET['orderby'] ) . '" />';
 
-		if ( ! empty( $_GET['post_type'] ) )
-			$fields .= '<input type="hidden" name="post_type" value="' . esc_attr( $_GET['post_type'] ) . '" />';
+		if ($_chosen_attributes) foreach ($_chosen_attributes as $attribute => $data) :
 
-		if ( ! empty ( $_GET['product_cat'] ) )
-			$fields .= '<input type="hidden" name="product_cat" value="' . esc_attr( $_GET['product_cat'] ) . '" />';
+			$taxonomy_filter = 'filter_' . str_replace( 'pa_', '', $attribute );
 
-		if ( ! empty( $_GET['product_tag'] ) )
-			$fields .= '<input type="hidden" name="product_tag" value="' . esc_attr( $_GET['product_tag'] ) . '" />';
+			$fields .= '<input type="hidden" name="' . esc_attr( $taxonomy_filter ) . '" value="' . esc_attr( implode( ',', $data['terms'] ) ) . '" />';
 
-		if ( $_chosen_attributes ) foreach ( $_chosen_attributes as $attribute => $data ) {
+			if ($data['query_type']=='or') $fields .= '<input type="hidden" name="'.esc_attr( str_replace('pa_', 'query_type_', $attribute) ).'" value="or" />';
 
-			$fields .= '<input type="hidden" name="' . esc_attr( str_replace( 'pa_', 'filter_', $attribute ) ).'" value="' . esc_attr( implode( ',', $data['terms'] ) ) . '" />';
-
-			if ( $data['query_type'] == 'or' )
-				$fields .= '<input type="hidden" name="' . esc_attr( str_replace( 'pa_', 'query_type_', $attribute ) ) . '" value="or" />';
-		}
+		endforeach;
 
 		$min = $max = 0;
 		$post_min = $post_max = '';
@@ -113,8 +124,7 @@ class WC_Widget_Price_Filter extends WC_Widget {
 			) ) );
 		}
 
-		if ( $min == $max )
-			return;
+		if ( $min == $max ) return;
 
 		echo $before_widget . $before_title . $title . $after_title;
 
@@ -133,7 +143,7 @@ class WC_Widget_Price_Filter extends WC_Widget {
 					<div class="price_label" style="display:none;">
 						'.__( 'Price:', 'woocommerce' ).' <span class="from"></span> &mdash; <span class="to"></span>
 					</div>
-					' . $fields . '
+					'.$fields.'
 					<div class="clear"></div>
 				</div>
 			</div>
@@ -141,6 +151,37 @@ class WC_Widget_Price_Filter extends WC_Widget {
 
 		echo $after_widget;
 	}
-}
 
-register_widget( 'WC_Widget_Price_Filter' );
+
+	/**
+	 * update function.
+	 *
+	 * @see WP_Widget->update
+	 * @access public
+	 * @param array $new_instance
+	 * @param array $old_instance
+	 * @return array
+	 */
+	function update( $new_instance, $old_instance ) {
+		if (!isset($new_instance['title']) || empty($new_instance['title'])) $new_instance['title'] = __( 'Filter by price', 'woocommerce' );
+		$instance['title'] = strip_tags(stripslashes($new_instance['title']));
+		return $instance;
+	}
+
+
+	/**
+	 * form function.
+	 *
+	 * @see WP_Widget->form
+	 * @access public
+	 * @param array $instance
+	 * @return void
+	 */
+	function form( $instance ) {
+		global $wpdb;
+		?>
+			<p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e( 'Title:', 'woocommerce' ) ?></label>
+			<input type="text" class="widefat" id="<?php echo esc_attr( $this->get_field_id('title') ); ?>" name="<?php echo esc_attr( $this->get_field_name('title') ); ?>" value="<?php if (isset ( $instance['title'])) {echo esc_attr( $instance['title'] );} ?>" /></p>
+		<?php
+	}
+}

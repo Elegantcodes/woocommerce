@@ -14,6 +14,14 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $woocommerce;
 
+$localisation_setting = defined( 'WPLANG' ) && file_exists( $woocommerce->plugin_path() . '/i18n/languages/informal/woocommerce-' . WPLANG . '.mo' ) ? array(
+	'title' => __( 'Localisation', 'woocommerce' ),
+	'desc' 		=> sprintf( __( 'Use informal localisation for %s', 'woocommerce' ), WPLANG ),
+	'id' 		=> 'woocommerce_informal_localisation_type',
+	'type' 		=> 'checkbox',
+	'default'	=> 'no',
+) : array();
+
 $currency_code_options = get_woocommerce_currencies();
 
 foreach ( $currency_code_options as $code => $name ) {
@@ -53,7 +61,7 @@ $woocommerce_settings['general'] = apply_filters('woocommerce_general_settings',
 		'default'	=> 'all',
 		'type' 		=> 'select',
 		'class'		=> 'chosen_select',
-		'css' 		=> 'min-width: 350px;',
+		'css' 		=> 'min-width:350px;',
 		'desc_tip'	=>  true,
 		'options' => array(
 			'all'  => __( 'All Countries', 'woocommerce' ),
@@ -69,6 +77,8 @@ $woocommerce_settings['general'] = apply_filters('woocommerce_general_settings',
 		'default'	=> '',
 		'type' 		=> 'multi_select_countries'
 	),
+
+	$localisation_setting,
 
 	array(
 		'title' => __( 'Store Notice', 'woocommerce' ),
@@ -102,12 +112,19 @@ $woocommerce_settings['general'] = apply_filters('woocommerce_general_settings',
 
 	array(
 		'title' => __( 'Checkout', 'woocommerce' ),
-		'desc' 		=> __( 'Enable guest checkout', 'woocommerce' ),
-		'desc_tip'	=>  __( 'Allows customers to checkout without creating an account.', 'woocommerce' ),
+		'desc' 		=> __( 'Enable guest checkout (no account required)', 'woocommerce' ),
 		'id' 		=> 'woocommerce_enable_guest_checkout',
 		'default'	=> 'yes',
 		'type' 		=> 'checkbox',
 		'checkboxgroup'	=> 'start'
+	),
+
+	array(
+		'desc' 		=> __( 'Enable customer note field on checkout', 'woocommerce' ),
+		'id' 		=> 'woocommerce_enable_order_comments',
+		'default'	=> 'yes',
+		'type' 		=> 'checkbox',
+		'checkboxgroup'		=> ''
 	),
 
 	array(
@@ -131,7 +148,7 @@ $woocommerce_settings['general'] = apply_filters('woocommerce_general_settings',
 
 	array(
 		'title' => __( 'Registration', 'woocommerce' ),
-		'desc' 		=> __( 'Enable registration on the "Checkout" page', 'woocommerce' ),
+		'desc' 		=> __( 'Allow registration on the checkout page', 'woocommerce' ),
 		'id' 		=> 'woocommerce_enable_signup_and_login_from_checkout',
 		'default'	=> 'yes',
 		'type' 		=> 'checkbox',
@@ -139,7 +156,7 @@ $woocommerce_settings['general'] = apply_filters('woocommerce_general_settings',
 	),
 
 	array(
-		'desc' 		=> __( 'Enable registration on the "My Account" page', 'woocommerce' ),
+		'desc' 		=> __( 'Allow registration on the "My Account" page', 'woocommerce' ),
 		'id' 		=> 'woocommerce_enable_myaccount_registration',
 		'default'	=> 'no',
 		'type' 		=> 'checkbox',
@@ -147,16 +164,33 @@ $woocommerce_settings['general'] = apply_filters('woocommerce_general_settings',
 	),
 
 	array(
-		'desc' 		=> __( 'Automatically generate username from customer email', 'woocommerce' ),
-		'id' 		=> 'woocommerce_registration_generate_username',
-		'default'	=> 'yes',
+		'desc' 		=> __( 'Register using the email address for the username', 'woocommerce' ),
+		'id' 		=> 'woocommerce_registration_email_for_username',
+		'default'	=> 'no',
+		'type' 		=> 'checkbox',
+		'checkboxgroup'		=> 'end'
+	),
+
+	array(
+		'title' => __( 'Customer Accounts', 'woocommerce' ),
+		'desc' 		=> __( 'Prevent customers from accessing WordPress admin', 'woocommerce' ),
+		'id' 		=> 'woocommerce_lock_down_admin',
+		'default'	=> 'no',
+		'type' 		=> 'checkbox',
+		'checkboxgroup'		=> 'start'
+	),
+
+	array(
+		'desc' 		=> __( 'Clear cart when logging out', 'woocommerce' ),
+		'id' 		=> 'woocommerce_clear_cart_on_logout',
+		'default'	=> 'no',
 		'type' 		=> 'checkbox',
 		'checkboxgroup'		=> ''
 	),
 
 	array(
-		'desc' 		=> __( 'Automatically generate customer password', 'woocommerce' ),
-		'id' 		=> 'woocommerce_registration_generate_password',
+		'desc' 		=> __( 'Allow customers to repurchase orders from their account page', 'woocommerce' ),
+		'id' 		=> 'woocommerce_allow_customers_to_reorder',
 		'default'	=> 'no',
 		'type' 		=> 'checkbox',
 		'checkboxgroup'		=> 'end'
@@ -165,6 +199,14 @@ $woocommerce_settings['general'] = apply_filters('woocommerce_general_settings',
 	array( 'type' => 'sectionend', 'id' => 'checkout_account_options'),
 
 	array(	'title' => __( 'Styles and Scripts', 'woocommerce' ), 'type' => 'title', 'id' => 'script_styling_options' ),
+
+	array(
+		'title' => __( 'Styling', 'woocommerce' ),
+		'desc' 		=> __( 'Enable WooCommerce CSS', 'woocommerce' ),
+		'id' 		=> 'woocommerce_frontend_css',
+		'default'	=> 'yes',
+		'type' 		=> 'checkbox'
+	),
 
 	array(
 		'type' 		=> 'frontend_styles'
@@ -300,6 +342,28 @@ $woocommerce_settings['pages'] = apply_filters('woocommerce_page_settings', arra
 	),
 
 	array(
+		'title' => __( 'Pay Page', 'woocommerce' ),
+		'desc' 		=> __( 'Page contents: [woocommerce_pay] Parent: "Checkout"', 'woocommerce' ),
+		'id' 		=> 'woocommerce_pay_page_id',
+		'type' 		=> 'single_select_page',
+		'default'	=> '',
+		'class'		=> 'chosen_select_nostd',
+		'css' 		=> 'min-width:300px;',
+		'desc_tip'	=>  true,
+	),
+
+	array(
+		'title' => __( 'Thanks Page', 'woocommerce' ),
+		'desc' 		=> __( 'Page contents: [woocommerce_thankyou] Parent: "Checkout"', 'woocommerce' ),
+		'id' 		=> 'woocommerce_thanks_page_id',
+		'type' 		=> 'single_select_page',
+		'default'	=> '',
+		'class'		=> 'chosen_select_nostd',
+		'css' 		=> 'min-width:300px;',
+		'desc_tip'	=>  true,
+	),
+
+	array(
 		'title' => __( 'My Account Page', 'woocommerce' ),
 		'desc' 		=> __( 'Page contents: [woocommerce_my_account]', 'woocommerce' ),
 		'id' 		=> 'woocommerce_myaccount_page_id',
@@ -314,6 +378,28 @@ $woocommerce_settings['pages'] = apply_filters('woocommerce_page_settings', arra
 		'title' => __( 'Edit Address Page', 'woocommerce' ),
 		'desc' 		=> __( 'Page contents: [woocommerce_edit_address] Parent: "My Account"', 'woocommerce' ),
 		'id' 		=> 'woocommerce_edit_address_page_id',
+		'type' 		=> 'single_select_page',
+		'default'	=> '',
+		'class'		=> 'chosen_select_nostd',
+		'css' 		=> 'min-width:300px;',
+		'desc_tip'	=>  true,
+	),
+
+	array(
+		'title' => __( 'View Order Page', 'woocommerce' ),
+		'desc' 		=> __( 'Page contents: [woocommerce_view_order] Parent: "My Account"', 'woocommerce' ),
+		'id' 		=> 'woocommerce_view_order_page_id',
+		'type' 		=> 'single_select_page',
+		'default'	=> '',
+		'class'		=> 'chosen_select_nostd',
+		'css' 		=> 'min-width:300px;',
+		'desc_tip'	=>  true,
+	),
+
+	array(
+		'title' => __( 'Change Password Page', 'woocommerce' ),
+		'desc' 		=> __( 'Page contents: [woocommerce_change_password] Parent: "My Account"', 'woocommerce' ),
+		'id' 		=> 'woocommerce_change_password_page_id',
 		'type' 		=> 'single_select_page',
 		'default'	=> '',
 		'class'		=> 'chosen_select_nostd',
@@ -786,7 +872,7 @@ $woocommerce_settings['shipping'] = apply_filters('woocommerce_shipping_settings
 
 	array(
 		'desc' 		=> __( 'Ship to billing address by default', 'woocommerce' ),
-		'id' 		=> 'woocommerce_ship_to_billing',
+		'id' 		=> 'woocommerce_ship_to_same_address',
 		'default'	=> 'yes',
 		'type' 		=> 'checkbox',
 		'checkboxgroup'		=> ''

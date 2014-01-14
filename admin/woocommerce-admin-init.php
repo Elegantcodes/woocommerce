@@ -70,7 +70,7 @@ function woocommerce_admin_menu() {
 
     $wc_screen_id = strtolower( __( 'WooCommerce', 'woocommerce' ) );
 
-    $print_css_on = apply_filters( 'woocommerce_screen_ids', array( 'toplevel_page_' . $wc_screen_id, $wc_screen_id . '_page_woocommerce_settings', $wc_screen_id . '_page_woocommerce_reports', $wc_screen_id . '_page_woocommerce_status', $wc_screen_id . '_page_woocommerce_customers', 'toplevel_page_woocommerce', 'woocommerce_page_woocommerce_settings', 'woocommerce_page_woocommerce_reports', 'woocommerce_page_woocommerce_customers', 'woocommerce_page_woocommerce_status', 'product_page_woocommerce_attributes', 'edit-tags.php', 'edit.php', 'index.php', 'post-new.php', 'post.php' ) );
+    $print_css_on = apply_filters( 'woocommerce_screen_ids', array( 'toplevel_page_' . $wc_screen_id, $wc_screen_id . '_page_woocommerce_settings', $wc_screen_id . '_page_woocommerce_reports', 'toplevel_page_woocommerce', 'woocommerce_page_woocommerce_settings', 'woocommerce_page_woocommerce_reports', 'woocommerce_page_woocommerce_status', 'product_page_woocommerce_attributes', 'edit-tags.php', 'edit.php', 'index.php', 'post-new.php', 'post.php' ) );
 
     foreach ( $print_css_on as $page )
     	add_action( 'admin_print_styles-'. $page, 'woocommerce_admin_css' );
@@ -85,7 +85,6 @@ add_action('admin_menu', 'woocommerce_admin_menu', 9);
  * @return void
  */
 function woocommerce_admin_menu_after() {
-	$customers_page = add_submenu_page( 'woocommerce', __( 'Customers', 'woocommerce' ),  __( 'Customers', 'woocommerce' ) , 'manage_woocommerce', 'woocommerce_customers', 'woocommerce_customers_page' );
 	$settings_page = add_submenu_page( 'woocommerce', __( 'WooCommerce Settings', 'woocommerce' ),  __( 'Settings', 'woocommerce' ) , 'manage_woocommerce', 'woocommerce_settings', 'woocommerce_settings_page');
 	$status_page = add_submenu_page( 'woocommerce', __( 'WooCommerce Status', 'woocommerce' ),  __( 'System Status', 'woocommerce' ) , 'manage_woocommerce', 'woocommerce_status', 'woocommerce_status_page');
 
@@ -231,7 +230,7 @@ function woocommerce_admin_install_notices() {
  * @return void
  */
 function woocommerce_admin_init() {
-	global $pagenow, $typenow;
+	global $pagenow, $typenow, $post;
 
 	ob_start();
 
@@ -302,9 +301,9 @@ function woocommerce_admin_init() {
 		if ( in_array( $typenow, array( 'product', 'shop_coupon', 'shop_order' ) ) )
 			add_action('admin_print_styles', 'woocommerce_admin_help_tab');
 
-	} elseif ( $pagenow == 'user-edit.php' || $pagenow == 'profile.php' ) {
+	} elseif ( $pagenow == 'users.php' || $pagenow == 'user-edit.php' || $pagenow == 'profile.php' ) {
 
-		include_once( 'woocommerce-admin-profile.php' );
+		include_once( 'woocommerce-admin-users.php' );
 
 	}
 
@@ -326,38 +325,6 @@ add_action('admin_init', 'woocommerce_admin_init');
 function woocommerce_settings_page() {
 	include_once( 'woocommerce-admin-settings.php' );
 	woocommerce_settings();
-}
-
-/**
- * Include and display the customers page.
- *
- * @access public
- * @return void
- */
-function woocommerce_customers_page() {
-	include_once( 'woocommerce-admin-customers.php' );
-
-	$WC_Admin_Customers = new WC_Admin_Customers();
-    $WC_Admin_Customers->prepare_items();
-    ?>
-    <div class="wrap">
-        <div id="icon-woocommerce" class="icon32 icon32-woocommerce-users"><br/></div>
-        <h2><?php _e( 'Customers', 'wc_software' ); ?></h2>
-
-        <?php
-	        if ( ! empty( $_GET['link_orders'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], 'link_orders' ) ) {
-				$linked = woocommerce_update_new_customer_past_orders( absint( $_GET['link_orders'] ) );
-
-				echo '<div class="updated"><p>' . sprintf( _n( '%s previous order linked', '%s previous orders linked', $linked, 'woocommerce' ), $linked ) . '</p></div>';
-			}
-		?>
-
-        <form method="post" id="woocommerce_customers">
-			<?php $WC_Admin_Customers->search_box( __( 'Search customers', 'woocommerce' ), 'customer_search' ); ?>
- 			<?php $WC_Admin_Customers->display() ?>
-		</form>
-    </div>
-    <?php
 }
 
 /**
@@ -426,20 +393,18 @@ function woocommerce_admin_scripts() {
 
 	wp_register_script( 'jquery-tiptip', $woocommerce->plugin_url() . '/assets/js/jquery-tiptip/jquery.tipTip' . $suffix . '.js', array( 'jquery' ), $woocommerce->version, true );
 
-	wp_register_script( 'accounting', $woocommerce->plugin_url() . '/assets/js/admin/accounting' . $suffix . '.js', array( 'jquery' ), '1.3.2' );
+	wp_register_script( 'woocommerce_writepanel', $woocommerce->plugin_url() . '/assets/js/admin/write-panels'.$suffix.'.js', array('jquery', 'jquery-ui-datepicker', 'jquery-ui-sortable'), $woocommerce->version );
 
-	wp_register_script( 'woocommerce_writepanel', $woocommerce->plugin_url() . '/assets/js/admin/write-panels' . $suffix . '.js', array( 'jquery', 'jquery-ui-datepicker', 'jquery-ui-sortable', 'accounting' ), $woocommerce->version );
+	wp_register_script( 'ajax-chosen', $woocommerce->plugin_url() . '/assets/js/chosen/ajax-chosen.jquery'.$suffix.'.js', array('jquery', 'chosen'), $woocommerce->version );
 
-	wp_register_script( 'ajax-chosen', $woocommerce->plugin_url() . '/assets/js/chosen/ajax-chosen.jquery' . $suffix . '.js', array('jquery', 'chosen'), $woocommerce->version );
-
-	wp_register_script( 'chosen', $woocommerce->plugin_url() . '/assets/js/chosen/chosen.jquery' . $suffix . '.js', array('jquery'), $woocommerce->version );
+	wp_register_script( 'chosen', $woocommerce->plugin_url() . '/assets/js/chosen/chosen.jquery'.$suffix.'.js', array('jquery'), $woocommerce->version );
 
 	// Get admin screen id
     $screen       = get_current_screen();
     $wc_screen_id = strtolower( __( 'WooCommerce', 'woocommerce' ) );
 
     // WooCommerce admin pages
-    if ( in_array( $screen->id, apply_filters( 'woocommerce_screen_ids', array( 'toplevel_page_' . $wc_screen_id, $wc_screen_id . '_page_woocommerce_settings', $wc_screen_id . '_page_woocommerce_reports', $wc_screen_id . '_page_woocommerce_status', $wc_screen_id . '_page_woocommerce_customers', 'toplevel_page_woocommerce', 'woocommerce_page_woocommerce_settings', 'woocommerce_page_woocommerce_reports', 'woocommerce_page_woocommerce_status', 'woocommerce_page_woocommerce_customers', 'edit-shop_order', 'edit-shop_coupon', 'shop_coupon', 'shop_order', 'edit-product', 'product' ) ) ) ) {
+    if ( in_array( $screen->id, apply_filters( 'woocommerce_screen_ids', array( 'toplevel_page_' . $wc_screen_id, $wc_screen_id . '_page_woocommerce_settings', $wc_screen_id . '_page_woocommerce_reports', 'toplevel_page_woocommerce', 'woocommerce_page_woocommerce_settings', 'woocommerce_page_woocommerce_reports', 'edit-shop_order', 'edit-shop_coupon', 'shop_coupon', 'shop_order', 'edit-product', 'product' ) ) ) ) {
 
     	wp_enqueue_script( 'woocommerce_admin' );
     	wp_enqueue_script( 'farbtastic' );
@@ -447,6 +412,7 @@ function woocommerce_admin_scripts() {
     	wp_enqueue_script( 'chosen' );
     	wp_enqueue_script( 'jquery-ui-sortable' );
     	wp_enqueue_script( 'jquery-ui-autocomplete' );
+
     }
 
     // Edit product category pages
@@ -536,9 +502,14 @@ function woocommerce_admin_scripts() {
     if ( in_array( $screen->id, apply_filters( 'woocommerce_reports_screen_ids', array( $wc_screen_id . '_page_woocommerce_reports', apply_filters( 'woocommerce_reports_screen_id', 'woocommerce_page_woocommerce_reports' ) ) ) ) ) {
 
 		wp_enqueue_script( 'jquery-ui-datepicker' );
-		wp_enqueue_script( 'flot', $woocommerce->plugin_url() . '/assets/js/admin/jquery.flot' . $suffix . '.js', 'jquery', '1.0' );
-		wp_enqueue_script( 'flot-resize', $woocommerce->plugin_url() . '/assets/js/admin/jquery.flot.resize' . $suffix . '.js', array('jquery', 'flot'), '1.0' );
+		wp_enqueue_script( 'flot', $woocommerce->plugin_url() . '/assets/js/admin/jquery.flot'.$suffix.'.js', 'jquery', '1.0' );
+		wp_enqueue_script( 'flot-resize', $woocommerce->plugin_url() . '/assets/js/admin/jquery.flot.resize'.$suffix.'.js', array('jquery', 'flot'), '1.0' );
 
+	}
+
+	// Chosen RTL
+	if ( is_rtl() ) {
+		wp_enqueue_script( 'chosen-rtl', $woocommerce->plugin_url() . '/assets/js/chosen/chosen-rtl' . $suffix . '.js', array( 'jquery' ), $woocommerce->version, true );
 	}
 }
 

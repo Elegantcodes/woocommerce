@@ -27,7 +27,7 @@ function do_install_woocommerce() {
 	woocommerce_init_roles();
 
 	// Register post types
-	include_once( '../classes/class-wc-post-types.php' );
+	$woocommerce->init_taxonomy();
 
 	// Add default taxonomies
 	woocommerce_default_taxonomies();
@@ -160,16 +160,7 @@ function woocommerce_create_page( $slug, $option, $page_title = '', $page_conten
 	if ( $option_value > 0 && get_post( $option_value ) )
 		return;
 
-	$page_found = null;
-
-	if ( strlen( $page_content ) > 0 ) {
-		// Search for an existing page with the specified page content (typically a shortcode)
-		$page_found = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM " . $wpdb->posts . " WHERE post_type='page' AND post_content LIKE %s LIMIT 1;", "%{$page_content}%" ) );
-	} else {
-		// Search for an existing page with the specified page slug
-		$page_found = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM " . $wpdb->posts . " WHERE post_type='page' AND post_name = %s LIMIT 1;", $slug ) );
-	}
-
+	$page_found = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM " . $wpdb->posts . " WHERE post_name = %s LIMIT 1;", $slug ) );
 	if ( $page_found ) {
 		if ( ! $option_value )
 			update_option( $option, $page_found );
@@ -200,50 +191,38 @@ function woocommerce_create_page( $slug, $option, $page_title = '', $page_conten
  */
 function woocommerce_create_pages() {
 
-	$pages = apply_filters( 'woocommerce_create_pages', array(
-		'shop' => array(
-			'name'    => _x( 'shop', 'page_slug', 'woocommerce' ),
-			'title'   => __( 'Shop', 'woocommerce' ),
-			'content' => ''
-		),
-		'cart' => array(
-			'name'    => _x( 'cart', 'page_slug', 'woocommerce' ),
-			'title'   => __( 'Cart', 'woocommerce' ),
-			'content' => '[woocommerce_cart]'
-		),
-		'checkout' => array(
-			'name'    => _x( 'checkout', 'page_slug', 'woocommerce' ),
-			'title'   => __( 'Checkout', 'woocommerce' ),
-			'content' => '[woocommerce_checkout]'
-		),
-		'myaccount' => array(
-			'name'    => _x( 'my-account', 'page_slug', 'woocommerce' ),
-			'title'   => __( 'My Account', 'woocommerce' ),
-			'content' => '[woocommerce_my_account]'
-		),
-		'lost_password' => array(
-			'name'    => _x( 'lost-password', 'page_slug', 'woocommerce' ),
-			'title'   => __( 'Lost Password', 'woocommerce' ),
-			'content' => '[woocommerce_lost_password]',
-			'parent'  => 'myaccount'
-		),
-		'edit_address' => array(
-			'name'    => _x( 'edit-address', 'page_slug', 'woocommerce' ),
-			'title'   => __( 'Edit My Address', 'woocommerce' ),
-			'content' => '[woocommerce_edit_address]',
-			'parent'  => 'myaccount'
-		),
-		'logout' => array(
-			'name'    => _x( 'logout', 'page_slug', 'woocommerce' ),
-			'title'   => __( 'Logout', 'woocommerce' ),
-			'content' => '',
-			'parent'  => 'myaccount'
-		)
-	) );
+	// Shop page
+    woocommerce_create_page( esc_sql( _x( 'shop', 'page_slug', 'woocommerce' ) ), 'woocommerce_shop_page_id', __( 'Shop', 'woocommerce' ), '' );
 
-	foreach ( $pages as $key => $page ) {
-		woocommerce_create_page( esc_sql( $page['name'] ), 'woocommerce_' . $key . '_page_id', $page['title'], $page['content'], ! empty( $page['parent'] ) ? woocommerce_get_page_id( $page['parent'] ) : '' );
-	}
+    // Cart page
+    woocommerce_create_page( esc_sql( _x( 'cart', 'page_slug', 'woocommerce' ) ), 'woocommerce_cart_page_id', __( 'Cart', 'woocommerce' ), '[woocommerce_cart]' );
+
+	// Checkout page
+    woocommerce_create_page( esc_sql( _x( 'checkout', 'page_slug', 'woocommerce' ) ), 'woocommerce_checkout_page_id', __( 'Checkout', 'woocommerce' ), '[woocommerce_checkout]' );
+
+	// My Account page
+    woocommerce_create_page( esc_sql( _x( 'my-account', 'page_slug', 'woocommerce' ) ), 'woocommerce_myaccount_page_id', __( 'My Account', 'woocommerce' ), '[woocommerce_my_account]' );
+
+	// Lost password page
+	woocommerce_create_page( esc_sql( _x( 'lost-password', 'page_slug', 'woocommerce' ) ), 'woocommerce_lost_password_page_id', __( 'Lost Password', 'woocommerce' ), '[woocommerce_lost_password]', woocommerce_get_page_id( 'myaccount' ) );
+
+	// Edit address page
+    woocommerce_create_page( esc_sql( _x( 'edit-address', 'page_slug', 'woocommerce' ) ), 'woocommerce_edit_address_page_id', __( 'Edit My Address', 'woocommerce' ), '[woocommerce_edit_address]', woocommerce_get_page_id( 'myaccount' ) );
+
+    // View order page
+    woocommerce_create_page( esc_sql( _x( 'view-order', 'page_slug', 'woocommerce' ) ), 'woocommerce_view_order_page_id', __( 'View Order', 'woocommerce' ), '[woocommerce_view_order]', woocommerce_get_page_id( 'myaccount' ) );
+
+    // Change password page
+    woocommerce_create_page( esc_sql( _x( 'change-password', 'page_slug', 'woocommerce' ) ), 'woocommerce_change_password_page_id', __( 'Change Password', 'woocommerce' ), '[woocommerce_change_password]', woocommerce_get_page_id( 'myaccount' ) );
+
+    // Logout page
+    woocommerce_create_page( esc_sql( _x( 'logout', 'page_slug', 'woocommerce' ) ), 'woocommerce_logout_page_id', __( 'Logout', 'woocommerce' ), '', woocommerce_get_page_id( 'myaccount' ) );
+
+	// Pay page
+    woocommerce_create_page( esc_sql( _x( 'pay', 'page_slug', 'woocommerce' ) ), 'woocommerce_pay_page_id', __( 'Checkout &rarr; Pay', 'woocommerce' ), '[woocommerce_pay]', woocommerce_get_page_id( 'checkout' ) );
+
+    // Thanks page
+    woocommerce_create_page( esc_sql( _x( 'order-received', 'page_slug', 'woocommerce' ) ), 'woocommerce_thanks_page_id', __( 'Order Received', 'woocommerce' ), '[woocommerce_thankyou]', woocommerce_get_page_id( 'checkout' ) );
 }
 
 

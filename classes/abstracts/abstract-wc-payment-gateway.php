@@ -34,7 +34,7 @@ abstract class WC_Payment_Gateway extends WC_Settings_API {
 	/** @var string Available for all counties or specific. */
 	var $availability;
 
-	/** @var bool True if the method is enabled. */
+	/** @var string True if the method is enabled. */
 	var $enabled;
 
 	/** @var string Icon for the gateway. */
@@ -54,12 +54,17 @@ abstract class WC_Payment_Gateway extends WC_Settings_API {
 	 * @return string
 	 */
 	function get_return_url( $order = '' ) {
-		if ( $order )
-			$return_url = $order->get_checkout_order_received_url();
-		elseif ( get_option( 'permalink_structure' ) )
-			$return_url = trailingslashit( get_permalink( woocommerce_get_page_id( 'checkout' ) ) ) . 'order-received/';
-		else
-			$return_url = add_query_arg( 'order-received', '', get_permalink( woocommerce_get_page_id( 'checkout' ) ) );
+
+		$thanks_page_id = woocommerce_get_page_id('thanks');
+		if ( $thanks_page_id ) :
+			$return_url = get_permalink($thanks_page_id);
+		else :
+			$return_url = home_url();
+		endif;
+
+		if ( $order ) :
+			$return_url = add_query_arg( 'key', $order->order_key, add_query_arg( 'order', $order->id, $return_url ) );
+		endif;
 
 		if ( is_ssl() || get_option('woocommerce_force_ssl_checkout') == 'yes' )
 			$return_url = str_replace( 'http:', 'https:', $return_url );
@@ -122,7 +127,7 @@ abstract class WC_Payment_Gateway extends WC_Settings_API {
 	function get_icon() {
 		global $woocommerce;
 
-		$icon = $this->icon ? '<img src="' . $woocommerce->force_ssl( $this->icon ) . '" alt="' . $this->title . '" />' : '';
+		$icon = $this->icon ? '<img src="' . $woocommerce->force_ssl( $this->icon ) . '" alt="' . $this->get_title() . '" />' : '';
 
 		return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
 	}
@@ -147,9 +152,10 @@ abstract class WC_Payment_Gateway extends WC_Settings_API {
 	 * Process the payment. Override this in your gateway.
 	 *
 	 * @access public
+	 * @param int $order_id Id of the order that's going to be processed
 	 * @return void
 	 */
-	function process_payment() {}
+	function process_payment( $order_id ) {}
 
 
 	/**

@@ -823,14 +823,7 @@ if ( ! function_exists( 'woocommerce_output_related_products' ) ) {
 	 * @return void
 	 */
 	function woocommerce_output_related_products() {
-
-		$args = array(
-			'posts_per_page' => 2,
-			'columns' => 2,
-			'orderby' => 'rand'
-		);
-
-		woocommerce_related_products( apply_filters( 'woocommerce_output_related_products_args', $args ) );
+		woocommerce_related_products( 2, 2 );
 	}
 }
 
@@ -840,33 +833,17 @@ if ( ! function_exists( 'woocommerce_related_products' ) ) {
 	 * Output the related products.
 	 *
 	 * @access public
-	 * @param array Provided arguments
-	 * @param bool Columns argument for backwards compat
-	 * @param bool Order by argument for backwards compat
+	 * @param int $posts_per_page (default: 2)
+	 * @param int $columns (default: 2)
+	 * @param string $orderby (default: 'rand')
 	 * @return void
 	 */
-	function woocommerce_related_products( $args = array(), $columns = false, $orderby = false ) {
-		if ( ! is_array( $args ) ) {
-			_deprecated_argument( __CLASS__ . '->' . __FUNCTION__, '2.1', __( 'Use $args argument as an array instead. Deprecated argument will be removed in WC 2.2.', 'woocommerce' ) );
-
-			$argsvalue = $args;
-
-			$args = array(
-				'posts_per_page' => $argsvalue,
-				'columns'        => $columns,
-				'orderby'        => $orderby,
-			);
-		}
-
-		$defaults = array(
-			'posts_per_page' => 2,
-			'columns'        => 2,
-			'orderby'        => 'rand'
-		);
-
-		$args = wp_parse_args( $args, $defaults );
-
-		woocommerce_get_template( 'single-product/related.php', $args );
+	function woocommerce_related_products( $posts_per_page = 2, $columns = 2, $orderby = 'rand'  ) {
+		woocommerce_get_template( 'single-product/related.php', array(
+				'posts_per_page'  => $posts_per_page,
+				'orderby'    => $orderby,
+				'columns'    => $columns
+			) );
 	}
 }
 
@@ -925,16 +902,12 @@ if ( ! function_exists( 'woocommerce_cross_sell_display' ) ) {
 	/**
 	 * Output the cart cross-sells.
 	 *
-	 * @param  integer $posts_per_page
-	 * @param  integer $columns
-	 * @param  string $orderby
+	 * @access public
+	 * @subpackage	Cart
+	 * @return void
 	 */
-	function woocommerce_cross_sell_display( $posts_per_page = 2, $columns = 2, $orderby = 'rand' ) {
-		woocommerce_get_template( 'cart/cross-sells.php', array(
-				'posts_per_page' => $posts_per_page,
-				'orderby'        => $orderby,
-				'columns'        => $columns
-			) );
+	function woocommerce_cross_sell_display() {
+		woocommerce_get_template( 'cart/cross-sells.php' );
 	}
 }
 
@@ -1278,31 +1251,6 @@ if ( ! function_exists( 'woocommerce_order_details_table' ) ) {
 	}
 }
 
-
-if ( ! function_exists( 'woocommerce_order_again_button' ) ) {
-
-	/**
-	 * Display an 'order again' button on the view order page.
-	 *
-	 * @access public
-	 * @param object $order
-	 * @subpackage	Orders
-	 * @return void
-	 */
-	function woocommerce_order_again_button( $order ) {
-		global $woocommerce;
-
-		if ( ! $order || $order->status != 'completed' )
-			return;
-
-		?>
-		<p class="order-again">
-			<a href="<?php echo esc_url( $woocommerce->nonce_url( 'order_again', add_query_arg( 'order_again', $order->id ) ) ); ?>" class="button"><?php _e( 'Order Again', 'woocommerce' ); ?></a>
-		</p>
-		<?php
-	}
-}
-
 /** Forms ****************************************************************/
 
 if ( ! function_exists( 'woocommerce_form_field' ) ) {
@@ -1372,9 +1320,11 @@ if ( ! function_exists( 'woocommerce_form_field' ) ) {
 				if ( $args['label'] )
 					$field .= '<label class="' . implode( ' ', $args['label_class'] ) .'">' . $args['label']  . '</label>';
 
-				$field .= '<strong>' . current( array_values( $woocommerce->countries->get_allowed_countries() ) ) . '</strong>';
+				$allowed_country_values = array_values( $woocommerce->countries->get_allowed_countries() );
+				$field .= '<strong>' . current( $allowed_country_values ) . '</strong>';
 
-				$field .= '<input type="hidden" name="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" value="' . current( array_keys( $woocommerce->countries->get_allowed_countries() ) ) . '" ' . implode( ' ', $custom_attributes ) . ' />';
+				$allowed_country_keys = array_keys( $woocommerce->countries->get_allowed_countries() );
+				$field .= '<input type="hidden" name="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" value="' . current( $allowed_country_keys ) . '" ' . implode( ' ', $custom_attributes ) . ' />';
 
 				$field .= '</p>' . $after;
 

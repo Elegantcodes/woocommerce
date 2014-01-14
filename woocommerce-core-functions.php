@@ -33,64 +33,6 @@ function get_product( $the_product = false, $args = array() ) {
 }
 
 /**
- * Get past orders (by email) and update them
- *
- * @param  int $customer_id
- * @return void
- */
-function woocommerce_update_new_customer_past_orders( $customer_id ) {
-    global $wpdb;
-
-    $customer = get_user_by( 'id', absint( $customer_id ) );
-
-    $customer_orders = get_posts( array(
-        'numberposts' => -1,
-        'post_type'   => 'shop_order',
-        'post_status' => 'publish',
-        'fields'      => 'ids',
-        'meta_query' => array(
-			array(
-				'key'     => '_customer_user',
-				'value'   => array( 0, '' ),
-				'compare' => 'IN'
-			),
-			array(
-				'key'     => '_billing_email',
-				'value'   => $customer->user_email,
-			)
-		),
-    ) );
-
-    $linked = 0;
-    $complete = 0;
-
-    if ( $customer_orders )
-        foreach ( $customer_orders as $order_id ) {
-        	update_post_meta( $order_id, '_customer_user', $customer->ID );
-
-        	$order_status = wp_get_post_terms( $order_id, 'shop_order_status' );
-
-			if ( $order_status ) {
-				$order_status = current( $order_status );
-				$order_status = sanitize_title( $order_status->slug );
-			}
-
-			if ( $order_status == 'completed' )
-				$complete ++;
-
-            $linked ++;
-        }
-
-    if ( $complete ) {
-    	update_user_meta( $customer_id, 'paying_customer', 1 );
-    	update_user_meta( $customer_id, '_order_count', '' );
-    	update_user_meta( $customer_id, '_money_spent', '' );
-    }
-
-    return $linked;
-}
-
-/**
  * Function that returns an array containing the IDs of the products that are on sale.
  *
  * @since 2.0
@@ -153,12 +95,12 @@ function woocommerce_get_product_ids_on_sale() {
  * @return void
  */
 function woocommerce_sanitize_taxonomy_name( $taxonomy ) {
-	$taxonomy = strtolower( stripslashes( strip_tags( $taxonomy ) ) );
-	$taxonomy = preg_replace( '/&.+?;/', '', $taxonomy ); // Kill entities
-	$taxonomy = str_replace( array( '.', '\'', '"' ), '', $taxonomy ); // Kill quotes and full stops.
-	$taxonomy = str_replace( array( ' ', '_' ), '-', $taxonomy ); // Replace spaces and underscores.
+	$filtered = strtolower( remove_accents( stripslashes( strip_tags( $taxonomy ) ) ) );
+	$filtered = preg_replace( '/&.+?;/', '', $filtered ); // Kill entities
+	$filtered = str_replace( array( '.', '\'', '"' ), '', $filtered ); // Kill quotes and full stops.
+	$filtered = str_replace( array( ' ', '_' ), '-', $filtered ); // Replace spaces and underscores.
 
-	return $taxonomy;
+	return apply_filters( 'sanitize_taxonomy_name', $filtered, $taxonomy );
 }
 
 /**
@@ -232,7 +174,7 @@ function woocommerce_get_dimension( $dim, $to_unit ) {
 				$dim *= 0.1;
 			break;
 			case 'yd':
-				$dim *= 0.010936133;
+				$dim *= 91.44;
 			break;
 		}
 
@@ -248,7 +190,7 @@ function woocommerce_get_dimension( $dim, $to_unit ) {
 				$dim *= 10;
 			break;
 			case 'yd':
-				$dim *= 91.44;
+				$dim *= 0.010936133;
 			break;
 		}
 	}
@@ -310,14 +252,27 @@ function woocommerce_get_weight( $weight, $to_unit ) {
  *
  * @access public
  * @param mixed $product
- * @deprecated 2.1
  * @return void
  */
 function woocommerce_get_formatted_product_name( $product ) {
+	if ( ! $product || ! is_object( $product ) )
+		return;
 
-	_deprecated_function( __FUNCTION__, '2.1', 'WC_Product::get_formatted_name()' );
+	if ( $product->get_sku() )
+		$identifier = $product->get_sku();
+	elseif ( $product->is_type( 'variation' ) )
+		$identifier = '#' . $product->variation_id;
+	else
+		$identifier = '#' . $product->id;
 
-	return $product->get_formatted_name();
+	if ( $product->is_type( 'variation' ) ) {
+		$attributes = $product->get_variation_attributes();
+		$extra_data = ' &ndash; ' . implode( ', ', $attributes ) . ' &ndash; ' . woocommerce_price( $product->get_price() );
+	} else {
+		$extra_data = '';
+	}
+
+	return sprintf( __( '%s &ndash; %s%s', 'woocommerce' ), $identifier, $product->get_title(), $extra_data );
 }
 
 
@@ -391,7 +346,7 @@ if ( ! function_exists( 'woocommerce_get_page_id' ) ) {
 	/**
 	 * WooCommerce page IDs
 	 *
-	 * retrieve page ids - used for myaccount, edit_address, shop, cart, checkout, pay, view_order, terms
+	 * retrieve page ids - used for myaccount, edit_address, change_password, shop, cart, checkout, pay, view_order, thanks, terms
 	 *
 	 * returns -1 if no page is found
 	 *
@@ -400,21 +355,8 @@ if ( ! function_exists( 'woocommerce_get_page_id' ) ) {
 	 * @return int
 	 */
 	function woocommerce_get_page_id( $page ) {
-
-		if ( $page == 'pay' || $page == 'thanks' ) {
-			_deprecated_argument( __CLASS__ . '->' . __FUNCTION__, '2.1', 'The "pay" and "thanks" pages are no-longer used - an endpoint is added to the checkout instead. To get a valid link use the WC_Order::get_checkout_payment_url() or WC_Order::get_checkout_order_received_url() methods instead.' );
-
-			$page = 'checkout';
-		}
-		if ( $page == 'change_password' ) {
-			_deprecated_argument( __CLASS__ . '->' . __FUNCTION__, '2.1', 'The "change_password" page is no-longer used - an endpoint is added to the my-account instead. To get a valid link use the woocommerce_customer_edit_account_url() function instead.' );
-
-			$page = 'myaccount';
-		}
-
-		$page = apply_filters( 'woocommerce_get_' . $page . '_page_id', get_option('woocommerce_' . $page . '_page_id' ) );
-
-		return $page ? $page : -1;
+		$page = apply_filters('woocommerce_get_' . $page . '_page_id', get_option('woocommerce_' . $page . '_page_id'));
+		return ( $page ) ? $page : -1;
 	}
 }
 
@@ -441,24 +383,20 @@ if ( ! function_exists( 'woocommerce_empty_cart' ) ) {
 if ( ! function_exists( 'woocommerce_disable_admin_bar' ) ) {
 
 	/**
-	 * Prevent any user who cannot 'edit_posts' (subscribers, customers etc) from seeing the admin bar
-	 *
-	 * Note: get_option( 'woocommerce_lock_down_admin', true ) is a deprecated option here for backwards compat. Defaults to true.
+	 * WooCommerce disable admin bar
 	 *
 	 * @access public
 	 * @param bool $show_admin_bar
 	 * @return bool
 	 */
 	function woocommerce_disable_admin_bar( $show_admin_bar ) {
-		if ( apply_filters( 'woocommerce_disable_admin_bar', get_option( 'woocommerce_lock_down_admin', "yes" ) == "yes" ) && ! ( current_user_can('edit_posts') || current_user_can('manage_woocommerce') ) ) {
+		if ( get_option('woocommerce_lock_down_admin')=='yes' && ! ( current_user_can('edit_posts') || current_user_can('manage_woocommerce') ) ) {
 			$show_admin_bar = false;
 		}
 
 		return $show_admin_bar;
 	}
 }
-
-add_filter( 'show_admin_bar', 'woocommerce_disable_admin_bar', 10, 1 );
 
 
 /**
@@ -581,7 +519,7 @@ if ( ! function_exists( 'is_checkout' ) ) {
 	 * @return bool
 	 */
 	function is_checkout() {
-		return is_page( woocommerce_get_page_id( 'checkout' ) ) ? true : false;
+		return ( is_page( woocommerce_get_page_id( 'checkout' ) ) || is_page( woocommerce_get_page_id( 'pay' ) ) ) ? true : false;
 	}
 }
 
@@ -594,7 +532,7 @@ if ( ! function_exists( 'is_account_page' ) ) {
 	 * @return bool
 	 */
 	function is_account_page() {
-		return is_page( woocommerce_get_page_id( 'myaccount' ) ) || is_page( woocommerce_get_page_id( 'edit_address' ) ) || is_page( woocommerce_get_page_id( 'lost_password' ) ) || apply_filters( 'woocommerce_is_account_page', false ) ? true : false;
+		return is_page( woocommerce_get_page_id( 'myaccount' ) ) || is_page( woocommerce_get_page_id( 'edit_address' ) ) || is_page( woocommerce_get_page_id( 'view_order' ) ) || is_page( woocommerce_get_page_id( 'change_password' ) ) || is_page( woocommerce_get_page_id( 'lost_password' ) ) || apply_filters( 'woocommerce_is_account_page', false ) ? true : false;
 	}
 }
 
@@ -607,7 +545,7 @@ if ( ! function_exists( 'is_order_received_page' ) ) {
     * @return bool
     */
     function is_order_received_page() {
-        return ( is_page( woocommerce_get_page_id( 'checkout' ) ) && isset( $wp->query_vars['order-received'] ) ) ? true : false;
+        return ( is_page( woocommerce_get_page_id( 'thanks' ) ) ) ? true : false;
     }
 }
 
@@ -1412,9 +1350,6 @@ function woocommerce_paying_customer( $order_id ) {
 	if ( $order->user_id > 0 ) {
 		update_user_meta( $order->user_id, 'paying_customer', 1 );
 
-		$old_spent = absint( get_user_meta( $order->user_id, '_money_spent', true ) );
-		update_user_meta( $order->user_id, '_money_spent', $old_spent + $order->order_total );
-
 		$old_count = absint( get_user_meta( $order->user_id, '_order_count', true ) );
 		update_user_meta( $order->user_id, '_order_count', $old_count + 1 );
 	}
@@ -1574,7 +1509,7 @@ function woocommerce_get_product_terms( $object_id, $taxonomy, $fields = 'all' )
 	$object_terms 	= get_the_terms( $object_id, $taxonomy );
 
 	if ( ! is_array( $object_terms ) )
-    	return array();
+		return array();
 
 	$all_terms 		= array_flip( get_terms( $taxonomy, array( 'menu_order' => 'ASC', 'fields' => 'ids' ) ) );
 
@@ -1618,13 +1553,16 @@ function woocommerce_get_product_terms( $object_id, $taxonomy, $fields = 'all' )
 function woocommerce_product_dropdown_categories( $show_counts = 1, $hierarchical = 1, $show_uncategorized = 1, $orderby = '' ) {
 	global $wp_query, $woocommerce;
 
-	$r                 = array();
-	$r['pad_counts']   = 1;
-	$r['hierarchical'] = $hierarchical;
-	$r['hide_empty']   = 1;
-	$r['show_count']   = $show_counts;
-	$r['selected']     = ( isset( $wp_query->query['product_cat'] ) ) ? $wp_query->query['product_cat'] : '';
-	$r['menu_order']   = false;
+	include_once( $woocommerce->plugin_path() . '/classes/walkers/class-product-cat-dropdown-walker.php' );
+
+	$r = array();
+	$r['pad_counts'] 	= 1;
+	$r['hierarchical'] 	= $hierarchical;
+	$r['hide_empty'] 	= 1;
+	$r['show_count'] 	= $show_counts;
+	$r['selected'] 		= ( isset( $wp_query->query['product_cat'] ) ) ? $wp_query->query['product_cat'] : '';
+
+	$r['menu_order'] = false;
 
 	if ( $orderby == 'order' )
 		$r['menu_order'] = 'asc';
@@ -1633,8 +1571,7 @@ function woocommerce_product_dropdown_categories( $show_counts = 1, $hierarchica
 
 	$terms = get_terms( 'product_cat', $r );
 
-	if ( ! $terms )
-		return;
+	if (!$terms) return;
 
 	$output  = "<select name='product_cat' id='dropdown_product_cat'>";
 	$output .= '<option value="" ' .  selected( isset( $_GET['product_cat'] ) ? $_GET['product_cat'] : '', '', false ) . '>'.__( 'Select a category', 'woocommerce' ).'</option>';
@@ -1656,11 +1593,6 @@ function woocommerce_product_dropdown_categories( $show_counts = 1, $hierarchica
  * @return void
  */
 function woocommerce_walk_category_dropdown_tree() {
-	global $woocommerce;
-
-	if ( ! class_exists( 'WC_Product_Cat_Dropdown_Walker' ) )
-		include_once( $woocommerce->plugin_path() . '/classes/walkers/class-product-cat-dropdown-walker.php' );
-
 	$args = func_get_args();
 
 	// the user's options are the third parameter
@@ -1688,7 +1620,7 @@ function woocommerce_taxonomy_metadata_wpdbfix() {
 	$wpdb->order_itemmeta = $wpdb->prefix . $itemmeta_name;
 
 	$wpdb->tables[] = 'woocommerce_termmeta';
-	$wpdb->tables[] = 'order_itemmeta';
+	$wpdb->tables[] = 'woocommerce_order_itemmeta';
 }
 
 add_action( 'init', 'woocommerce_taxonomy_metadata_wpdbfix', 0 );
@@ -1940,12 +1872,14 @@ function woocommerce_processing_order_count() {
 	if ( false === ( $order_count = get_transient( 'woocommerce_processing_order_count' ) ) ) {
 		$order_statuses = get_terms( 'shop_order_status' );
 	    $order_count = false;
-	    foreach ( $order_statuses as $status ) {
-	        if( $status->slug === 'processing' ) {
-	            $order_count += $status->count;
-	            break;
-	        }
-	    }
+	    if ( $order_statuses ) {
+		    foreach ( $order_statuses as $status ) {
+		        if( $status->slug === 'processing' ) {
+		            $order_count += $status->count;
+		            break;
+		        }
+		    }
+		}
 	    $order_count = apply_filters( 'woocommerce_admin_menu_count', intval( $order_count ) );
 		set_transient( 'woocommerce_processing_order_count', $order_count );
 	}
@@ -2412,6 +2346,7 @@ add_action( 'woocommerce_product_set_stock_status', 'woocommerce_recount_after_s
 
 /**
  * woocommerce_change_term_counts function.
+ *
  * Overrides the original term count for product categories and tags with the product count
  * that takes catalog visibility into account.
  *
@@ -2423,14 +2358,15 @@ add_action( 'woocommerce_product_set_stock_status', 'woocommerce_recount_after_s
  */
 function woocommerce_change_term_counts( $terms, $taxonomies, $args ) {
 
-	if ( ! in_array( $taxonomies[0], apply_filters( 'woocommerce_change_term_counts', array( 'product_cat', 'product_tag' ) ) ) )
+	if ( ! isset( $taxonomies[0] ) || ! in_array( $taxonomies[0], apply_filters( 'woocommerce_change_term_counts', array( 'product_cat', 'product_tag' ) ) ) )
 		return $terms;
 
 	$term_counts = $o_term_counts = get_transient( 'wc_term_counts' );
 
 	foreach ( $terms as &$term ) {
 		// If the original term count is zero, there's no way the product count could be higher.
-		if ( empty( $term->count ) ) continue;
+		if ( empty( $term->count ) )
+			continue;
 
 		$term_counts[ $term->term_id ] = isset( $term_counts[ $term->term_id ] ) ? $term_counts[ $term->term_id ] : get_woocommerce_term_meta( $term->term_id, 'product_count_' . $taxonomies[0] , true );
 
@@ -2489,7 +2425,7 @@ function woocommerce_scheduled_sales() {
 			// Sync parent
 			if ( $parent ) {
 				// We can force varaible product price to sync up by removing their min price meta
-				delete_post_meta( $parent, 'min_variation_price' );
+				delete_post_meta( $parent, '_min_variation_price' );
 
 				// Grouped products need syncing via a function
 				$this_product = get_product( $product_id );
@@ -2530,7 +2466,7 @@ function woocommerce_scheduled_sales() {
 			// Sync parent
 			if ( $parent ) {
 				// We can force variable product price to sync up by removing their min price meta
-				delete_post_meta( $parent, 'min_variation_price' );
+				delete_post_meta( $parent, '_min_variation_price' );
 
 				// Grouped products need syncing via a function
 				$this_product = get_product( $product_id );

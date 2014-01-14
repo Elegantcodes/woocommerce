@@ -3,11 +3,11 @@
  * Plugin Name: WooCommerce
  * Plugin URI: http://www.woothemes.com/woocommerce/
  * Description: An e-commerce toolkit that helps you sell anything. Beautifully.
- * Version: 2.1-bleeding
+ * Version: 2.0.20
  * Author: WooThemes
  * Author URI: http://woothemes.com
  * Requires at least: 3.5
- * Tested up to: 3.5
+ * Tested up to: 3.7
  *
  * Text Domain: woocommerce
  * Domain Path: /i18n/languages/
@@ -37,7 +37,7 @@ class Woocommerce {
 	/**
 	 * @var string
 	 */
-	public $version = '2.1-bleeding';
+	public $version = '2.0.20';
 
 	/**
 	 * @var string
@@ -148,7 +148,7 @@ class Woocommerce {
 		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'action_links' ) );
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'core_shipping' ) );
 		add_filter( 'woocommerce_payment_gateways', array( $this, 'core_gateways' ) );
-		add_action( 'widgets_init', array( $this, 'include_widgets' ) );
+		add_action( 'widgets_init', array( $this, 'register_widgets' ) );
 		add_action( 'init', array( $this, 'init' ), 0 );
 		add_action( 'init', array( $this, 'include_template_functions' ), 25 );
 		add_action( 'after_setup_theme', array( $this, 'compatibility' ) );
@@ -300,9 +300,6 @@ class Woocommerce {
 		if ( ! is_admin() || defined('DOING_AJAX') )
 			$this->frontend_includes();
 
-		// Post types
-		include_once( 'classes/class-wc-post-types.php' );					// Registers post types
-
 		// Functions
 		include_once( 'woocommerce-core-functions.php' );					// Contains core functions for the front/back end
 
@@ -325,6 +322,7 @@ class Woocommerce {
 		// Include Core Integrations - these are included sitewide
 		include_once( 'classes/integrations/google-analytics/class-wc-google-analytics.php' );
 		include_once( 'classes/integrations/sharethis/class-wc-sharethis.php' );
+		include_once( 'classes/integrations/shareyourcart/class-wc-shareyourcart.php' );
 		include_once( 'classes/integrations/sharedaddy/class-wc-sharedaddy.php' );
 	}
 
@@ -419,24 +417,45 @@ class Woocommerce {
 
 
 	/**
-	 * include_widgets function.
+	 * register_widgets function.
 	 *
 	 * @access public
 	 * @return void
 	 */
-	public function include_widgets() {
-		include_once( 'classes/abstracts/abstract-wc-widget.php' );
+	function register_widgets() {
+		// Include - no need to use autoload as WP loads them anyway
 		include_once( 'classes/widgets/class-wc-widget-cart.php' );
-		include_once( 'classes/widgets/class-wc-widget-products.php' );
+		include_once( 'classes/widgets/class-wc-widget-featured-products.php' );
 		include_once( 'classes/widgets/class-wc-widget-layered-nav.php' );
 		include_once( 'classes/widgets/class-wc-widget-layered-nav-filters.php' );
 		include_once( 'classes/widgets/class-wc-widget-price-filter.php' );
 		include_once( 'classes/widgets/class-wc-widget-product-categories.php' );
 		include_once( 'classes/widgets/class-wc-widget-product-search.php' );
 		include_once( 'classes/widgets/class-wc-widget-product-tag-cloud.php' );
+		include_once( 'classes/widgets/class-wc-widget-recent-products.php' );
+		include_once( 'classes/widgets/class-wc-widget-top-rated-products.php' );
 		include_once( 'classes/widgets/class-wc-widget-recent-reviews.php' );
 		include_once( 'classes/widgets/class-wc-widget-recently-viewed.php' );
-		include_once( 'classes/widgets/class-wc-widget-top-rated-products.php' );
+		include_once( 'classes/widgets/class-wc-widget-best-sellers.php' );
+		include_once( 'classes/widgets/class-wc-widget-onsale.php' );
+		include_once( 'classes/widgets/class-wc-widget-random-products.php' );
+
+		// Register widgets
+		register_widget( 'WC_Widget_Recent_Products' );
+		register_widget( 'WC_Widget_Featured_Products' );
+		register_widget( 'WC_Widget_Product_Categories' );
+		register_widget( 'WC_Widget_Product_Tag_Cloud' );
+		register_widget( 'WC_Widget_Cart' );
+		register_widget( 'WC_Widget_Layered_Nav' );
+		register_widget( 'WC_Widget_Layered_Nav_Filters' );
+		register_widget( 'WC_Widget_Price_Filter' );
+		register_widget( 'WC_Widget_Product_Search' );
+		register_widget( 'WC_Widget_Top_Rated_Products' );
+		register_widget( 'WC_Widget_Recent_Reviews' );
+		register_widget( 'WC_Widget_Recently_Viewed' );
+		register_widget( 'WC_Widget_Best_Sellers' );
+		register_widget( 'WC_Widget_Onsale' );
+		register_widget( 'WC_Widget_Random_Products' );
 	}
 
 
@@ -455,12 +474,6 @@ class Woocommerce {
 
 		// Variables
 		$this->template_url			= apply_filters( 'woocommerce_template_url', 'woocommerce/' );
-
-		// Add endpoints
-		add_rewrite_endpoint( 'order-pay', EP_PAGES );
-		add_rewrite_endpoint( 'order-received', EP_PAGES );
-		add_rewrite_endpoint( 'view-order', EP_PAGES );
-		add_rewrite_endpoint( 'edit-account', EP_PAGES );
 
 		// Load class instances
 		$this->product_factory 		= new WC_Product_Factory();     // Product Factory to create new product instances
@@ -497,7 +510,7 @@ class Woocommerce {
 			add_action( 'wp_footer', array( $this, 'output_inline_js' ), 25 );
 
 			// HTTPS urls with SSL on
-			$filters = array( 'post_thumbnail_html', 'widget_text', 'wp_get_attachment_url', 'wp_get_attachment_image_attributes', 'wp_get_attachment_url', 'option_stylesheet_url', 'option_template_url', 'script_loader_src', 'style_loader_src', 'template_directory_uri', 'stylesheet_directory_uri', 'site_url' );
+			$filters = array( 'post_thumbnail_html', 'wp_get_attachment_url', 'wp_get_attachment_image_attributes', 'wp_get_attachment_url', 'option_stylesheet_url', 'option_template_url', 'script_loader_src', 'style_loader_src', 'template_directory_uri', 'stylesheet_directory_uri', 'site_url' );
 
 			foreach ( $filters as $filter )
 				add_filter( $filter, array( $this, 'force_ssl' ) );
@@ -508,13 +521,16 @@ class Woocommerce {
 		add_action( 'admin_footer', array( $this, 'output_inline_js' ), 25 );
 
 		// Email Actions
-		$email_actions = array( 'woocommerce_low_stock', 'woocommerce_no_stock', 'woocommerce_product_on_backorder', 'woocommerce_order_status_pending_to_processing', 'woocommerce_order_status_pending_to_completed', 'woocommerce_order_status_pending_to_on-hold', 'woocommerce_order_status_failed_to_processing', 'woocommerce_order_status_failed_to_completed', 'woocommerce_order_status_completed', 'woocommerce_new_customer_note', 'woocommerce_created_customer' );
+		$email_actions = array( 'woocommerce_low_stock', 'woocommerce_no_stock', 'woocommerce_product_on_backorder', 'woocommerce_order_status_pending_to_processing', 'woocommerce_order_status_pending_to_completed', 'woocommerce_order_status_pending_to_on-hold', 'woocommerce_order_status_failed_to_processing', 'woocommerce_order_status_failed_to_completed', 'woocommerce_order_status_pending_to_processing', 'woocommerce_order_status_pending_to_on-hold', 'woocommerce_order_status_completed', 'woocommerce_new_customer_note' );
 
 		foreach ( $email_actions as $action )
-			add_action( $action, array( $this, 'send_transactional_email'), 10, 10 );
+			add_action( $action, array( $this, 'send_transactional_email') );
 
 		// Register globals for WC environment
 		$this->register_globals();
+
+		// Init WooCommerce taxonomies
+		$this->init_taxonomy();
 
 		// Init Images sizes
 		$this->init_image_sizes();
@@ -531,7 +547,7 @@ class Woocommerce {
 	 * @return void
 	 */
 	public function init_checkout() {
-		if ( is_checkout() ) {
+		if ( is_checkout() || is_order_received_page() ) {
 			$this->payment_gateways();
 			$this->shipping();
 		}
@@ -548,20 +564,18 @@ class Woocommerce {
 	 */
 	public function load_plugin_textdomain() {
 		$locale = apply_filters( 'plugin_locale', get_locale(), 'woocommerce' );
+		$formal = 'yes' == get_option( 'woocommerce_informal_localisation_type' ) ? 'informal' : 'formal';
 
-		// Admin Locale
+		load_textdomain( 'woocommerce', WP_LANG_DIR . "/woocommerce/woocommerce-$locale.mo" );
+
+		// Load admin specific MO files
 		if ( is_admin() ) {
 			load_textdomain( 'woocommerce', WP_LANG_DIR . "/woocommerce/woocommerce-admin-$locale.mo" );
 			load_textdomain( 'woocommerce', $this->plugin_path() . "/i18n/languages/woocommerce-admin-$locale.mo" );
 		}
 
-		// Frontend Locale
-		load_textdomain( 'woocommerce', WP_LANG_DIR . "/woocommerce/woocommerce-$locale.mo" );
-
-		if ( apply_filters( 'woocommerce_load_alt_locale', false ) )
-			load_plugin_textdomain( 'woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . "/i18n/languages/alt" );
-		else
-			load_plugin_textdomain( 'woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . "/i18n/languages" );
+		load_plugin_textdomain( 'woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . "/i18n/languages/$formal" );
+		load_plugin_textdomain( 'woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . "/i18n/languages" );
 	}
 
 
@@ -727,7 +741,7 @@ class Woocommerce {
 			return;
 		}
 
-		if ( is_checkout() ) {
+		if ( is_checkout() || is_order_received_page() ) {
 			$this->add_body_class( 'woocommerce-checkout' );
 			$this->add_body_class( 'woocommerce-page' );
 			return;
@@ -745,6 +759,373 @@ class Woocommerce {
 			return;
 		}
 
+	}
+
+
+	/**
+	 * Init WooCommerce taxonomies.
+	 *
+	 * @access public
+	 * @return void
+	 */
+	public function init_taxonomy() {
+
+		if ( post_type_exists('product') )
+			return;
+
+		/**
+		 * Slugs
+		 **/
+		$permalinks 	= get_option( 'woocommerce_permalinks' );
+		$shop_page_id 	= woocommerce_get_page_id( 'shop' );
+
+		// Base slug is also used for the product post type archive
+		$base_slug 		= $shop_page_id > 0 && get_page( $shop_page_id ) ? get_page_uri( $shop_page_id ) : 'shop';
+
+		// Get bases
+		$product_category_slug 	= empty( $permalinks['category_base'] ) ? _x( 'product-category', 'slug', 'woocommerce' ) : $permalinks['category_base'];
+		$product_tag_slug 		= empty( $permalinks['tag_base'] ) ? _x( 'product-tag', 'slug', 'woocommerce' ) : $permalinks['tag_base'];
+		$product_attribute_base	= empty( $permalinks['attribute_base'] ) ? '' : trailingslashit( $permalinks['attribute_base'] );
+		$product_permalink 		= empty( $permalinks['product_base'] ) ? _x( 'product', 'slug', 'woocommerce' ) : $permalinks['product_base'];
+
+		if ( $product_permalink )
+			$rewrite =  array( 'slug' => untrailingslashit( $product_permalink ), 'with_front' => false, 'feeds' => true );
+		else
+			$rewrite = false;
+
+		$show_in_menu = current_user_can( 'manage_woocommerce' ) ? 'woocommerce' : true;
+
+		/**
+		 * Taxonomies
+		 **/
+		do_action( 'woocommerce_register_taxonomy' );
+
+		$admin_only_query_var = is_admin();
+
+		register_taxonomy( 'product_type',
+	        apply_filters( 'woocommerce_taxonomy_objects_product_type', array('product') ),
+	        apply_filters( 'woocommerce_taxonomy_args_product_type', array(
+	            'hierarchical' 			=> false,
+	            'update_count_callback' => '_update_post_term_count',
+	            'show_ui' 				=> false,
+	            'show_in_nav_menus' 	=> false,
+	            'query_var' 			=> $admin_only_query_var,
+	            'rewrite'				=> false
+	        ) )
+	    );
+		register_taxonomy( 'product_cat',
+	        apply_filters( 'woocommerce_taxonomy_objects_product_cat', array('product') ),
+	        apply_filters( 'woocommerce_taxonomy_args_product_cat', array(
+	            'hierarchical' 			=> true,
+	            'update_count_callback' => '_woocommerce_term_recount',
+	            'label' 				=> __( 'Product Categories', 'woocommerce'),
+	            'labels' => array(
+	                    'name' 				=> __( 'Product Categories', 'woocommerce'),
+	                    'singular_name' 	=> __( 'Product Category', 'woocommerce'),
+						'menu_name'			=> _x( 'Categories', 'Admin menu name', 'woocommerce' ),
+	                    'search_items' 		=> __( 'Search Product Categories', 'woocommerce'),
+	                    'all_items' 		=> __( 'All Product Categories', 'woocommerce'),
+	                    'parent_item' 		=> __( 'Parent Product Category', 'woocommerce'),
+	                    'parent_item_colon' => __( 'Parent Product Category:', 'woocommerce'),
+	                    'edit_item' 		=> __( 'Edit Product Category', 'woocommerce'),
+	                    'update_item' 		=> __( 'Update Product Category', 'woocommerce'),
+	                    'add_new_item' 		=> __( 'Add New Product Category', 'woocommerce'),
+	                    'new_item_name' 	=> __( 'New Product Category Name', 'woocommerce')
+	            	),
+	            'show_ui' 				=> true,
+	            'query_var' 			=> true,
+	            'capabilities'			=> array(
+	            	'manage_terms' 		=> 'manage_product_terms',
+					'edit_terms' 		=> 'edit_product_terms',
+					'delete_terms' 		=> 'delete_product_terms',
+					'assign_terms' 		=> 'assign_product_terms',
+	            ),
+	            'rewrite' 				=> array(
+	            	'slug' => $product_category_slug,
+	            	'with_front' => false,
+	            	'hierarchical' => true,
+	            	//'ep_mask' => EP_CATEGORIES
+	            ),
+	        ) )
+	    );
+
+	    register_taxonomy( 'product_tag',
+	        apply_filters( 'woocommerce_taxonomy_objects_product_tag', array('product') ),
+	        apply_filters( 'woocommerce_taxonomy_args_product_tag', array(
+	            'hierarchical' 			=> false,
+	            'update_count_callback' => '_woocommerce_term_recount',
+	            'label' 				=> __( 'Product Tags', 'woocommerce'),
+	            'labels' => array(
+	                    'name' 				=> __( 'Product Tags', 'woocommerce'),
+	                    'singular_name' 	=> __( 'Product Tag', 'woocommerce'),
+						'menu_name'			=> _x( 'Tags', 'Admin menu name', 'woocommerce' ),
+	                    'search_items' 		=> __( 'Search Product Tags', 'woocommerce'),
+	                    'all_items' 		=> __( 'All Product Tags', 'woocommerce'),
+	                    'parent_item' 		=> __( 'Parent Product Tag', 'woocommerce'),
+	                    'parent_item_colon' => __( 'Parent Product Tag:', 'woocommerce'),
+	                    'edit_item' 		=> __( 'Edit Product Tag', 'woocommerce'),
+	                    'update_item' 		=> __( 'Update Product Tag', 'woocommerce'),
+	                    'add_new_item' 		=> __( 'Add New Product Tag', 'woocommerce'),
+	                    'new_item_name' 	=> __( 'New Product Tag Name', 'woocommerce')
+	            	),
+	            'show_ui' 				=> true,
+	            'query_var' 			=> true,
+				'capabilities'			=> array(
+					'manage_terms' 		=> 'manage_product_terms',
+					'edit_terms' 		=> 'edit_product_terms',
+					'delete_terms' 		=> 'delete_product_terms',
+					'assign_terms' 		=> 'assign_product_terms',
+				),
+	            'rewrite' 				=> array( 'slug' => $product_tag_slug, 'with_front' => false ),
+	        ) )
+	    );
+
+		register_taxonomy( 'product_shipping_class',
+	        apply_filters( 'woocommerce_taxonomy_objects_product_shipping_class', array('product', 'product_variation') ),
+	        apply_filters( 'woocommerce_taxonomy_args_product_shipping_class', array(
+	            'hierarchical' 			=> true,
+	            'update_count_callback' => '_update_post_term_count',
+	            'label' 				=> __( 'Shipping Classes', 'woocommerce'),
+	            'labels' => array(
+	                    'name' 				=> __( 'Shipping Classes', 'woocommerce'),
+	                    'singular_name' 	=> __( 'Shipping Class', 'woocommerce'),
+						'menu_name'			=> _x( 'Shipping Classes', 'Admin menu name', 'woocommerce' ),
+	                    'search_items' 		=> __( 'Search Shipping Classes', 'woocommerce'),
+	                    'all_items' 		=> __( 'All Shipping Classes', 'woocommerce'),
+	                    'parent_item' 		=> __( 'Parent Shipping Class', 'woocommerce'),
+	                    'parent_item_colon' => __( 'Parent Shipping Class:', 'woocommerce'),
+	                    'edit_item' 		=> __( 'Edit Shipping Class', 'woocommerce'),
+	                    'update_item' 		=> __( 'Update Shipping Class', 'woocommerce'),
+	                    'add_new_item' 		=> __( 'Add New Shipping Class', 'woocommerce'),
+	                    'new_item_name' 	=> __( 'New Shipping Class Name', 'woocommerce')
+	            	),
+	            'show_ui' 				=> true,
+	            'show_in_nav_menus' 	=> false,
+	            'query_var' 			=> $admin_only_query_var,
+				'capabilities'			=> array(
+					'manage_terms' 		=> 'manage_product_terms',
+					'edit_terms' 		=> 'edit_product_terms',
+					'delete_terms' 		=> 'delete_product_terms',
+					'assign_terms' 		=> 'assign_product_terms',
+				),
+	            'rewrite' 				=> false,
+	        ) )
+	    );
+
+	    register_taxonomy( 'shop_order_status',
+	        apply_filters( 'woocommerce_taxonomy_objects_shop_order_status', array('shop_order') ),
+	        apply_filters( 'woocommerce_taxonomy_args_shop_order_status', array(
+	            'hierarchical' 			=> false,
+	            'update_count_callback' => '_update_post_term_count',
+	            'show_ui' 				=> false,
+	            'show_in_nav_menus' 	=> false,
+	            'query_var' 			=> $admin_only_query_var,
+	            'rewrite' 				=> false,
+	        ) )
+	    );
+
+	    global $wc_product_attributes;
+
+		if ( $attribute_taxonomies = $this->get_attribute_taxonomies() ) {
+			foreach ($attribute_taxonomies as $tax) {
+
+		    	$name = $this->attribute_taxonomy_name( $tax->attribute_name );
+		    	$hierarchical = true;
+		    	if ($name) {
+
+		    		$label = ( isset( $tax->attribute_label ) && $tax->attribute_label ) ? $tax->attribute_label : $tax->attribute_name;
+
+		    		$wc_product_attributes[ $name ] = $tax;
+
+					$show_in_nav_menus = apply_filters( 'woocommerce_attribute_show_in_nav_menus', false, $name );
+
+		    		register_taxonomy( $name,
+				        apply_filters( 'woocommerce_taxonomy_objects_' . $name, array('product') ),
+				        apply_filters( 'woocommerce_taxonomy_args_' . $name, array(
+				            'hierarchical' 				=> $hierarchical,
+	            			'update_count_callback' 	=> '_update_post_term_count',
+				            'labels' => array(
+				                    'name' 						=> $label,
+				                    'singular_name' 			=> $label,
+				                    'search_items' 				=> __( 'Search', 'woocommerce') . ' ' . $label,
+				                    'all_items' 				=> __( 'All', 'woocommerce') . ' ' . $label,
+				                    'parent_item' 				=> __( 'Parent', 'woocommerce') . ' ' . $label,
+				                    'parent_item_colon' 		=> __( 'Parent', 'woocommerce') . ' ' . $label . ':',
+				                    'edit_item' 				=> __( 'Edit', 'woocommerce') . ' ' . $label,
+				                    'update_item' 				=> __( 'Update', 'woocommerce') . ' ' . $label,
+				                    'add_new_item' 				=> __( 'Add New', 'woocommerce') . ' ' . $label,
+				                    'new_item_name' 			=> __( 'New', 'woocommerce') . ' ' . $label
+				            	),
+				            'show_ui' 					=> false,
+				            'query_var' 				=> true,
+				            'capabilities'			=> array(
+				            	'manage_terms' 		=> 'manage_product_terms',
+								'edit_terms' 		=> 'edit_product_terms',
+								'delete_terms' 		=> 'delete_product_terms',
+								'assign_terms' 		=> 'assign_product_terms',
+				            ),
+				            'show_in_nav_menus' 		=> $show_in_nav_menus,
+				            'rewrite' 					=> array( 'slug' => $product_attribute_base . sanitize_title( $tax->attribute_name ), 'with_front' => false, 'hierarchical' => $hierarchical ),
+				        ) )
+				    );
+
+		    	}
+		    }
+		}
+
+	    /**
+		 * Post Types
+		 **/
+		do_action( 'woocommerce_register_post_type' );
+
+		register_post_type( "product",
+			apply_filters( 'woocommerce_register_post_type_product',
+				array(
+					'labels' => array(
+							'name' 					=> __( 'Products', 'woocommerce' ),
+							'singular_name' 		=> __( 'Product', 'woocommerce' ),
+							'menu_name'				=> _x( 'Products', 'Admin menu name', 'woocommerce' ),
+							'add_new' 				=> __( 'Add Product', 'woocommerce' ),
+							'add_new_item' 			=> __( 'Add New Product', 'woocommerce' ),
+							'edit' 					=> __( 'Edit', 'woocommerce' ),
+							'edit_item' 			=> __( 'Edit Product', 'woocommerce' ),
+							'new_item' 				=> __( 'New Product', 'woocommerce' ),
+							'view' 					=> __( 'View Product', 'woocommerce' ),
+							'view_item' 			=> __( 'View Product', 'woocommerce' ),
+							'search_items' 			=> __( 'Search Products', 'woocommerce' ),
+							'not_found' 			=> __( 'No Products found', 'woocommerce' ),
+							'not_found_in_trash' 	=> __( 'No Products found in trash', 'woocommerce' ),
+							'parent' 				=> __( 'Parent Product', 'woocommerce' )
+						),
+					'description' 			=> __( 'This is where you can add new products to your store.', 'woocommerce' ),
+					'public' 				=> true,
+					'show_ui' 				=> true,
+					'capability_type' 		=> 'product',
+					'map_meta_cap'			=> true,
+					'publicly_queryable' 	=> true,
+					'exclude_from_search' 	=> false,
+					'hierarchical' 			=> false, // Hierarchical causes memory issues - WP loads all records!
+					'rewrite' 				=> $rewrite,
+					'query_var' 			=> true,
+					'supports' 				=> array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'custom-fields', 'page-attributes' ),
+					'has_archive' 			=> $base_slug,
+					'show_in_nav_menus' 	=> true
+				)
+			)
+		);
+
+		// Sort out attachment urls (removed, breaks pagination) no alternatives add_rewrite_rule( '^' . $attachment_base . '([^/]*)/([^/]*)/([^/]*)/?', 'index.php?attachment=$matches[3]', 'top' );
+
+		register_post_type( "product_variation",
+			apply_filters( 'woocommerce_register_post_type_product_variation',
+				array(
+					'labels' => array(
+							'name' 					=> __( 'Variations', 'woocommerce' ),
+							'singular_name' 		=> __( 'Variation', 'woocommerce' ),
+							'add_new' 				=> __( 'Add Variation', 'woocommerce' ),
+							'add_new_item' 			=> __( 'Add New Variation', 'woocommerce' ),
+							'edit' 					=> __( 'Edit', 'woocommerce' ),
+							'edit_item' 			=> __( 'Edit Variation', 'woocommerce' ),
+							'new_item' 				=> __( 'New Variation', 'woocommerce' ),
+							'view' 					=> __( 'View Variation', 'woocommerce' ),
+							'view_item' 			=> __( 'View Variation', 'woocommerce' ),
+							'search_items' 			=> __( 'Search Variations', 'woocommerce' ),
+							'not_found' 			=> __( 'No Variations found', 'woocommerce' ),
+							'not_found_in_trash' 	=> __( 'No Variations found in trash', 'woocommerce' ),
+							'parent' 				=> __( 'Parent Variation', 'woocommerce' )
+						),
+					'public' 				=> true,
+					'show_ui' 				=> false,
+					'capability_type' 		=> 'product',
+					'map_meta_cap'			=> true,
+					'publicly_queryable' 	=> false,
+					'exclude_from_search' 	=> true,
+					'hierarchical' 			=> false,
+					'rewrite' 				=> false,
+					'query_var'				=> true,
+					'supports' 				=> array( 'title', 'editor', 'custom-fields', 'page-attributes', 'thumbnail' ),
+					'show_in_nav_menus' 	=> false
+				)
+			)
+		);
+
+		$menu_name = _x('Orders', 'Admin menu name', 'woocommerce');
+		if ( $order_count = woocommerce_processing_order_count() ) {
+			$menu_name .= " <span class='awaiting-mod update-plugins count-$order_count'><span class='processing-count'>" . number_format_i18n( $order_count ) . "</span></span>" ;
+		}
+
+	    register_post_type( "shop_order",
+		    apply_filters( 'woocommerce_register_post_type_shop_order',
+				array(
+					'labels' => array(
+							'name' 					=> __( 'Orders', 'woocommerce' ),
+							'singular_name' 		=> __( 'Order', 'woocommerce' ),
+							'add_new' 				=> __( 'Add Order', 'woocommerce' ),
+							'add_new_item' 			=> __( 'Add New Order', 'woocommerce' ),
+							'edit' 					=> __( 'Edit', 'woocommerce' ),
+							'edit_item' 			=> __( 'Edit Order', 'woocommerce' ),
+							'new_item' 				=> __( 'New Order', 'woocommerce' ),
+							'view' 					=> __( 'View Order', 'woocommerce' ),
+							'view_item' 			=> __( 'View Order', 'woocommerce' ),
+							'search_items' 			=> __( 'Search Orders', 'woocommerce' ),
+							'not_found' 			=> __( 'No Orders found', 'woocommerce' ),
+							'not_found_in_trash' 	=> __( 'No Orders found in trash', 'woocommerce' ),
+							'parent' 				=> __( 'Parent Orders', 'woocommerce' ),
+							'menu_name'				=> $menu_name
+						),
+					'description' 			=> __( 'This is where store orders are stored.', 'woocommerce' ),
+					'public' 				=> false,
+					'show_ui' 				=> true,
+					'capability_type' 		=> 'shop_order',
+					'map_meta_cap'			=> true,
+					'publicly_queryable' 	=> false,
+					'exclude_from_search' 	=> true,
+					'show_in_menu' 			=> $show_in_menu,
+					'hierarchical' 			=> false,
+					'show_in_nav_menus' 	=> false,
+					'rewrite' 				=> false,
+					'query_var' 			=> false,
+					'supports' 				=> array( 'title', 'comments', 'custom-fields' ),
+					'has_archive' 			=> false,
+				)
+			)
+		);
+
+	    register_post_type( "shop_coupon",
+		    apply_filters( 'woocommerce_register_post_type_shop_coupon',
+				array(
+					'labels' => array(
+							'name' 					=> __( 'Coupons', 'woocommerce' ),
+							'singular_name' 		=> __( 'Coupon', 'woocommerce' ),
+							'menu_name'				=> _x( 'Coupons', 'Admin menu name', 'woocommerce' ),
+							'add_new' 				=> __( 'Add Coupon', 'woocommerce' ),
+							'add_new_item' 			=> __( 'Add New Coupon', 'woocommerce' ),
+							'edit' 					=> __( 'Edit', 'woocommerce' ),
+							'edit_item' 			=> __( 'Edit Coupon', 'woocommerce' ),
+							'new_item' 				=> __( 'New Coupon', 'woocommerce' ),
+							'view' 					=> __( 'View Coupons', 'woocommerce' ),
+							'view_item' 			=> __( 'View Coupon', 'woocommerce' ),
+							'search_items' 			=> __( 'Search Coupons', 'woocommerce' ),
+							'not_found' 			=> __( 'No Coupons found', 'woocommerce' ),
+							'not_found_in_trash' 	=> __( 'No Coupons found in trash', 'woocommerce' ),
+							'parent' 				=> __( 'Parent Coupon', 'woocommerce' )
+						),
+					'description' 			=> __( 'This is where you can add new coupons that customers can use in your store.', 'woocommerce' ),
+					'public' 				=> true,
+					'show_ui' 				=> true,
+					'capability_type' 		=> 'shop_coupon',
+					'map_meta_cap'			=> true,
+					'publicly_queryable' 	=> false,
+					'exclude_from_search' 	=> true,
+					'show_in_menu' 			=> $show_in_menu,
+					'hierarchical' 			=> false,
+					'rewrite' 				=> false,
+					'query_var' 			=> false,
+					'supports' 				=> array( 'title' ),
+					'show_in_nav_menus'		=> false
+				)
+			)
+		);
 	}
 
 
@@ -772,23 +1153,22 @@ class Woocommerce {
 	 * @return void
 	 */
 	public function frontend_scripts() {
-		global $post, $wp;
+		global $post;
 
-		$suffix               = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$lightbox_en          = get_option( 'woocommerce_enable_lightbox' ) == 'yes' ? true : false;
-		$chosen_en            = get_option( 'woocommerce_enable_chosen' ) == 'yes' ? true : false;
-		$ajax_cart_en         = get_option( 'woocommerce_enable_ajax_add_to_cart' ) == 'yes' ? true : false;
-		$assets_path          = str_replace( array( 'http:', 'https:' ), '', $this->plugin_url() ) . '/assets/';
-		$frontend_script_path = $assets_path . 'js/frontend/';
+		$suffix 				= defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		$lightbox_en 			= get_option( 'woocommerce_enable_lightbox' ) == 'yes' ? true : false;
+		$chosen_en 				= get_option( 'woocommerce_enable_chosen' ) == 'yes' ? true : false;
+		$ajax_cart_en			= get_option( 'woocommerce_enable_ajax_add_to_cart' ) == 'yes' ? true : false;
+		$frontend_script_path 	= $this->plugin_url() . '/assets/js/frontend/';
 
 		// Register any scripts for later use, or used as dependencies
-		wp_register_script( 'chosen', $assets_path . 'js/chosen/chosen.jquery' . $suffix . '.js', array( 'jquery' ), '0.9.14', true );
-		wp_register_script( 'jquery-blockui', $assets_path . 'js/jquery-blockui/jquery.blockUI' . $suffix . '.js', array( 'jquery' ), '2.60', true );
-		wp_register_script( 'jquery-placeholder', $assets_path . 'js/jquery-placeholder/jquery.placeholder' . $suffix . '.js', array( 'jquery' ), $this->version, true );
+		wp_register_script( 'chosen', $this->plugin_url() . '/assets/js/chosen/chosen.jquery' . $suffix . '.js', array( 'jquery' ), '0.9.11', true );
+		wp_register_script( 'jquery-blockui', $this->plugin_url() . '/assets/js/jquery-blockui/jquery.blockUI' . $suffix . '.js', array( 'jquery' ), '2.60', true );
+		wp_register_script( 'jquery-placeholder', $this->plugin_url() . '/assets/js/jquery-placeholder/jquery.placeholder' . $suffix . '.js', array( 'jquery' ), $this->version, true );
 
 		wp_register_script( 'wc-add-to-cart-variation', $frontend_script_path . 'add-to-cart-variation' . $suffix . '.js', array( 'jquery' ), $this->version, true );
 		wp_register_script( 'wc-single-product', $frontend_script_path . 'single-product' . $suffix . '.js', array( 'jquery' ), $this->version, true );
-		wp_register_script( 'jquery-cookie', $assets_path . 'js/jquery-cookie/jquery.cookie' . $suffix . '.js', array( 'jquery' ), '1.3.1', true );
+		wp_register_script( 'jquery-cookie', $this->plugin_url() . '/assets/js/jquery-cookie/jquery.cookie' . $suffix . '.js', array( 'jquery' ), '1.3.1', true );
 
 		// Queue frontend scripts conditionally
 		if ( $ajax_cart_en )
@@ -800,32 +1180,31 @@ class Woocommerce {
 		if ( is_checkout() ) {
 			if ( $chosen_en ) {
 				wp_enqueue_script( 'wc-chosen', $frontend_script_path . 'chosen-frontend' . $suffix . '.js', array( 'chosen' ), $this->version, true );
-				wp_enqueue_style( 'woocommerce_chosen_styles', $assets_path . 'css/chosen.css' );
+				wp_enqueue_style( 'woocommerce_chosen_styles', $this->plugin_url() . '/assets/css/chosen.css' );
 			}
 
 			wp_enqueue_script( 'wc-checkout', $frontend_script_path . 'checkout' . $suffix . '.js', array( 'jquery', 'woocommerce' ), $this->version, true );
 		}
 
 		if ( $lightbox_en && ( is_product() || ( ! empty( $post->post_content ) && strstr( $post->post_content, '[product_page' ) ) ) ) {
-			wp_enqueue_script( 'prettyPhoto', $assets_path . 'js/prettyPhoto/jquery.prettyPhoto' . $suffix . '.js', array( 'jquery' ), '3.1.5', true );
-			wp_enqueue_script( 'prettyPhoto-init', $assets_path . 'js/prettyPhoto/jquery.prettyPhoto.init' . $suffix . '.js', array( 'jquery' ), $this->version, true );
-			wp_enqueue_style( 'woocommerce_prettyPhoto_css', $assets_path . 'css/prettyPhoto.css' );
+			wp_enqueue_script( 'prettyPhoto', $this->plugin_url() . '/assets/js/prettyPhoto/jquery.prettyPhoto' . $suffix . '.js', array( 'jquery' ), '3.1.5', true );
+			wp_enqueue_script( 'prettyPhoto-init', $this->plugin_url() . '/assets/js/prettyPhoto/jquery.prettyPhoto.init' . $suffix . '.js', array( 'jquery' ), $this->version, true );
+			wp_enqueue_style( 'woocommerce_prettyPhoto_css', $this->plugin_url() . '/assets/css/prettyPhoto.css' );
 		}
 
 		if ( is_product() )
 			wp_enqueue_script( 'wc-single-product' );
 
 		// Global frontend scripts
-		wp_enqueue_script( 'woocommerce', $frontend_script_path . 'woocommerce' . $suffix . '.js', array( 'jquery', 'jquery-blockui' ), $this->version, true );
+		wp_enqueue_script( 'woocommerce', $frontend_script_path . 'woocommerce' . $suffix . '.js', array( 'jquery', 'jquery-blockui', 'jquery-placeholder' ), $this->version, true );
 		wp_enqueue_script( 'wc-cart-fragments', $frontend_script_path . 'cart-fragments' . $suffix . '.js', array( 'jquery', 'jquery-cookie' ), $this->version, true );
-		wp_enqueue_script( 'jquery-placeholder' );
 
 		// Variables for JS scripts
 		$woocommerce_params = array(
 			'countries'                        => json_encode( $this->countries->get_allowed_country_states() ),
 			'plugin_url'                       => $this->plugin_url(),
 			'ajax_url'                         => $this->ajax_url(),
-			'ajax_loader_url'                  => apply_filters( 'woocommerce_ajax_loader_url', $assets_path . 'images/ajax-loader@2x.gif' ),
+			'ajax_loader_url'                  => apply_filters( 'woocommerce_ajax_loader_url', $this->plugin_url() . '/assets/images/ajax-loader@2x.gif' ),
 			'i18n_select_state_text'           => esc_attr__( 'Select an option&hellip;', 'woocommerce' ),
 			'i18n_required_rating_text'        => esc_attr__( 'Please select a rating', 'woocommerce' ),
 			'i18n_no_matching_variations_text' => esc_attr__( 'Sorry, no products matched your selection. Please choose a different combination.', 'woocommerce' ),
@@ -836,7 +1215,7 @@ class Woocommerce {
 			'apply_coupon_nonce'               => wp_create_nonce( "apply-coupon" ),
 			'option_guest_checkout'            => get_option( 'woocommerce_enable_guest_checkout' ),
 			'checkout_url'                     => add_query_arg( 'action', 'woocommerce-checkout', $this->ajax_url() ),
-			'is_checkout'                      => is_page( woocommerce_get_page_id( 'checkout' ) ) && empty( $wp->query_vars['order-pay'] ) && ! isset( $wp->query_vars['order-received'] ) ? 1 : 0,
+			'is_checkout'                      => is_page( woocommerce_get_page_id( 'checkout' ) ) ? 1 : 0,
 			'update_shipping_method_nonce'     => wp_create_nonce( "update-shipping-method" ),
 			'cart_url'                         => get_permalink( woocommerce_get_page_id( 'cart' ) ),
 			'cart_redirect_after_add'          => get_option( 'woocommerce_cart_redirect_after_add' )
@@ -849,15 +1228,11 @@ class Woocommerce {
 
 		// CSS Styles
 		if ( ! defined( 'WOOCOMMERCE_USE_CSS' ) )
-			define( 'WOOCOMMERCE_USE_CSS', true );
+			define( 'WOOCOMMERCE_USE_CSS', get_option( 'woocommerce_frontend_css' ) == 'yes' ? true : false );
 
 		if ( WOOCOMMERCE_USE_CSS ) {
-			$css 				= file_exists( get_stylesheet_directory() . '/woocommerce/style.css' ) ? get_stylesheet_directory_uri() . '/woocommerce/style.css' : $assets_path . 'css/woocommerce.css';
-			$css_layout 		= file_exists( get_stylesheet_directory() . '/woocommerce/style-layout.css' ) ? get_stylesheet_directory_uri() . '/woocommerce/style-layout.css' : $assets_path . 'css/woocommerce-layout.css';
-			$css_smallscreen 	= file_exists( get_stylesheet_directory() . '/woocommerce/style-smallscreen.css' ) ? get_stylesheet_directory_uri() . '/woocommerce/style-smallscreen.css' : $assets_path . 'css/woocommerce-smallscreen.css';
+			$css = file_exists( get_stylesheet_directory() . '/woocommerce/style.css' ) ? get_stylesheet_directory_uri() . '/woocommerce/style.css' : $this->plugin_url() . '/assets/css/woocommerce.css';
 
-			wp_enqueue_style( 'woocommerce_frontend_styles_layout', $css_layout );
-			wp_enqueue_style( 'woocommerce_frontend_styles_smallscreen', $css_smallscreen, '','' ,'only screen and (max-width: ' . apply_filters( 'woocommerce_smallscreen_breakpoint', $breakpoint = '768px' ) . ' )' );
 			wp_enqueue_style( 'woocommerce_frontend_styles', $css );
 		}
 	}
@@ -875,7 +1250,7 @@ class Woocommerce {
 		global $wp_scripts;
 
 		// Enforce minimum version of jQuery
-		if ( ! empty( $wp_scripts->registered['jquery']->ver ) && ! empty( $wp_scripts->registered['jquery']->src ) && $wp_scripts->registered['jquery']->ver < '1.7' ) {
+		if ( ! empty( $wp_scripts->registered['jquery']->ver ) && ! empty( $wp_scripts->registered['jquery']->src ) && 0 >= version_compare( $wp_scripts->registered['jquery']->ver, '1.7' ) ) {
 			wp_deregister_script( 'jquery' );
 			wp_register_script( 'jquery', '/wp-includes/js/jquery/jquery.js', array(), '1.7' );
 			wp_enqueue_script( 'jquery' );
@@ -950,9 +1325,9 @@ class Woocommerce {
 	 * @param array $args (default: array())
 	 * @return void
 	 */
-	public function send_transactional_email() {
+	public function send_transactional_email( $args = array() ) {
 		$this->mailer();
-		do_action_ref_array( current_filter() . '_notification', func_get_args() );
+		do_action( current_filter() . '_notification', $args );
 	}
 
 	/**
@@ -977,7 +1352,7 @@ class Woocommerce {
 	 * @return string
 	 */
 	public function plugin_url() {
-		if ( isset( $this->plugin_url ) ) return $this->plugin_url;
+		if ( $this->plugin_url ) return $this->plugin_url;
 		return $this->plugin_url = untrailingslashit( plugins_url( '/', __FILE__ ) );
 	}
 
@@ -989,7 +1364,7 @@ class Woocommerce {
 	 * @return string
 	 */
 	public function plugin_path() {
-		if ( isset( $this->plugin_path ) ) return $this->plugin_path;
+		if ( $this->plugin_path ) return $this->plugin_path;
 
 		return $this->plugin_path = untrailingslashit( plugin_dir_path( __FILE__ ) );
 	}
@@ -1023,7 +1398,11 @@ class Woocommerce {
 			$scheme = 'http';
 		}
 
-		return esc_url_raw( trailingslashit( home_url( '/wc-api/' . $request, $scheme ) ) );
+		if ( get_option('permalink_structure') ) {
+			return esc_url_raw( trailingslashit( home_url( '/wc-api/' . $request, $scheme ) ) );
+		} else {
+			return esc_url_raw( add_query_arg( 'wc-api', $request, trailingslashit( home_url( '', $scheme ) ) ) );
+		}
 	}
 
 
@@ -1445,7 +1824,8 @@ class Woocommerce {
 		);
 
 		foreach( $transients_to_clear as $transient ) {
-			delete_transient( $transient );
+			delete_transient( 'wc_products_onsale' );
+			$wpdb->query( $wpdb->prepare( "DELETE FROM `$wpdb->options` WHERE `option_name` = %s OR `option_name` = %s", '_transient_' . $transient, '_transient_timeout_' . $transient ) );
 		}
 
 		// Clear transients for which we don't have the name

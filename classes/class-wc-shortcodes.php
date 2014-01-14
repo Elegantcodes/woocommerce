@@ -35,7 +35,11 @@ class WC_Shortcodes {
 		add_shortcode( 'woocommerce_order_tracking', array( $this, 'order_tracking' ) );
 		add_shortcode( 'woocommerce_my_account', array( $this, 'my_account' ) );
 		add_shortcode( 'woocommerce_edit_address', array( $this, 'edit_address' ) );
+		add_shortcode( 'woocommerce_change_password', array( $this, 'change_password' ) );
 		add_shortcode( 'woocommerce_lost_password', array( $this, 'lost_password' ) );
+		add_shortcode( 'woocommerce_view_order', array( $this, 'view_order' ) );
+		add_shortcode( 'woocommerce_pay', array( $this, 'pay' ) );
+		add_shortcode( 'woocommerce_thankyou', array( $this, 'thankyou' ) );
 	}
 
 	/**
@@ -98,6 +102,19 @@ class WC_Shortcodes {
 		return $woocommerce->shortcode_wrapper( array( 'WC_Shortcode_Edit_Address', 'output' ), $atts );
 	}
 
+
+	/**
+	 * Change password page shortcode.
+	 *
+	 * @access public
+	 * @param mixed $atts
+	 * @return string
+	 */
+	public function change_password( $atts ) {
+		global $woocommerce;
+		return $woocommerce->shortcode_wrapper( array( 'WC_Shortcode_Change_Password', 'output' ), $atts );
+	}
+
 	/**
 	 * Lost password page shortcode.
 	 *
@@ -108,6 +125,42 @@ class WC_Shortcodes {
 	public function lost_password( $atts ) {
 		global $woocommerce;
 		return $woocommerce->shortcode_wrapper( array( 'WC_Shortcode_Lost_Password', 'output' ), $atts );
+	}
+
+	/**
+	 * View order page shortcode.
+	 *
+	 * @access public
+	 * @param mixed $atts
+	 * @return string
+	 */
+	public function view_order( $atts ) {
+		global $woocommerce;
+		return $woocommerce->shortcode_wrapper( array( 'WC_Shortcode_View_Order', 'output' ), $atts );
+	}
+
+	/**
+	 * Pay page shortcode.
+	 *
+	 * @access public
+	 * @param mixed $atts
+	 * @return string
+	 */
+	public function pay( $atts ) {
+		global $woocommerce;
+		return $woocommerce->shortcode_wrapper( array( 'WC_Shortcode_Pay', 'output' ), $atts );
+	}
+
+	/**
+	 * Thankyou page shortcode.
+	 *
+	 * @access public
+	 * @param mixed $atts
+	 * @return string
+	 */
+	public function thankyou( $atts ) {
+		global $woocommerce;
+		return $woocommerce->shortcode_wrapper( array( 'WC_Shortcode_Thankyou', 'output' ), $atts );
 	}
 
 	/**
@@ -464,7 +517,7 @@ class WC_Shortcodes {
 	 * @return string
 	 */
 	public function product_add_to_cart( $atts ) {
-	  	global $wpdb, $woocommerce;
+	  	global $wpdb, $post, $woocommerce;
 
 	  	if ( empty( $atts ) ) return;
 
@@ -493,7 +546,8 @@ class WC_Shortcodes {
 
 			</p><?php
 
-			wp_reset_postdata();
+			// Restore Product global in case this is shown inside a product post
+			$woocommerce->setup_product_data( $post );
 
 			return ob_get_clean();
 
@@ -598,7 +652,7 @@ class WC_Shortcodes {
 			'post_status' 	=> 'publish',
 			'post_type' 	=> 'product',
 			'meta_query' 	=> $meta_query,
-			'post__in'		=> $product_ids_on_sale
+			'post__in'		=> array_merge( array( 0 ), $product_ids_on_sale )
 		);
 
 	  	ob_start();
@@ -973,22 +1027,15 @@ class WC_Shortcodes {
 	}
 
 	function related_products_shortcode( $atts ) {
-
-		$atts = shortcode_atts( array(
-			'posts_per_page' => '2',
-			'columns' 	     => '2',
-			'orderby'        => 'rand',
-		), $atts);
-
-		if ( isset( $atts['per_page'] ) ) {
-			_deprecated_argument( __CLASS__ . '->' . __FUNCTION__, '2.1', __( 'Use $args["posts_per_page"] instead. Deprecated argument will be removed in WC 2.2.', 'woocommerce' ) );
-			$atts['posts_per_page'] = $atts['per_page'];
-			unset( $atts['per_page'] );
-		}
+		extract( shortcode_atts( array(
+			'per_page' 	=> '2',
+			'columns' 	=> '2',
+			'orderby' => 'rand',
+		), $atts));
 
 		ob_start();
 
-		woocommerce_related_products( $atts );
+		woocommerce_related_products( $per_page, $columns, $orderby );
 
 		return ob_get_clean();
 	}

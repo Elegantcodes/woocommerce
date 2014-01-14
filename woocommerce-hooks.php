@@ -221,8 +221,16 @@ add_filter( 'wp_nav_menu_objects', 'woocommerce_nav_menu_items', 10, 2 );
  * @see woocommerce_empty_cart()
  * @see woocommerce_clear_cart_after_payment()
  */
-add_action( 'wp_logout', 'woocommerce_empty_cart' );
+if ( get_option( 'woocommerce_clear_cart_on_logout' ) == 'yes' )
+	add_action( 'wp_logout', 'woocommerce_empty_cart' );
 add_action( 'get_header', 'woocommerce_clear_cart_after_payment' );
+
+/**
+ * Disable admin bar
+ *
+ * @see woocommerce_disable_admin_bar()
+ */
+add_filter( 'show_admin_bar', 'woocommerce_disable_admin_bar', 10, 1 );
 
 /**
  * Cart Actions
@@ -242,7 +250,7 @@ add_action( 'wp_login', 'woocommerce_load_persistent_cart', 1, 2 );
  * @see woocommerce_pay_action()
  */
 add_action( 'init', 'woocommerce_checkout_action', 20 );
-add_action( 'wp', 'woocommerce_pay_action', 20 );
+add_action( 'init', 'woocommerce_pay_action', 20 );
 
 /**
  * Login and Registration
@@ -261,6 +269,13 @@ add_action( 'init', 'woocommerce_process_registration' );
 add_action('init', 'woocommerce_download_product');
 
 /**
+ * Analytics
+ *
+ * @see woocommerce_ecommerce_tracking_piwik()
+ */
+add_action( 'woocommerce_thankyou', 'woocommerce_ecommerce_tracking_piwik' );
+
+/**
  * RSS Feeds
  *
  * @see woocommerce_products_rss_feed()
@@ -275,7 +290,6 @@ add_action( 'wp_head', 'woocommerce_products_rss_feed' );
  */
 add_action( 'init', 'woocommerce_cancel_order' );
 add_action( 'init', 'woocommerce_order_again' );
-add_action( 'woocommerce_order_details_after_order_table', 'woocommerce_order_again_button' );
 
 /**
  * Star Ratings

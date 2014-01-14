@@ -72,8 +72,7 @@ class WC_Emails {
 		// Hooks for sending emails during store events
 		add_action( 'woocommerce_low_stock_notification', array( $this, 'low_stock' ) );
 		add_action( 'woocommerce_no_stock_notification', array( $this, 'no_stock' ) );
-		add_action( 'woocommerce_product_on_backorder_notification', array( $this, 'backorder' ) );
-		add_action( 'woocommerce_created_customer_notification', array( $this, 'customer_new_account' ), 10, 3 );
+		add_action( 'woocommerce_product_on_backorder_notification', array( $this, 'backorder' ));
 
 		// Let 3rd parties unhook the above via this hook
 		do_action( 'woocommerce_email', $this );
@@ -217,18 +216,16 @@ class WC_Emails {
 	 * Customer new account welcome email.
 	 *
 	 * @access public
-	 * @param int $customer_id
-	 * @param array $new_customer_data
+	 * @param mixed $user_id
+	 * @param mixed $plaintext_pass
 	 * @return void
 	 */
-	function customer_new_account( $customer_id, $new_customer_data = array(), $password_generated = false ) {
-		if ( ! $customer_id )
+	function customer_new_account( $user_id, $plaintext_pass ) {
+		if ( ! $user_id || ! $plaintext_pass)
 			return;
 
-		$user_pass = ! empty( $new_customer_data['user_pass'] ) ? $new_customer_data['user_pass'] : '';
-
 		$email = $this->emails['WC_Email_Customer_New_Account'];
-		$email->trigger( $customer_id, $user_pass, $password_generated );
+		$email->trigger( $user_id, $plaintext_pass );
 	}
 
 	/**
@@ -249,10 +246,11 @@ class WC_Emails {
 			$meta[ __( 'Note', 'woocommerce' ) ] = wptexturize( $order->customer_note );
 
 		if ( $show_fields )
-			foreach ( $show_fields as $field ) {
-				$value = get_post_meta( $order->id, $field, true );
-				if ( $value )
-					$meta[ ucwords( esc_attr( $field ) ) ] = wptexturize( $value );
+			foreach ( $show_fields as $key => $field ) {
+				if ( is_numeric( $key ) )
+					$key = $field;
+
+				$meta[ wptexturize( $key ) ] = wptexturize( get_post_meta( $order->id, $field, true ) );
 			}
 
 		if ( sizeof( $meta ) > 0 ) {
@@ -366,8 +364,7 @@ class WC_Emails {
 		else
 			$title = sprintf(__( 'Product #%s - %s', 'woocommerce' ), $product->id, get_the_title($product->id)) . $sku;
 
-		$order = new WC_Order( $order_id );
-		$message = sprintf(__( '%s units of %s have been backordered in order %s.', 'woocommerce' ), $quantity, $title, $order->get_order_number() );
+		$message = sprintf(__( '%s units of %s have been backordered in order #%s.', 'woocommerce' ), $quantity, $title, $order_id );
 
 		//	CC, BCC, additional headers
 		$headers = apply_filters('woocommerce_email_headers', '', 'backorder', $args);

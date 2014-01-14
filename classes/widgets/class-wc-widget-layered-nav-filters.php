@@ -5,30 +5,38 @@
  * @author 		WooThemes
  * @category 	Widgets
  * @package 	WooCommerce/Widgets
- * @version 	2.0.1
- * @extends 	WC_Widget
+ * @version 	2.0.0
+ * @extends 	WP_Widget
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-class WC_Widget_Layered_Nav_Filters extends WC_Widget {
+class WC_Widget_Layered_Nav_Filters extends WP_Widget {
+
+	var $woo_widget_cssclass;
+	var $woo_widget_description;
+	var $woo_widget_idbase;
+	var $woo_widget_name;
 
 	/**
-	 * Constructor
+	 * constructor
+	 *
+	 * @access public
+	 * @return void
 	 */
-	public function __construct() {
-		$this->widget_cssclass    = 'woocommerce widget_layered_nav_filters';
-		$this->widget_description = __( 'Shows active layered nav filters so users can see and deactivate them.', 'woocommerce' );
-		$this->widget_id          = 'woocommerce_layered_nav_filters';
-		$this->widget_name        = __( 'WooCommerce Layered Nav Filters', 'woocommerce' );
-		$this->settings           = array(
-			'title'  => array(
-				'type'  => 'text',
-				'std'   => __( 'Active Filters', 'woocommerce' ),
-				'label' => __( 'Title', 'woocommerce' )
-			)
-		);
-		parent::__construct();
+	function WC_Widget_Layered_Nav_Filters() {
+
+		/* Widget variable settings. */
+		$this->woo_widget_cssclass 		= 'woocommerce widget_layered_nav_filters';
+		$this->woo_widget_description	= __( 'Shows active layered nav filters so users can see and deactivate them.', 'woocommerce' );
+		$this->woo_widget_idbase 		= 'woocommerce_layered_nav_filters';
+		$this->woo_widget_name 			= __( 'WooCommerce Layered Nav Filters', 'woocommerce' );
+
+		/* Widget settings. */
+		$widget_ops = array( 'classname' => $this->woo_widget_cssclass, 'description' => $this->woo_widget_description );
+
+		/* Create the widget. */
+		$this->WP_Widget( 'woocommerce_layered_nav_filters', $this->woo_widget_name, $widget_ops );
 	}
 
 	/**
@@ -40,17 +48,19 @@ class WC_Widget_Layered_Nav_Filters extends WC_Widget {
 	 * @param array $instance
 	 * @return void
 	 */
-	public function widget( $args, $instance ) {
+	function widget( $args, $instance ) {
 		global $_chosen_attributes, $woocommerce, $_attributes_array;
 
 		extract( $args );
 
-		if ( ! is_post_type_archive( 'product' ) && is_array( $_attributes_array ) && ! is_tax( array_merge( $_attributes_array, array( 'product_cat', 'product_tag' ) ) ) )
+		if ( ! is_post_type_archive( 'product' ) && is_array( $_attributes_array ) && ! is_tax( get_object_taxonomies( 'product' ) ) )
 			return;
 
 		$current_term 	= $_attributes_array && is_tax( $_attributes_array ) ? get_queried_object()->term_id : '';
 		$current_tax 	= $_attributes_array && is_tax( $_attributes_array ) ? get_queried_object()->taxonomy : '';
-		$title          = apply_filters( 'widget_title', $instance['title'], $instance, $this->id_base );
+
+		$title = ( ! isset( $instance['title'] ) ) ? __( 'Active filters', 'woocommerce' ) : $instance['title'];
+		$title = apply_filters( 'widget_title', $title, $instance, $this->id_base);
 
 		// Price
 		$min_price = isset( $_GET['min_price'] ) ? esc_attr( $_GET['min_price'] ) : 0;
@@ -100,5 +110,3 @@ class WC_Widget_Layered_Nav_Filters extends WC_Widget {
 		}
 	}
 }
-
-register_widget( 'WC_Widget_Layered_Nav_Filters' );

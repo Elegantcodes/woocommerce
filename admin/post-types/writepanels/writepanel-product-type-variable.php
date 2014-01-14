@@ -78,11 +78,7 @@ function variable_product_type_options() {
 					<option value="toggle_virtual"><?php _e( 'Toggle &quot;Virtual&quot;', 'woocommerce' ); ?></option>
 					<option value="delete_all"><?php _e( 'Delete all variations', 'woocommerce' ); ?></option>
 					<option value="variable_regular_price"><?php _e( 'Prices', 'woocommerce' ); ?></option>
-					<option value="variable_regular_price_increase"><?php _e( 'Prices increase by (fixed amount or %)', 'woocommerce' ); ?></option>
-					<option value="variable_regular_price_decrease"><?php _e( 'Prices decrease by (fixed amount or %)', 'woocommerce' ); ?></option>
 					<option value="variable_sale_price"><?php _e( 'Sale prices', 'woocommerce' ); ?></option>
-					<option value="variable_sale_price_increase"><?php _e( 'Sale prices increase by (fixed amount or %)', 'woocommerce' ); ?></option>
-					<option value="variable_sale_price_decrease"><?php _e( 'Sale prices decrease by (fixed amount or %)', 'woocommerce' ); ?></option>
 					<option value="variable_stock"><?php _e( 'Stock', 'woocommerce' ); ?></option>
 					<option value="variable_weight"><?php _e( 'Weight', 'woocommerce' ); ?></option>
 					<option value="variable_length"><?php _e( 'Length', 'woocommerce' ); ?></option>
@@ -179,7 +175,7 @@ function variable_product_type_options() {
 					$image = '';
 					$image_id = absint( $_thumbnail_id );
 					if ( $image_id )
-						$image = wp_get_attachment_url( $image_id );
+						$image = wp_get_attachment_thumb_url( $image_id );
 
 					// Format file paths
 					$_file_paths = maybe_unserialize( $_file_paths );
@@ -437,74 +433,6 @@ function variable_product_type_options() {
 				}
 				return false;
 			}
-			else if ( field_to_edit == 'variable_regular_price_increase' ) {
-				field_to_edit = 'variable_regular_price';
-				var input_tag = jQuery('select#field_to_edit :selected').attr('rel') ? jQuery('select#field_to_edit :selected').attr('rel') : 'input';
-
-				var value = prompt("<?php echo esc_js( __( 'Enter a value (fixed or %)', 'woocommerce' ) ); ?>");
-				jQuery(input_tag + '[name^="' + field_to_edit + '"]').each(function() {
-					var current_value = jQuery(this).val();
-
-					if ( value.indexOf("%") >= 0 ) {
-						var new_value = Number( current_value ) + ( ( Number( current_value ) / 100 ) * Number( value.replace(/\%/, "" ) ) );
-					} else {
-						var new_value = Number( current_value ) + Number ( value );
-					}
-					jQuery(this).val( new_value ).change();
-				});
-				return false;
-			}
-			else if ( field_to_edit == 'variable_regular_price_decrease' ) {
-				field_to_edit = 'variable_regular_price';
-				var input_tag = jQuery('select#field_to_edit :selected').attr('rel') ? jQuery('select#field_to_edit :selected').attr('rel') : 'input';
-
-				var value = prompt("<?php echo esc_js( __( 'Enter a value (fixed or %)', 'woocommerce' ) ); ?>");
-				jQuery(input_tag + '[name^="' + field_to_edit + '"]').each(function() {
-					var current_value = jQuery(this).val();
-
-					if ( value.indexOf("%") >= 0 ) {
-						var new_value = Number( current_value ) - ( ( Number( current_value ) / 100 ) * Number( value.replace(/\%/, "" ) ) );
-					} else {
-						var new_value = Number( current_value ) - Number ( value );
-					}
-					jQuery(this).val( new_value ).change();
-				});
-				return false;
-			}
-			else if ( field_to_edit == 'variable_sale_price_increase' ) {
-				field_to_edit = 'variable_sale_price';
-				var input_tag = jQuery('select#field_to_edit :selected').attr('rel') ? jQuery('select#field_to_edit :selected').attr('rel') : 'input';
-
-				var value = prompt("<?php echo esc_js( __( 'Enter a value (fixed or %)', 'woocommerce' ) ); ?>");
-				jQuery(input_tag + '[name^="' + field_to_edit + '"]').each(function() {
-					var current_value = jQuery(this).val();
-
-					if ( value.indexOf("%") >= 0 ) {
-						var new_value = Number( current_value ) + ( ( Number( current_value ) / 100 ) * Number( value.replace(/\%/, "" ) ) );
-					} else {
-						var new_value = Number( current_value ) + Number ( value );
-					}
-					jQuery(this).val( new_value ).change();
-				});
-				return false;
-			}
-			else if ( field_to_edit == 'variable_sale_price_decrease' ) {
-				field_to_edit = 'variable_sale_price';
-				var input_tag = jQuery('select#field_to_edit :selected').attr('rel') ? jQuery('select#field_to_edit :selected').attr('rel') : 'input';
-
-				var value = prompt("<?php echo esc_js( __( 'Enter a value (fixed or %)', 'woocommerce' ) ); ?>");
-				jQuery(input_tag + '[name^="' + field_to_edit + '"]').each(function() {
-					var current_value = jQuery(this).val();
-
-					if ( value.indexOf("%") >= 0 ) {
-						var new_value = Number( current_value ) - ( ( Number( current_value ) / 100 ) * Number( value.replace(/\%/, "" ) ) );
-					} else {
-						var new_value = Number( current_value ) - Number ( value );
-					}
-					jQuery(this).val( new_value ).change();
-				});
-				return false;
-			}
 			else {
 
 				var input_tag = jQuery('select#field_to_edit :selected').attr('rel') ? jQuery('select#field_to_edit :selected').attr('rel') : 'input';
@@ -512,6 +440,7 @@ function variable_product_type_options() {
 				var value = prompt("<?php echo esc_js( __( 'Enter a value', 'woocommerce' ) ); ?>");
 				jQuery(input_tag + '[name^="' + field_to_edit + '["]').val( value ).change();
 				return false;
+
 			}
 		});
 
@@ -665,7 +594,7 @@ function process_product_meta_variable( $post_id ) {
 		$variable_download_limit 			= $_POST['variable_download_limit'];
 		$variable_download_expiry   		= $_POST['variable_download_expiry'];
 		$variable_shipping_class 			= $_POST['variable_shipping_class'];
-		$variable_tax_class					= $_POST['variable_tax_class'];
+		$variable_tax_class					= isset( $_POST['variable_tax_class'] ) ? $_POST['variable_tax_class'] : array();
 		$variable_menu_order 				= $_POST['variation_menu_order'];
 		$variable_sale_price_dates_from 	= $_POST['variable_sale_price_dates_from'];
 		$variable_sale_price_dates_to 		= $_POST['variable_sale_price_dates_to'];
@@ -777,7 +706,7 @@ function process_product_meta_variable( $post_id ) {
 				update_post_meta( $variation_id, '_sale_price_dates_to', '' );
 			}
 
-			if ( $variable_tax_class[ $i ] !== 'parent' )
+			if ( isset( $variable_tax_class[ $i ] ) && $variable_tax_class[ $i ] !== 'parent' )
 				update_post_meta( $variation_id, '_tax_class', woocommerce_clean( $variable_tax_class[ $i ] ) );
 			else
 				delete_post_meta( $variation_id, '_tax_class' );
@@ -831,7 +760,7 @@ function process_product_meta_variable( $post_id ) {
 
 			}
 
-			do_action( 'woocommerce_save_product_variation', $variation_id );
+			do_action( 'woocommerce_save_product_variation', $variation_id, $i );
 
 		 }
 
@@ -888,6 +817,8 @@ function process_product_meta_variable( $post_id ) {
 	update_post_meta( $post_parent, '_max_variation_regular_price', $highest_regular_price );
 	update_post_meta( $post_parent, '_min_variation_sale_price', $lowest_sale_price );
 	update_post_meta( $post_parent, '_max_variation_sale_price', $highest_sale_price );
+
+	do_action( 'woocommerce_variable_product_sync', $post_parent );
 
 	// Update default attribute options setting
 	$default_attributes = array();

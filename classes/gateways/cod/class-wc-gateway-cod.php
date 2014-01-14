@@ -127,10 +127,10 @@ class WC_Gateway_COD extends WC_Payment_Gateway {
 
 		if ( ! empty( $this->enable_for_methods ) ) {
 
-			if ( is_page( woocommerce_get_page_id( 'checkout' ) ) && ! empty( $wp->query_vars['order-pay'] ) ) {
+			if ( is_page( woocommerce_get_page_id( 'pay' ) ) ) {
 
-				$order_id = absint( $wp->query_vars['order-pay'] );
-				$order    = new WC_Order( $order_id );
+				$order_id = (int) $_GET['order_id'];
+				$order = new WC_Order( $order_id );
 
 				if ( ! $order->shipping_method )
 					return false;
@@ -167,13 +167,13 @@ class WC_Gateway_COD extends WC_Payment_Gateway {
      * @param int $order_id
      * @return array
      */
-	function process_payment($order_id) {
+	function process_payment ($order_id) {
 		global $woocommerce;
 
 		$order = new WC_Order( $order_id );
 
-		// Mark as processing (payment won't be taken until delivery)
-		$order->update_status( 'processing', __( 'Payment to be made upon delivery.', 'woocommerce' ) );
+		// Mark as on-hold (we're awaiting the cheque)
+		$order->update_status('on-hold', __( 'Payment to be made upon delivery.', 'woocommerce' ));
 
 		// Reduce stock levels
 		$order->reduce_order_stock();
@@ -184,7 +184,7 @@ class WC_Gateway_COD extends WC_Payment_Gateway {
 		// Return thankyou redirect
 		return array(
 			'result' 	=> 'success',
-			'redirect'	=> $this->get_return_url( $order )
+			'redirect'	=> add_query_arg('key', $order->order_key, add_query_arg('order', $order_id, get_permalink(woocommerce_get_page_id('thanks'))))
 		);
 	}
 
